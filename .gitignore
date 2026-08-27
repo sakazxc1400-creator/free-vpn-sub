@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+_e2e_backup/
+.venv/
+venv/
+.idea/
+.vscode/
+*.log

@@ -1,0 +1,36 @@
+# Источники подписок.
+# Одна ссылка на строку. Строки, начинающиеся с # — комментарии.
+# Формат содержимого может быть: plain-text (по одной ссылке на строку) или base64.
+# Скрипт определяет формат автоматически.
+
+# --- Агрегаторы смешанных протоколов ---
+https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/All_Configs_Sub.txt
+https://raw.githubusercontent.com/mahdibland/ShadowsocksAggregator/master/Eternity
+https://raw.githubusercontent.com/mfuu/v2ray/master/v2ray
+https://raw.githubusercontent.com/ermaozi/get_subscribe/main/subscribe/v2ray.txt
+https://raw.githubusercontent.com/aiboboxx/v2rayfree/main/v2
+https://raw.githubusercontent.com/peasoft/NoMoreWalls/master/list_raw.txt
+https://raw.githubusercontent.com/Pawdroid/Free-servers/main/sub
+https://raw.githubusercontent.com/freefq/free/master/v2
+
+# --- VLESS / Reality ---
+https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/Splitted-By-Protocol/vless.txt
+https://raw.githubusercontent.com/Epodonios/v2ray-configs/main/Splitted-By-Protocol/vless.txt
+https://raw.githubusercontent.com/MhdiTaheri/V2rayCollector/main/sub/vless
+
+# --- VMess ---
+https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/Splitted-By-Protocol/vmess.txt
+https://raw.githubusercontent.com/Epodonios/v2ray-configs/main/Splitted-By-Protocol/vmess.txt
+https://raw.githubusercontent.com/MhdiTaheri/V2rayCollector/main/sub/vmess
+
+# --- Trojan ---
+https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/Splitted-By-Protocol/trojan.txt
+https://raw.githubusercontent.com/Epodonios/v2ray-configs/main/Splitted-By-Protocol/trojan.txt
+
+# --- Shadowsocks ---
+https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/Splitted-By-Protocol/ss.txt
+https://raw.githubusercontent.com/Epodonios/v2ray-configs/main/Splitted-By-Protocol/ss.txt
+
+# --- Hysteria2 / TUIC (новые протоколы, лучше проходят DPI) ---
+https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/Splitted-By-Protocol/hysteria2.txt
+https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/Splitted-By-Protocol/tuic.txt
