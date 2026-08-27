@@ -1,19 +1,20 @@
 {
-  "updated": "2026-08-27 17:12:55 UTC",
+  "updated": "2026-08-27 17:26:06 UTC",
   "sources_total": 30,
   "sources_ok": 30,
   "sources_failed": [],
-  "links_found": 40200,
-  "parsed": 39982,
-  "unique": 10577,
-  "alive": 4549,
-  "published": 1500,
+  "links_found": 40106,
+  "parsed": 39888,
+  "unique": 10597,
+  "alive": 4459,
+  "published": 1650,
   "by_protocol": {
-    "hysteria2": 1,
-    "ss": 128,
-    "trojan": 348,
-    "vless": 990,
-    "vmess": 33
+    "hysteria2": 148,
+    "ss": 21,
+    "trojan": 9,
+    "tuic": 2,
+    "vless": 1263,
+    "vmess": 207
   },
-  "best_latency_ms": 5
+  "best_latency_ms": 1
 }
