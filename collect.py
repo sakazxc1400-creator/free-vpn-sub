@@ -56,6 +56,12 @@ CHECK_WORKERS = 200         # параллельных проверок
 CHECK_LIMIT = 6000          # максимум узлов, отправляемых на проверку
 MAX_OUTPUT = 1500           # максимум узлов в итоговой подписке
 
+# Протоколы поверх QUIC/UDP. TCP-коннектом их проверить нельзя — порт
+# на TCP закрыт даже у полностью рабочего сервера. Для них делаем только
+# DNS-резолв и ставим в конец списка, чтобы TCP-проверенные шли первыми.
+UDP_PROTOCOLS = frozenset({"hysteria2", "tuic"})
+MAX_UDP_OUTPUT = 150        # сколько непроверяемых UDP-узлов пускать в подписку
+
 USER_AGENT = "Mozilla/5.0 (compatible; free-vpn-sub/1.0; +https://github.com)"
 
 # Порты, которых в валидном конфиге быть не может.
@@ -353,8 +359,8 @@ def parse_link(link: str) -> Node | None:
             return node
         if scheme in ("vless", "trojan", "tuic"):
             return parse_uri_style(link, scheme)
-    except Exception as exc:  # защита от любого мусора во входных данных
-        log(f"    [~] не разобрал ссылку ({type(exc).__name__})")
+    except Exception:
+        # Битые ссылки в публичных подписках — норма. Молча пропускаем.
         return None
     return None
 
@@ -372,6 +378,35 @@ def tcp_ping(node: Node) -> tuple[Node, int | None]:
             return node, elapsed
     except (OSError, socket.timeout, ValueError):
         return node, None
+
+
+def dns_ok(node: Node) -> tuple[Node, bool]:
+    """
+    Для UDP-протоколов (hysteria2/tuic) TCP-коннект бессмыслен.
+    Проверяем хотя бы то, что хост разрешается в адрес.
+    """
+    try:
+        socket.getaddrinfo(node.host, node.port, proto=socket.IPPROTO_UDP)
+        return node, True
+    except (OSError, socket.gaierror, ValueError):
+        return node, False
+
+
+def check_udp(nodes: list[Node]) -> list[Node]:
+    """DNS-проверка UDP-узлов. Задержку не измеряем — её не с чего измерить."""
+    ok: list[Node] = []
+    if not nodes:
+        return ok
+    with ThreadPoolExecutor(max_workers=min(CHECK_WORKERS, 60)) as pool:
+        futures = [pool.submit(dns_ok, n) for n in nodes]
+        for fut in as_completed(futures):
+            try:
+                node, alive = fut.result()
+            except Exception:
+                continue
+            if alive:
+                ok.append(node)
+    return ok
 
 
 def check_alive(nodes: list[Node]) -> list[Node]:
@@ -404,7 +439,10 @@ def check_alive(nodes: list[Node]) -> list[Node]:
 
 def retag(node: Node, index: int) -> str:
     """Заменяет комментарий ссылки на понятную метку с задержкой."""
-    label = f"[{index:03d}] {node.proto} {node.host} {node.latency_ms}ms"
+    if node.latency_ms is None:
+        label = f"[{index:03d}] {node.proto} {node.host} udp"
+    else:
+        label = f"[{index:03d}] {node.proto} {node.host} {node.latency_ms}ms"
     tag = urllib.parse.quote(label, safe="[]")
     base = node.raw.split("#", 1)[0]
     return f"{base}#{tag}"
@@ -445,7 +483,9 @@ def write_outputs(nodes: list[Node], stats: Stats) -> dict:
         "alive": stats.alive,
         "published": len(nodes),
         "by_protocol": stats.by_proto,
-        "best_latency_ms": nodes[0].latency_ms if nodes else None,
+        "best_latency_ms": next(
+            (n.latency_ms for n in nodes if n.latency_ms is not None), None
+        ),
     }
     (OUTPUT_DIR / "stats.json").write_text(
         json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
@@ -517,18 +557,32 @@ def main() -> int:
         return 1
 
     # --- Проверка живости ---
-    to_check = unique[:CHECK_LIMIT]
-    log(f"[4/5] Проверяю доступность {len(to_check)} узлов "
+    # QUIC-протоколы отделяем: TCP-коннектом их не проверить.
+    udp_nodes = [n for n in unique if n.proto in UDP_PROTOCOLS]
+    tcp_nodes = [n for n in unique if n.proto not in UDP_PROTOCOLS]
+
+    to_check = tcp_nodes[:CHECK_LIMIT]
+    log(f"[4/5] Проверяю доступность {len(to_check)} TCP-узлов "
         f"(таймаут {CHECK_TIMEOUT}s)...")
     alive = check_alive(to_check)
-    stats.alive = len(alive)
 
-    if not alive:
+    if udp_nodes:
+        log(f"      + {len(udp_nodes)} QUIC-узлов (hysteria2/tuic): "
+            f"только DNS-проверка")
+        alive_udp = check_udp(udp_nodes[:CHECK_LIMIT])
+        log(f"      QUIC с валидным DNS: {len(alive_udp)}")
+    else:
+        alive_udp = []
+
+    stats.alive = len(alive) + len(alive_udp)
+
+    if not alive and not alive_udp:
         log("[!] Живых узлов не найдено. Подписка не обновлена — "
             "старая версия осталась на месте.")
         return 1
 
-    published = alive[:MAX_OUTPUT]
+    # TCP-проверенные идут первыми, QUIC — в конец.
+    published = alive[:MAX_OUTPUT] + alive_udp[:MAX_UDP_OUTPUT]
 
     # --- Запись ---
     report = write_outputs(published, stats)

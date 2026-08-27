@@ -143,6 +143,7 @@ try:
     check("дубликат отброшен", stats["unique"] < stats["parsed"], f"{stats['unique']}/{stats['parsed']}")
     check("живых ровно 3", stats["alive"] == 3, str(stats["alive"]))
     check("мёртвые отброшены", stats["alive"] < stats["unique"])
+    check("best_latency не None", stats["best_latency_ms"] is not None)
 
     plain = (out / "all.txt").read_text(encoding="utf-8")
     check("в all.txt 3 строки", len([l for l in plain.splitlines() if l.strip()]) == 3)

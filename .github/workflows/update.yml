@@ -27,10 +27,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
@@ -56,26 +56,41 @@ jobs:
       - name: Commit and push
         if: steps.collect.outcome == 'success'
         run: |
+          set -u
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add -A output/
-
-          if git diff --cached --quiet; then
-            echo "Изменений нет — коммит не нужен."
-            exit 0
-          fi
-
           COUNT=$(python -c "import json;print(json.load(open('output/stats.json'))['published'])")
-          git commit -m "auto: обновление подписки — ${COUNT} узлов [skip ci]"
 
-          # На случай, если параллельный прогон уже успел запушить.
-          for i in 1 2 3; do
-            if git push; then
+          # output/ — полностью генерируемый каталог. При гонке двух прогонов
+          # мержить его содержимое бессмысленно: нужен свежий результат целиком.
+          # Поэтому сохраняем файлы, перечитываем remote и накладываем заново.
+          cp -r output "$RUNNER_TEMP/output-fresh"
+
+          for attempt in 1 2 3 4 5; do
+            git add -A output/
+            if git diff --cached --quiet; then
+              echo "Изменений нет — коммит не нужен."
               exit 0
             fi
-            echo "push не удался, пробую снова ($i)"
-            git pull --rebase --autostash
-            sleep 5
+
+            git commit -m "auto: обновление подписки — ${COUNT} узлов [skip ci]"
+
+            if git push; then
+              echo "Запушено с попытки $attempt."
+              exit 0
+            fi
+
+            echo "push отклонён (попытка $attempt) — синхронизируюсь с remote."
+            git reset --soft HEAD~1
+            git restore --staged output/ 2>/dev/null || git reset output/
+            git fetch origin main
+            # Берём remote как основу, затем возвращаем свежий output/.
+            git reset --hard origin/main
+            rm -rf output
+            cp -r "$RUNNER_TEMP/output-fresh" output
+            sleep $((attempt * 3))
           done
+
+          echo "Не удалось запушить за 5 попыток."
           exit 1

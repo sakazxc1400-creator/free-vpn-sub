@@ -127,6 +127,12 @@ check("новый тег на месте", "87ms" in tagged)
 check("тело ссылки не тронуто", tagged.startswith("vless://u@1.2.3.4:443#"))
 check("ровно один #", tagged.count("#") == 1)
 
+udp_node = Node(raw="hysteria2://p@1.2.3.4:8443#Old", proto="hysteria2",
+                host="1.2.3.4", port=8443, ident="k", latency_ms=None)
+udp_tagged = retag(udp_node, 2)
+check("узел без latency не падает", "udp" in udp_tagged)
+check("нет 'Nonems'", "None" not in udp_tagged)
+
 print("== дедупликация ==")
 a = parse_link("vless://uuid-1@1.2.3.4:443?sni=x.com#name-one")
 b = parse_link("vless://uuid-1@1.2.3.4:443?sni=x.com#name-two")
