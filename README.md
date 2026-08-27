@@ -15,10 +15,14 @@
 Вставьте эту ссылку в свой VPN-клиент:
 
 ```
-https://raw.githubusercontent.com/ВАШ_ЛОГИН/free-vpn-sub/main/output/sub.txt
+https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/main/output/sub.txt
 ```
 
-> Замените `ВАШ_ЛОГИН` на своё имя пользователя GitHub.
+> Если `raw.githubusercontent.com` у вас не открывается (частая ситуация в РФ),
+> используйте зеркало:
+> ```
+> https://gh-proxy.com/https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/main/output/sub.txt
+> ```
 
 Дополнительные файлы, если нужен отдельный протокол:
 
