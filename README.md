@@ -19,10 +19,15 @@ https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/main/output/s
 ```
 
 > Если `raw.githubusercontent.com` у вас не открывается (частая ситуация в РФ),
-> используйте зеркало:
+> используйте любое из зеркал — содержимое одинаковое:
+> ```
+> https://cdn.jsdelivr.net/gh/sakazxc1400-creator/free-vpn-sub@main/output/sub.txt
+> ```
 > ```
 > https://gh-proxy.com/https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/main/output/sub.txt
 > ```
+> Оба зеркала проверены и работают. jsdelivr кэширует до ~12 часов, gh-proxy
+> отдаёт актуальную версию сразу.
 
 Дополнительные файлы, если нужен отдельный протокол:
 
@@ -102,10 +107,10 @@ https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/main/output/s
 серверы из начала списка: они отсортированы по скорости.
 
 **Подписка не загружается**
-`raw.githubusercontent.com` в некоторых сетях недоступен. Варианты:
-- добавьте перед ссылкой зеркало: `https://ghproxy.net/` + ваша ссылка;
-- скачайте `output/all.txt` вручную и импортируйте содержимое как текст
-  («Добавить из буфера обмена» в клиенте).
+`raw.githubusercontent.com` в некоторых сетях недоступен. Используйте зеркало
+из раздела выше (`cdn.jsdelivr.net` или `gh-proxy.com`) — они проверены
+и работают. Либо скачайте `output/all.txt` вручную и импортируйте содержимое
+как текст («Добавить из буфера обмена» в клиенте).
 
 **Подключение есть, но интернета нет**
 Смените сервер. Проверка в этом проекте подтверждает только доступность порта,
