@@ -1,27 +1,19 @@
 {
-  "updated": "2026-08-27 17:04:21 UTC",
-  "sources_total": 20,
-  "sources_ok": 12,
-  "sources_failed": [
-    "https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/Splitted-By-Protocol/vless.txt",
-    "https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/Splitted-By-Protocol/vmess.txt",
-    "https://raw.githubusercontent.com/aiboboxx/v2rayfree/main/v2",
-    "https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/All_Configs_Sub.txt",
-    "https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/Splitted-By-Protocol/trojan.txt",
-    "https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/Splitted-By-Protocol/ss.txt",
-    "https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/Splitted-By-Protocol/hysteria2.txt",
-    "https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/Splitted-By-Protocol/tuic.txt"
-  ],
-  "links_found": 8366,
-  "parsed": 8305,
-  "unique": 4148,
-  "alive": 2608,
+  "updated": "2026-08-27 17:12:55 UTC",
+  "sources_total": 30,
+  "sources_ok": 30,
+  "sources_failed": [],
+  "links_found": 40200,
+  "parsed": 39982,
+  "unique": 10577,
+  "alive": 4549,
   "published": 1500,
   "by_protocol": {
-    "ss": 62,
-    "trojan": 141,
-    "vless": 1217,
-    "vmess": 80
+    "hysteria2": 1,
+    "ss": 128,
+    "trojan": 348,
+    "vless": 990,
+    "vmess": 33
   },
-  "best_latency_ms": 16
+  "best_latency_ms": 5
 }
