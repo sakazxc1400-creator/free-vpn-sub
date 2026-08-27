@@ -7,10 +7,15 @@
   2. Понимает форматы: plain-text и base64.
   3. Извлекает ссылки протоколов vless/vmess/trojan/ss/hysteria2/tuic.
   4. Убирает дубликаты по реальному адресу сервера (а не по тексту ссылки).
-  5. Проверяет доступность TCP-портов и отбрасывает мёртвые узлы.
-  6. Складывает всё в единую подписку output/sub.txt (base64) + вспомогательные файлы.
+  5. Отсеивает мёртвые узлы TCP-проверкой, затем прогоняет выживших через
+     sing-box и оставляет только те, через которые реально идёт трафик.
+  6. Определяет страну каждого узла и подписывает её флагом в названии.
+  7. Складывает результат в output/sub.txt (base64) + файлы по протоколам
+     и по странам.
 
 Зависимостей нет — только стандартная библиотека Python 3.9+.
+Для настоящей проверки нужен бинарник sing-box; без него используется
+TCP-проверка.
 """
 
 from __future__ import annotations
@@ -30,6 +35,9 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
+
+import geo
+import probe
 
 # ----------------------------------------------------------------------------
 # Настройки
@@ -53,16 +61,34 @@ FETCH_WORKERS = 12          # параллельных загрузок
 
 CHECK_TIMEOUT = 3.0         # сек на TCP-коннект к узлу
 CHECK_WORKERS = 200         # параллельных проверок
-CHECK_LIMIT = 6000          # максимум узлов, отправляемых на проверку
-MAX_OUTPUT = 1500           # максимум узлов в итоговой подписке
+CHECK_LIMIT = 6000          # максимум узлов, отправляемых на TCP-проверку
+
+# Размер итоговой подписки. Держим небольшим: клиенту не нужны тысячи
+# серверов, ему нужны несколько десятков рабочих.
+MAX_OUTPUT = 100
+
+# Сколько кандидатов прогонять через sing-box. Берём с запасом, потому что
+# доля реально работающих узлов — обычно 10-30%.
+VERIFY_CANDIDATES = 900
 
 # Протоколы поверх QUIC/UDP. TCP-коннектом их проверить нельзя — порт
-# на TCP закрыт даже у полностью рабочего сервера. Для них делаем только
-# DNS-резолв и ставим в конец списка, чтобы TCP-проверенные шли первыми.
+# на TCP закрыт даже у полностью рабочего сервера, поэтому они идут сразу
+# в sing-box, минуя TCP-фильтр.
 UDP_PROTOCOLS = frozenset({"hysteria2", "tuic"})
-MAX_UDP_OUTPUT = 150        # сколько непроверяемых UDP-узлов пускать в подписку
+
+# Сколько узлов на одну страну максимум, чтобы список не заполнился
+# двадцатью серверами из одного датацентра.
+MAX_PER_COUNTRY = 12
 
 USER_AGENT = "Mozilla/5.0 (compatible; free-vpn-sub/1.0; +https://github.com)"
+
+# Зеркала для raw.githubusercontent.com: в части сетей он заблокирован,
+# и без обхода локальный запуск скрипта невозможен.
+RAW_HOST = "raw.githubusercontent.com"
+MIRROR_TEMPLATES = (
+    "https://gh-proxy.com/https://{raw}",
+    "https://raw.gitcode.host/{path}",
+)
 
 # Порты, которых в валидном конфиге быть не может.
 VALID_PORT_RANGE = range(1, 65536)
@@ -82,6 +108,8 @@ class Node:
     port: int
     ident: str                     # ключ дедупликации
     latency_ms: int | None = None  # заполняется после проверки
+    country: str = ""              # код страны, ISO 3166-1 alpha-2
+    verified: bool = False         # прошёл ли проверку через sing-box
 
     @property
     def key(self) -> str:
@@ -98,8 +126,11 @@ class Stats:
     links_found: int = 0
     parsed: int = 0
     unique: int = 0
+    tcp_alive: int = 0
+    verified: int = 0
     alive: int = 0
     by_proto: dict[str, int] = field(default_factory=dict)
+    by_country: dict[str, int] = field(default_factory=dict)
 
 
 # ----------------------------------------------------------------------------
@@ -177,19 +208,46 @@ def read_sources() -> list[str]:
     return list(dict.fromkeys(urls))
 
 
+def mirror_urls(url: str) -> list[str]:
+    """
+    Для ссылок на raw.githubusercontent.com добавляет зеркала.
+    В CI прямой доступ есть и зеркала не понадобятся, но при локальном
+    запуске из сети с блокировками они спасают прогон.
+    """
+    if RAW_HOST not in url:
+        return [url]
+    raw = url.split("://", 1)[-1]
+    path = raw[len(RAW_HOST) + 1:] if raw.startswith(RAW_HOST + "/") else raw
+    variants = [url]
+    for template in MIRROR_TEMPLATES:
+        variants.append(template.format(raw=raw, path=path))
+    return variants
+
+
 def fetch(url: str) -> str | None:
-    """Скачивает URL с retry и экспоненциальной паузой."""
-    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
-    for attempt in range(1, FETCH_RETRIES + 1):
-        try:
-            with urllib.request.urlopen(req, timeout=FETCH_TIMEOUT) as resp:
-                return resp.read().decode("utf-8", errors="ignore")
-        except (urllib.error.URLError, urllib.error.HTTPError, socket.timeout,
-                ConnectionError, TimeoutError, OSError) as exc:
-            if attempt == FETCH_RETRIES:
-                log(f"    [x] {url} -> {type(exc).__name__}: {exc}")
-                return None
-            time.sleep(1.5 * attempt)
+    """
+    Скачивает URL с retry. Если основной адрес недоступен, пробует зеркала.
+    """
+    last_error: str = ""
+    for candidate in mirror_urls(url):
+        req = urllib.request.Request(
+            candidate, headers={"User-Agent": USER_AGENT}
+        )
+        for attempt in range(1, FETCH_RETRIES + 1):
+            try:
+                with urllib.request.urlopen(req, timeout=FETCH_TIMEOUT) as resp:
+                    body = resp.read().decode("utf-8", errors="ignore")
+                if body.strip():
+                    return body
+                last_error = "пустой ответ"
+                break
+            except (urllib.error.URLError, urllib.error.HTTPError,
+                    socket.timeout, ConnectionError, TimeoutError,
+                    OSError) as exc:
+                last_error = f"{type(exc).__name__}: {exc}"
+                if attempt < FETCH_RETRIES:
+                    time.sleep(1.5 * attempt)
+    log(f"    [x] {url} -> {last_error}")
     return None
 
 
@@ -438,12 +496,21 @@ def check_alive(nodes: list[Node]) -> list[Node]:
 # ----------------------------------------------------------------------------
 
 def retag(node: Node, index: int) -> str:
-    """Заменяет комментарий ссылки на понятную метку с задержкой."""
-    if node.latency_ms is None:
-        label = f"[{index:03d}] {node.proto} {node.host} udp"
+    """
+    Переписывает название узла так, чтобы в клиенте сразу было видно
+    страну, протокол и задержку:  🇳🇱 Нидерланды · vless · 84ms
+    """
+    parts: list[str] = []
+    if node.country:
+        parts.append(f"{geo.flag(node.country)} {geo.country_name(node.country)}")
     else:
-        label = f"[{index:03d}] {node.proto} {node.host} {node.latency_ms}ms"
-    tag = urllib.parse.quote(label, safe="[]")
+        parts.append("🏴 ??")
+    parts.append(node.proto)
+    if node.latency_ms is not None:
+        parts.append(f"{node.latency_ms}ms")
+
+    label = f"{index:02d}. " + " · ".join(parts)
+    tag = urllib.parse.quote(label, safe="")
     base = node.raw.split("#", 1)[0]
     return f"{base}#{tag}"
 
@@ -463,15 +530,46 @@ def write_outputs(nodes: list[Node], stats: Stats) -> dict:
     # Тот же список в открытом виде — удобно смотреть глазами.
     (OUTPUT_DIR / "all.txt").write_text(plain + "\n", encoding="utf-8")
 
-    # Разбивка по протоколам.
+    # Разбивка по протоколам. Старые файлы удаляем: если в этот раз,
+    # например, не нашлось ни одного tuic, файл с прошлого прогона
+    # не должен вводить в заблуждение.
+    known_protos = {"vless", "vmess", "trojan", "ss", "hysteria2", "tuic"}
+    for proto in known_protos:
+        stale = OUTPUT_DIR / f"{proto}.txt"
+        if stale.exists():
+            stale.unlink()
+
     by_proto: dict[str, list[str]] = {}
     for node, line in zip(nodes, tagged):
         by_proto.setdefault(node.proto, []).append(line)
     for proto, lines in by_proto.items():
-        (OUTPUT_DIR / f"{proto}.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
+        (OUTPUT_DIR / f"{proto}.txt").write_text(
+            "\n".join(lines) + "\n", encoding="utf-8"
+        )
     stats.by_proto = {p: len(v) for p, v in sorted(by_proto.items())}
 
-    # Отчёт для README и для отладки.
+    # Разбивка по странам — отдельной папкой, чтобы не мешалась в корне.
+    country_dir = OUTPUT_DIR / "by-country"
+    country_dir.mkdir(exist_ok=True)
+    for stale in country_dir.glob("*.txt"):
+        stale.unlink()
+
+    by_country: dict[str, list[str]] = {}
+    for node, line in zip(nodes, tagged):
+        by_country.setdefault(node.country or "XX", []).append(line)
+    for code, lines in by_country.items():
+        (country_dir / f"{code.lower()}.txt").write_text(
+            "\n".join(lines) + "\n", encoding="utf-8"
+        )
+    stats.by_country = {
+        code: len(lines)
+        for code, lines in sorted(
+            by_country.items(), key=lambda kv: (-len(kv[1]), kv[0])
+        )
+    }
+
+    latencies = [n.latency_ms for n in nodes if n.latency_ms is not None]
+
     report = {
         "updated": updated,
         "sources_total": stats.sources_total,
@@ -480,17 +578,93 @@ def write_outputs(nodes: list[Node], stats: Stats) -> dict:
         "links_found": stats.links_found,
         "parsed": stats.parsed,
         "unique": stats.unique,
-        "alive": stats.alive,
+        "tcp_alive": stats.tcp_alive,
+        "verified": stats.verified,
         "published": len(nodes),
+        "countries": len([c for c in by_country if c != "XX"]),
         "by_protocol": stats.by_proto,
-        "best_latency_ms": next(
-            (n.latency_ms for n in nodes if n.latency_ms is not None), None
+        "by_country": stats.by_country,
+        "best_latency_ms": min(latencies) if latencies else None,
+        "median_latency_ms": (
+            sorted(latencies)[len(latencies) // 2] if latencies else None
         ),
     }
     (OUTPUT_DIR / "stats.json").write_text(
         json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
     return report
+
+
+def interleave(*groups: list[Node]) -> list[Node]:
+    """
+    Смешивает несколько списков по кругу. Нужно, чтобы в кандидаты на
+    проверку попали все протоколы, а не только самый многочисленный.
+    """
+    buckets: dict[str, list[Node]] = {}
+    for group in groups:
+        for node in group:
+            buckets.setdefault(node.proto, []).append(node)
+
+    order = sorted(buckets, key=lambda p: -len(buckets[p]))
+    result: list[Node] = []
+    index = 0
+    while True:
+        added = False
+        for proto in order:
+            bucket = buckets[proto]
+            if index < len(bucket):
+                result.append(bucket[index])
+                added = True
+        if not added:
+            return result
+        index += 1
+
+
+def pick_diverse(nodes: list[Node], limit: int, per_country: int) -> list[Node]:
+    """
+    Отбирает узлы по кругу между странами: сначала по лучшему узлу от каждой
+    страны, потом по второму и так далее. Так в списке не окажется двадцати
+    серверов из одного датацентра, даже если они самые быстрые.
+
+    per_country — жёсткий потолок на страну. Если из-за него не набирается
+    limit, потолок поднимается, пока список не заполнится.
+    """
+    if limit <= 0 or not nodes:
+        return []
+
+    buckets: dict[str, list[Node]] = {}
+    for node in nodes:
+        buckets.setdefault(node.country or "XX", []).append(node)
+
+    # Страны с самым быстрым узлом идут первыми.
+    order = sorted(
+        buckets,
+        key=lambda code: buckets[code][0].latency_ms
+        if buckets[code][0].latency_ms is not None
+        else 99999,
+    )
+
+    chosen: list[Node] = []
+    taken = {code: 0 for code in buckets}
+    quota = max(1, per_country)
+
+    while len(chosen) < limit:
+        added = False
+        for code in order:
+            if len(chosen) >= limit:
+                break
+            index = taken[code]
+            if index < len(buckets[code]) and index < quota:
+                chosen.append(buckets[code][index])
+                taken[code] = index + 1
+                added = True
+        if not added:
+            # Все страны исчерпали квоту. Либо узлы кончились, либо
+            # нужно ослабить потолок.
+            if all(taken[c] >= len(buckets[c]) for c in buckets):
+                break
+            quota += max(1, per_country)
+    return chosen
 
 
 # ----------------------------------------------------------------------------
@@ -508,7 +682,7 @@ def main() -> int:
     if not sources:
         log("[!] Список источников пуст — нечего делать.")
         return 1
-    log(f"[1/5] Источников в списке: {len(sources)}")
+    log(f"[1/6] Источников в списке: {len(sources)}")
 
     # --- Скачивание ---
     payloads: list[str] = []
@@ -526,7 +700,7 @@ def main() -> int:
                 stats.sources_ok += 1
             else:
                 stats.sources_failed.append(url)
-    log(f"[2/5] Успешно скачано: {stats.sources_ok}/{stats.sources_total}")
+    log(f"[2/6] Успешно скачано: {stats.sources_ok}/{stats.sources_total}")
 
     if not payloads:
         log("[!] Ни один источник не ответил. Прерываюсь, чтобы не затирать "
@@ -549,46 +723,83 @@ def main() -> int:
             unique.append(node)
 
     stats.unique = len(unique)
-    log(f"[3/5] Найдено ссылок: {stats.links_found}, "
+    log(f"[3/6] Найдено ссылок: {stats.links_found}, "
         f"валидных: {stats.parsed}, уникальных: {stats.unique}")
 
     if not unique:
         log("[!] Не удалось извлечь ни одного узла. Подписка не обновлена.")
         return 1
 
-    # --- Проверка живости ---
-    # QUIC-протоколы отделяем: TCP-коннектом их не проверить.
+    # --- Быстрый фильтр: TCP-коннект ---
+    # QUIC-протоколы TCP-проверку не проходят по своей природе, поэтому
+    # отправляем их в sing-box напрямую.
     udp_nodes = [n for n in unique if n.proto in UDP_PROTOCOLS]
     tcp_nodes = [n for n in unique if n.proto not in UDP_PROTOCOLS]
 
     to_check = tcp_nodes[:CHECK_LIMIT]
-    log(f"[4/5] Проверяю доступность {len(to_check)} TCP-узлов "
+    log(f"[4/6] Быстрый фильтр: {len(to_check)} TCP-узлов "
         f"(таймаут {CHECK_TIMEOUT}s)...")
-    alive = check_alive(to_check)
+    tcp_alive = check_alive(to_check)
 
     if udp_nodes:
-        log(f"      + {len(udp_nodes)} QUIC-узлов (hysteria2/tuic): "
-            f"только DNS-проверка")
         alive_udp = check_udp(udp_nodes[:CHECK_LIMIT])
-        log(f"      QUIC с валидным DNS: {len(alive_udp)}")
+        log(f"      QUIC-узлов с валидным DNS: {len(alive_udp)}")
     else:
         alive_udp = []
 
-    stats.alive = len(alive) + len(alive_udp)
-
-    if not alive and not alive_udp:
+    stats.tcp_alive = len(tcp_alive) + len(alive_udp)
+    if not tcp_alive and not alive_udp:
         log("[!] Живых узлов не найдено. Подписка не обновлена — "
             "старая версия осталась на месте.")
         return 1
 
-    # TCP-проверенные идут первыми, QUIC — в конец.
-    published = alive[:MAX_OUTPUT] + alive_udp[:MAX_UDP_OUTPUT]
+    # --- Настоящая проверка: трафик через sing-box ---
+    # Перемешиваем протоколы, чтобы в кандидаты попали не только vless.
+    candidates = interleave(tcp_alive, alive_udp)[:VERIFY_CANDIDATES]
+    log(f"[5/6] Проверяю реальный доступ в интернет через {len(candidates)} "
+        f"узлов...")
+
+    working: list[Node] = []
+    for node, latency in probe.verify(candidates, need=MAX_OUTPUT * 3):
+        node.latency_ms = latency
+        node.verified = True
+        working.append(node)
+
+    if working:
+        stats.verified = len(working)
+        log(f"      Реально работают: {len(working)}")
+        selected_pool = working
+    else:
+        # sing-box недоступен или не собрал ни одного узла — работаем
+        # по результатам TCP-проверки, но честно помечаем это в отчёте.
+        log("      Настоящая проверка недоступна, откат на TCP-результаты.")
+        selected_pool = tcp_alive + alive_udp
+
+    stats.alive = len(selected_pool)
+
+    # --- Страны ---
+    log("[6/6] Определяю страны...")
+    codes = geo.annotate([n.host for n in selected_pool[:VERIFY_CANDIDATES]])
+    for node in selected_pool:
+        node.country = codes.get(node.host, "")
+    known = sum(1 for n in selected_pool if n.country)
+    log(f"      Страна определена у {known}/{len(selected_pool)} узлов")
+
+    # --- Отбор в подписку ---
+    selected_pool.sort(
+        key=lambda n: (n.latency_ms if n.latency_ms is not None else 99999)
+    )
+    published = pick_diverse(selected_pool, MAX_OUTPUT, MAX_PER_COUNTRY)
 
     # --- Запись ---
     report = write_outputs(published, stats)
-    log(f"[5/5] Живых узлов: {stats.alive}, в подписке: {len(published)}")
+    log(f"Итог: в подписке {len(published)} узлов из "
+        f"{report['countries']} стран")
     log(f"      По протоколам: {report['by_protocol']}")
-    log(f"      Лучшая задержка: {report['best_latency_ms']} ms")
+    log(f"      Задержка: лучшая {report['best_latency_ms']} ms, "
+        f"медиана {report['median_latency_ms']} ms")
+    log(f"      Проверено через sing-box: "
+        f"{'да' if stats.verified else 'нет (TCP-режим)'}")
     log(f"Готово за {time.time() - started:.1f}s")
     return 0
 

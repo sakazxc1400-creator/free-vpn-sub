@@ -9,6 +9,9 @@ on:
     branches: [main]
     paths:
       - "collect.py"
+      - "probe.py"
+      - "outbound.py"
+      - "geo.py"
       - "sources.txt"
       - ".github/workflows/update.yml"
 
@@ -23,7 +26,7 @@ permissions:
 jobs:
   update:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 45
 
     steps:
       - name: Checkout
@@ -34,8 +37,28 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Install sing-box
+        run: |
+          set -euo pipefail
+          VERSION=$(curl -fsSL https://api.github.com/repos/SagerNet/sing-box/releases/latest \
+            | python -c "import json,sys;print(json.load(sys.stdin)['tag_name'].lstrip('v'))")
+          echo "sing-box $VERSION"
+          curl -fsSL -o sb.tar.gz \
+            "https://github.com/SagerNet/sing-box/releases/download/v${VERSION}/sing-box-${VERSION}-linux-amd64.tar.gz"
+          tar -xzf sb.tar.gz
+          mv "sing-box-${VERSION}-linux-amd64/sing-box" ./sing-box
+          chmod +x ./sing-box
+          rm -rf sb.tar.gz "sing-box-${VERSION}-linux-amd64"
+          ./sing-box version
+
+      - name: Raise file descriptor limit
+        run: ulimit -n 65535 || true
+
       - name: Run unit tests
         run: python selftest.py
+
+      - name: Run converter tests
+        run: python testconv.py
 
       - name: Run end-to-end test
         run: python e2etest.py
@@ -65,10 +88,12 @@ jobs:
           # output/ — полностью генерируемый каталог. При гонке двух прогонов
           # мержить его содержимое бессмысленно: нужен свежий результат целиком.
           # Поэтому сохраняем файлы, перечитываем remote и накладываем заново.
+          rm -rf "$RUNNER_TEMP/output-fresh"
           cp -r output "$RUNNER_TEMP/output-fresh"
+          cp geo_cache.json "$RUNNER_TEMP/geo_cache.json" 2>/dev/null || true
 
           for attempt in 1 2 3 4 5; do
-            git add -A output/
+            git add -A output/ geo_cache.json
             if git diff --cached --quiet; then
               echo "Изменений нет — коммит не нужен."
               exit 0
@@ -82,13 +107,11 @@ jobs:
             fi
 
             echo "push отклонён (попытка $attempt) — синхронизируюсь с remote."
-            git reset --soft HEAD~1
-            git restore --staged output/ 2>/dev/null || git reset output/
             git fetch origin main
-            # Берём remote как основу, затем возвращаем свежий output/.
             git reset --hard origin/main
             rm -rf output
             cp -r "$RUNNER_TEMP/output-fresh" output
+            cp "$RUNNER_TEMP/geo_cache.json" geo_cache.json 2>/dev/null || true
             sleep $((attempt * 3))
           done
 

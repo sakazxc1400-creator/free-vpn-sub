@@ -6,3 +6,8 @@ venv/
 .idea/
 .vscode/
 *.log
+
+# Бинарник sing-box скачивается в CI, в репозитории не нужен.
+sing-box
+sing-box.exe
+GeoLite2-Country.mmdb

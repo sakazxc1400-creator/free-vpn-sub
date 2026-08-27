@@ -17,6 +17,7 @@ import socket
 import socketserver
 import sys
 import threading
+import urllib.parse
 from pathlib import Path
 
 import collect
@@ -111,6 +112,10 @@ if (ROOT / "output").exists():
     shutil.copytree(ROOT / "output", BACKUP / "output")
 
 exit_code = 1
+GEO_BACKUP = BACKUP / "geo_cache.json"
+if (ROOT / "geo_cache.json").exists():
+    shutil.copy2(ROOT / "geo_cache.json", GEO_BACKUP)
+
 try:
     # Подменяем источники.
     (ROOT / "sources.txt").write_text("\n".join([
@@ -125,6 +130,10 @@ try:
     # Разрешаем loopback только на время теста.
     collect.is_routable = lambda host: True
     collect.CHECK_TIMEOUT = 1.0
+    # sing-box в тесте не запускаем: проверяем именно откат на TCP-режим.
+    collect.probe.verify = lambda nodes, need: []
+    # Сеть для гео не трогаем, подставляем фиксированные страны.
+    collect.geo.annotate = lambda hosts: {h: "NL" for h in hosts}
 
     print("== прогон collect.main() ==")
     rc = collect.main()
@@ -141,9 +150,12 @@ try:
     check("часть источников упала", len(stats["sources_failed"]) >= 1)
     check("узлы распарсены", stats["parsed"] >= 4, str(stats["parsed"]))
     check("дубликат отброшен", stats["unique"] < stats["parsed"], f"{stats['unique']}/{stats['parsed']}")
-    check("живых ровно 3", stats["alive"] == 3, str(stats["alive"]))
-    check("мёртвые отброшены", stats["alive"] < stats["unique"])
+    check("tcp_alive = 3", stats["tcp_alive"] == 3, str(stats["tcp_alive"]))
+    check("мёртвые отброшены", stats["tcp_alive"] < stats["unique"])
+    check("verified = 0 без sing-box", stats["verified"] == 0, str(stats["verified"]))
     check("best_latency не None", stats["best_latency_ms"] is not None)
+    check("median_latency не None", stats["median_latency_ms"] is not None)
+    check("countries посчитаны", stats["countries"] == 1, str(stats["countries"]))
 
     plain = (out / "all.txt").read_text(encoding="utf-8")
     check("в all.txt 3 строки", len([l for l in plain.splitlines() if l.strip()]) == 3)
@@ -152,9 +164,24 @@ try:
     decoded = base64.b64decode((out / "sub.txt").read_text(encoding="utf-8")).decode()
     check("sub.txt = валидный base64 от all.txt", decoded.strip() == plain.strip())
     check("в подписке есть latency-метки", "ms" in decoded)
+    check("в подписке есть флаг страны",
+          "%F0%9F%87%B3%F0%9F%87%B1" in decoded or "\U0001F1F3\U0001F1F1" in decoded,
+          decoded[:200])
 
     check("файл по протоколу создан", (out / "vless.txt").exists())
     check("by_protocol заполнен", len(stats["by_protocol"]) >= 2, str(stats["by_protocol"]))
+    check("папка by-country создана", (out / "by-country").is_dir())
+    check("файл страны создан", (out / "by-country" / "nl.txt").exists())
+    check("by_country заполнен", stats["by_country"].get("NL") == 3,
+          str(stats["by_country"]))
+
+    # --- Лимит размера подписки ---
+    print("== лимит размера подписки ==")
+    check("не больше MAX_OUTPUT",
+          stats["published"] <= collect.MAX_OUTPUT,
+          f"{stats['published']}>{collect.MAX_OUTPUT}")
+    check("MAX_OUTPUT разумный для клиентов",
+          collect.MAX_OUTPUT <= 200, str(collect.MAX_OUTPUT))
 
     # --- Сценарий: все источники мертвы -> подписка не должна затираться ---
     print("== сценарий: все источники недоступны ==")
@@ -173,6 +200,27 @@ try:
     check("main() вернул ошибку", rc3 == 1, f"rc={rc3}")
     check("старая подписка не затёрта", before == after2)
 
+    # --- Сценарий: sing-box работает и часть узлов реально живая ---
+    print("== сценарий: проверка через sing-box ==")
+    (ROOT / "sources.txt").write_text("\n".join([
+        f"{base_url}/plain", f"{base_url}/b64",
+    ]) + "\n", encoding="utf-8")
+
+    def fake_verify(nodes, need):
+        # Первые два узла "работают", остальные нет.
+        return [(n, 40 + i * 10) for i, n in enumerate(nodes[:2])]
+
+    collect.probe.verify = fake_verify
+    rc4 = collect.main()
+    stats4 = json.loads((out / "stats.json").read_text(encoding="utf-8"))
+    check("main() вернул 0", rc4 == 0, f"rc={rc4}")
+    check("verified заполнен", stats4["verified"] == 2, str(stats4["verified"]))
+    check("published = verified", stats4["published"] == 2, str(stats4["published"]))
+    plain4 = (out / "all.txt").read_text(encoding="utf-8")
+    check("в подписке только проверенные",
+          len([l for l in plain4.splitlines() if l.strip()]) == 2)
+    check("задержка из проверки", "40ms" in urllib.parse.unquote(plain4), plain4[:200])
+
 finally:
     httpd.shutdown()
     for s in live_servers:
@@ -184,6 +232,11 @@ finally:
         shutil.rmtree(ROOT / "output")
     if (BACKUP / "output").exists():
         shutil.copytree(BACKUP / "output", ROOT / "output")
+    # Кэш гео, созданный тестом, не должен попасть в репозиторий.
+    if GEO_BACKUP.exists():
+        shutil.copy2(GEO_BACKUP, ROOT / "geo_cache.json")
+    elif (ROOT / "geo_cache.json").exists():
+        (ROOT / "geo_cache.json").unlink()
     shutil.rmtree(BACKUP)
     print("== файлы восстановлены ==")
 
