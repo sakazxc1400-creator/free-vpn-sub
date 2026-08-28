@@ -1,2 +1,1 @@
-trojan://humanity@212.183.88.136:443?path=/assignment&security=tls&insecure=0&host=www.calmlunch.com&type=ws&allowInsecure=0&sni=www.calmlunch.com#11.%20%F0%9F%87%A6%F0%9F%87%B9%20%D0%90%D0%B2%D1%81%D1%82%D1%80%D0%B8%D1%8F%20%C2%B7%20trojan%20%C2%B7%20482ms
 trojan://humanity@45.130.125.190:443?path=/assignment&security=tls&insecure=0&host=www.calmlunch.com&type=ws&allowInsecure=0&sni=www.calmlunch.com#17.%20%F0%9F%87%B8%F0%9F%87%A8%20%D0%A1%D0%B5%D0%B9%D1%88%D0%B5%D0%BB%D1%8B%20%C2%B7%20trojan%20%C2%B7%20539ms
