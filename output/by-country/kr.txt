@@ -1,5 +1,0 @@
-hy2://H7mP2xY9kJ4nQ8wR5tF6vB3z@3.36.93.74:443?insecure=1&sni=t.me#10.%20%F0%9F%87%B0%F0%9F%87%B7%20%D0%9A%D0%BE%D1%80%D0%B5%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20555ms
-hy2://H7mP2xY9kJ4nQ8wR5tF6vB3z@3.36.96.245:443?insecure=1&sni=css.rbxcdn.com#22.%20%F0%9F%87%B0%F0%9F%87%B7%20%D0%9A%D0%BE%D1%80%D0%B5%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20575ms
-hy2://H7mP2xY9kJ4nQ8wR5tF6vB3z@3.36.93.74:443?insecure=1&sni=speedtest.tinkoff.ru#32.%20%F0%9F%87%B0%F0%9F%87%B7%20%D0%9A%D0%BE%D1%80%D0%B5%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20589ms
-hy2://3d7634af8cb2c6cb4bac1c0efad8b43d@152.67.200.82:50160?insecure=1&sni=152-67-200-82.liao.kdns.fr#40.%20%F0%9F%87%B0%F0%9F%87%B7%20%D0%9A%D0%BE%D1%80%D0%B5%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20598ms
-hy2://H7mP2xY9kJ4nQ8wR5tF6vB3z@3.36.96.245:443?insecure=1&sni=speedtest.tinkoff.ru#47.%20%F0%9F%87%B0%F0%9F%87%B7%20%D0%9A%D0%BE%D1%80%D0%B5%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20614ms
