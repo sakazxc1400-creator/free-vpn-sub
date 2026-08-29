@@ -1,1 +1,1 @@
-ss://YWVzLTEyOC1nY206c2hhZG93c29ja3M=@156.146.38.167:443#01.%20%F0%9F%87%BA%F0%9F%87%B8%20%D0%A1%D0%A8%D0%90%20%C2%B7%20ss%20%C2%B7%20137ms
+vless://47fcef29-ab4e-4aa6-932b-d95a18f28a4e@108.162.198.178:2082?security=none&type=ws&path=%2F%3Fed%3D2560security%3Dtls&host=8nj2r.2k8t.f88.hh.vavava.kdns.fr#01.%20%F0%9F%87%BA%F0%9F%87%B8%20%D0%A1%D0%A8%D0%90%20%C2%B7%20vless%20%C2%B7%2031ms
