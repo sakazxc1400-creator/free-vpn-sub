@@ -1,9 +1,12 @@
 # Free VPN Subscription
 
-донат на еду
+[![Обновление подписки](https://github.com/sakazxc1400-creator/free-vpn-sub/actions/workflows/update.yml/badge.svg)](https://github.com/sakazxc1400-creator/free-vpn-sub/actions/workflows/update.yml)
+[![Серверов](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsakazxc1400-creator%2Ffree-vpn-sub%2Fmain%2Foutput%2Fstats.json&query=%24.published&label=%D1%81%D0%B5%D1%80%D0%B2%D0%B5%D1%80%D0%BE%D0%B2&color=brightgreen)](output/all.txt)
+[![Стран](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsakazxc1400-creator%2Ffree-vpn-sub%2Fmain%2Foutput%2Fstats.json&query=%24.countries&label=%D1%81%D1%82%D1%80%D0%B0%D0%BD&color=blue)](output/by-country)
+[![Обновлено](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsakazxc1400-creator%2Ffree-vpn-sub%2Fmain%2Foutput%2Fstats.json&query=%24.updated&label=%D0%BE%D0%B1%D0%BD%D0%BE%D0%B2%D0%BB%D0%B5%D0%BD%D0%BE&color=informational)](output/stats.json)
+[![Лицензия MIT](https://img.shields.io/badge/%D0%BB%D0%B8%D1%86%D0%B5%D0%BD%D0%B7%D0%B8%D1%8F-MIT-lightgrey)](LICENSE)
 
-https://www.donationalerts.com/r/saka1232131
-
+**[English version](README.en.md)**
 
 Список бесплатных VPN-серверов, который обновляется сам каждый час.
 
@@ -195,6 +198,15 @@ python collect.py      # собрать подписку
 заметно быстрее любого бесплатного узла.
 
 Проверить добросовестность этих серверов невозможно. Пользуйтесь на свой риск.
+
+## Поддержать
+
+Проект бесплатный и останется таким. Если он оказался полезен и хочется
+поблагодарить: [донат на еду](https://www.donationalerts.com/r/saka1232131).
+
+Помочь можно и без денег: поставьте звезду репозиторию — так его найдут те,
+кому он нужен. Нашли нерабочий источник или знаете хороший — открывайте
+[issue](../../issues) или правьте `sources.txt` и присылайте pull request.
 
 ## Лицензия
 
