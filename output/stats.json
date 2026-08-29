@@ -1,25 +1,41 @@
 {
-  "updated": "2026-08-29 11:26:50 UTC",
+  "updated": "2026-08-29 15:42:54 UTC",
   "sources_total": 30,
-  "sources_ok": 30,
-  "sources_failed": [],
-  "links_found": 41708,
-  "parsed": 41419,
-  "unique": 11303,
-  "tcp_alive": 4985,
-  "verified": 10,
-  "published": 10,
-  "countries": 3,
+  "sources_ok": 29,
+  "sources_failed": [
+    "https://raw.githubusercontent.com/0xRadikal/Free-v2ray-Configs/main/protocols/tuic.txt"
+  ],
+  "links_found": 41630,
+  "parsed": 41343,
+  "unique": 10934,
+  "tcp_alive": 4961,
+  "verified": 130,
+  "published": 100,
+  "countries": 15,
   "by_protocol": {
-    "hysteria2": 1,
-    "vless": 6,
-    "vmess": 3
+    "hysteria2": 28,
+    "ss": 33,
+    "trojan": 15,
+    "vless": 22,
+    "vmess": 2
   },
   "by_country": {
-    "US": 5,
-    "CA": 4,
-    "DE": 1
+    "CA": 19,
+    "HK": 19,
+    "NL": 19,
+    "US": 15,
+    "JP": 5,
+    "KR": 5,
+    "SG": 4,
+    "DE": 3,
+    "KZ": 3,
+    "PL": 3,
+    "FI": 1,
+    "FR": 1,
+    "GB": 1,
+    "IT": 1,
+    "RO": 1
   },
-  "best_latency_ms": 56,
-  "median_latency_ms": 108
+  "best_latency_ms": 76,
+  "median_latency_ms": 269
 }
