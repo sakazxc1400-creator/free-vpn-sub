@@ -1,36 +1,31 @@
 {
-  "updated": "2026-08-29 22:43:30 UTC",
+  "updated": "2026-08-30 00:51:09 UTC",
   "sources_total": 30,
   "sources_ok": 30,
   "sources_failed": [],
-  "links_found": 42459,
-  "parsed": 42163,
-  "unique": 11391,
-  "tcp_alive": 4373,
-  "verified": 125,
-  "published": 100,
-  "countries": 13,
+  "links_found": 43242,
+  "parsed": 42920,
+  "unique": 11310,
+  "tcp_alive": 4444,
+  "verified": 15,
+  "published": 15,
+  "countries": 7,
   "by_protocol": {
-    "hysteria2": 44,
-    "ss": 41,
-    "vless": 4,
-    "vmess": 11
+    "hysteria2": 3,
+    "ss": 4,
+    "trojan": 3,
+    "vless": 3,
+    "vmess": 2
   },
   "by_country": {
-    "NL": 35,
-    "HK": 17,
-    "SG": 11,
-    "US": 8,
-    "DE": 6,
-    "KR": 5,
-    "TW": 5,
-    "FR": 4,
-    "CA": 3,
-    "JP": 3,
-    "KZ": 1,
-    "PL": 1,
-    "RU": 1
+    "NL": 5,
+    "US": 3,
+    "CA": 2,
+    "DE": 2,
+    "CN": 1,
+    "ES": 1,
+    "HK": 1
   },
-  "best_latency_ms": 40,
-  "median_latency_ms": 305
+  "best_latency_ms": 76,
+  "median_latency_ms": 263
 }
