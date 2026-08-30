@@ -1,0 +1,2 @@
+trojan://mitivpn@27.50.48.49:443?path=/index.html/ed=mitivpn&security=tls&alpn=http/1.1&insecure=0&host=gamingdll.ir&fp=chrome&type=ws&allowInsecure=0&sni=gamingdll.ir#23.%20%F0%9F%87%AD%F0%9F%87%B0%20%D0%93%D0%BE%D0%BD%D0%BA%D0%BE%D0%BD%D0%B3%20%C2%B7%20trojan%20%C2%B7%202ms
+vless://Telegram:@Free_VPN_CH@45.192.223.8:2096?path=/sg-lnd&security=tls&encryption=none&host=tn1rr.qzz.io&type=ws&sni=tn1rr.qzz.io#47.%20%F0%9F%87%AD%F0%9F%87%B0%20%D0%93%D0%BE%D0%BD%D0%BA%D0%BE%D0%BD%D0%B3%20%C2%B7%20vless%20%C2%B7%202ms
