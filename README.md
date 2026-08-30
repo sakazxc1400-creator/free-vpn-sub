@@ -2,6 +2,7 @@
 
 [![Обновление подписки](https://github.com/sakazxc1400-creator/free-vpn-sub/actions/workflows/update.yml/badge.svg)](https://github.com/sakazxc1400-creator/free-vpn-sub/actions/workflows/update.yml)
 [![Серверов](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsakazxc1400-creator%2Ffree-vpn-sub%2Fmain%2Foutput%2Fstats.json&query=%24.published&label=%D1%81%D0%B5%D1%80%D0%B2%D0%B5%D1%80%D0%BE%D0%B2&color=brightgreen)](output/all.txt)
+[![Всего](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsakazxc1400-creator%2Ffree-vpn-sub%2Fmain%2Foutput%2Fstats.json&query=%24.published_full&label=%D0%B2%D1%81%D0%B5%D0%B3%D0%BE&color=green)](output/all-full.txt)
 [![Стран](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsakazxc1400-creator%2Ffree-vpn-sub%2Fmain%2Foutput%2Fstats.json&query=%24.countries&label=%D1%81%D1%82%D1%80%D0%B0%D0%BD&color=blue)](output/by-country)
 [![Обновлено](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsakazxc1400-creator%2Ffree-vpn-sub%2Fmain%2Foutput%2Fstats.json&query=%24.updated&label=%D0%BE%D0%B1%D0%BD%D0%BE%D0%B2%D0%BB%D0%B5%D0%BD%D0%BE&color=informational)](output/stats.json)
 [![Лицензия MIT](https://img.shields.io/badge/%D0%BB%D0%B8%D1%86%D0%B5%D0%BD%D0%B7%D0%B8%D1%8F-MIT-lightgrey)](LICENSE)
@@ -15,15 +16,25 @@
 список попадают только те, через которые трафик реально прошёл. У каждого
 сервера в названии видно страну, протокол и задержку.
 
-В подписке около сотни серверов. Не тысячи: клиенту незачем держать список,
-который он потом полчаса пингует, а телефон греется.
+Подписка выходит в двух размерах: основная — около двух сотен отобранных
+серверов, полная — все прошедшие проверку, обычно больше тысячи. Основную
+клиент пингует за секунды, полная нужна, когда хочется перебрать максимум
+вариантов.
 
 Протоколы: VLESS (включая Reality), VMess, Trojan, Shadowsocks, Hysteria2, TUIC.
 
 ## Ссылка на подписку
 
+Основная — короткий список, для повседневного использования:
+
 ```
 https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/main/output/sub.txt
+```
+
+Полная — всё, что прошло проверку:
+
+```
+https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/main/output/sub-full.txt
 ```
 
 Если `raw.githubusercontent.com` не открывается (в России часто), берите зеркало.
@@ -36,6 +47,8 @@ https://cdn.jsdelivr.net/gh/sakazxc1400-creator/free-vpn-sub@main/output/sub.txt
 ```
 https://gh-proxy.com/https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/main/output/sub.txt
 ```
+
+Для полной подписки в зеркалах меняется только имя файла на `sub-full.txt`.
 
 Оба зеркала проверены. jsdelivr кэширует ответ на несколько часов, gh-proxy
 отдаёт свежую версию сразу.
@@ -52,8 +65,9 @@ https://gh-proxy.com/https://raw.githubusercontent.com/sakazxc1400-creator/free-
 05. 🇷🇺 Россия · vless · 340ms
 ```
 
-Одна страна не может занять больше 12 позиций, иначе половина списка была бы
-одним датацентром в Гонконге.
+В основной подписке одна страна не может занять больше 12 позиций, иначе
+половина списка была бы одним датацентром в Гонконге. В полной такого
+ограничения нет.
 
 ## Подключение
 
@@ -120,8 +134,10 @@ https://gh-proxy.com/https://raw.githubusercontent.com/sakazxc1400-creator/free-
 |------|-----------|
 | `output/sub.txt` | Основная подписка, base64 |
 | `output/all.txt` | То же обычным текстом |
-| `output/vless.txt` и остальные по протоколам | Только один протокол |
-| `output/by-country/ru.txt` и т.д. | Только одна страна |
+| `output/sub-full.txt` | Полная подписка, base64 |
+| `output/all-full.txt` | То же обычным текстом |
+| `output/vless.txt` и остальные по протоколам | Только один протокол, из полного списка |
+| `output/by-country/ru.txt` и т.д. | Только одна страна, из полного списка |
 | `output/stats.json` | Статистика последнего обновления |
 
 ## Как это работает
@@ -150,13 +166,15 @@ output/         результат
 мёртвые адреса. Выжившие идут во вторую проверку: поднимается sing-box, на каждый
 сервер вешается локальный прокси, и через него делается запрос к
 `generate_204`. Ответ 204 с пустым телом означает, что трафик действительно
-дошёл до интернета и вернулся. Из 900 кандидатов проверку проходят обычно 60-100.
+дошёл до интернета и вернулся. Проверка идёт батчами по 150 узлов, пока не
+кончатся кандидаты или не выйдет отведённое время.
 
 QUIC-протоколы (Hysteria2, TUIC) TCP-фильтр пропускают мимо: у рабочего сервера
 TCP-порт закрыт, стучаться туда бессмысленно. Они идут сразу во вторую проверку.
 
-Наконец определяется страна по IP, серверы сортируются по задержке и с квотой на
-страну попадают в подписку.
+Наконец определяется страна по IP и серверы сортируются по задержке. Всё
+проверенное идёт в полную подписку, а в основную отбирается верхушка с квотой
+на страну.
 
 Если источники недоступны или ни один сервер не прошёл проверку, скрипт
 завершается с ошибкой и не трогает старые файлы. Устаревшая рабочая подписка

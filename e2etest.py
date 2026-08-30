@@ -140,7 +140,8 @@ try:
     check("main() вернул 0", rc == 0, f"rc={rc}")
 
     out = ROOT / "output"
-    for fname in ("sub.txt", "all.txt", "stats.json"):
+    for fname in ("sub.txt", "all.txt", "sub-full.txt", "all-full.txt",
+                  "stats.json"):
         check(f"{fname} создан", (out / fname).exists())
 
     stats = json.loads((out / "stats.json").read_text(encoding="utf-8"))
@@ -175,13 +176,31 @@ try:
     check("by_country заполнен", stats["by_country"].get("NL") == 3,
           str(stats["by_country"]))
 
-    # --- Лимит размера подписки ---
-    print("== лимит размера подписки ==")
+    # --- Лимиты размера подписок ---
+    print("== лимиты размера подписок ==")
     check("не больше MAX_OUTPUT",
           stats["published"] <= collect.MAX_OUTPUT,
           f"{stats['published']}>{collect.MAX_OUTPUT}")
     check("MAX_OUTPUT разумный для клиентов",
-          collect.MAX_OUTPUT <= 200, str(collect.MAX_OUTPUT))
+          collect.MAX_OUTPUT <= 300, str(collect.MAX_OUTPUT))
+    check("не больше MAX_FULL",
+          stats["published_full"] <= collect.MAX_FULL,
+          f"{stats['published_full']}>{collect.MAX_FULL}")
+    check("полная не меньше основной",
+          stats["published_full"] >= stats["published"],
+          f"{stats['published_full']}<{stats['published']}")
+    check("MAX_FULL больше MAX_OUTPUT",
+          collect.MAX_FULL > collect.MAX_OUTPUT,
+          f"{collect.MAX_FULL}<={collect.MAX_OUTPUT}")
+
+    full_plain = (out / "all-full.txt").read_text(encoding="utf-8")
+    full_decoded = base64.b64decode(
+        (out / "sub-full.txt").read_text(encoding="utf-8")
+    ).decode()
+    check("sub-full.txt = валидный base64 от all-full.txt",
+          full_decoded.strip() == full_plain.strip())
+    check("в all-full.txt 3 строки",
+          len([l for l in full_plain.splitlines() if l.strip()]) == 3)
 
     # --- Сценарий: все источники мертвы -> подписка не должна затираться ---
     print("== сценарий: все источники недоступны ==")

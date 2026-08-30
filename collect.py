@@ -10,8 +10,8 @@
   5. Отсеивает мёртвые узлы TCP-проверкой, затем прогоняет выживших через
      sing-box и оставляет только те, через которые реально идёт трафик.
   6. Определяет страну каждого узла и подписывает её флагом в названии.
-  7. Складывает результат в output/sub.txt (base64) + файлы по протоколам
-     и по странам.
+  7. Складывает результат в output/: sub.txt (основная, короткая) и
+     sub-full.txt (полная), плюс файлы по протоколам и по странам.
 
 Зависимостей нет — только стандартная библиотека Python 3.9+.
 Для настоящей проверки нужен бинарник sing-box; без него используется
@@ -61,23 +61,30 @@ FETCH_WORKERS = 12          # параллельных загрузок
 
 CHECK_TIMEOUT = 3.0         # сек на TCP-коннект к узлу
 CHECK_WORKERS = 200         # параллельных проверок
-CHECK_LIMIT = 6000          # максимум узлов, отправляемых на TCP-проверку
+CHECK_LIMIT = 20000         # максимум узлов, отправляемых на TCP-проверку
 
-# Размер итоговой подписки. Держим небольшим: клиенту не нужны тысячи
-# серверов, ему нужны несколько десятков рабочих.
-MAX_OUTPUT = 100
+# Подписка выходит в двух размерах.
+#
+# MAX_OUTPUT — основная (sub.txt): короткий отобранный список, по нему
+# клиент быстро прогоняет тест задержки и не тормозит. MAX_FULL —
+# полная (sub-full.txt): всё, что прошло проверку, без отбора.
+MAX_OUTPUT = 200
+MAX_FULL = 5000
 
-# Сколько кандидатов прогонять через sing-box. Берём с запасом, потому что
-# доля реально работающих узлов — обычно 10-30%.
-VERIFY_CANDIDATES = 900
+# Сколько кандидатов прогонять через sing-box. Доля реально работающих —
+# обычно 5-15%, поэтому берём пул с большим запасом; сколько успеем
+# проверить, ограничивает VERIFY_BUDGET в probe.py.
+VERIFY_CANDIDATES = 7000
 
 # Протоколы поверх QUIC/UDP. TCP-коннектом их проверить нельзя — порт
 # на TCP закрыт даже у полностью рабочего сервера, поэтому они идут сразу
 # в sing-box, минуя TCP-фильтр.
 UDP_PROTOCOLS = frozenset({"hysteria2", "tuic"})
 
-# Сколько узлов на одну страну максимум, чтобы список не заполнился
-# двадцатью серверами из одного датацентра.
+# Сколько узлов на одну страну максимум в основной подписке, чтобы
+# список не заполнился десятком серверов из одного датацентра. Это не
+# жёсткий отсев: если при таком потолке не набирается MAX_OUTPUT,
+# pick_diverse его поднимает.
 MAX_PER_COUNTRY = 12
 
 USER_AGENT = "Mozilla/5.0 (compatible; free-vpn-sub/1.0; +https://github.com)"
@@ -515,7 +522,17 @@ def retag(node: Node, index: int) -> str:
     return f"{base}#{tag}"
 
 
-def write_outputs(nodes: list[Node], stats: Stats) -> dict:
+def write_outputs(nodes: list[Node], full: list[Node], stats: Stats) -> dict:
+    """
+    Пишет обе подписки.
+
+    nodes — основная (sub.txt): короткий отобранный список.
+    full  — полная (sub-full.txt): всё, что прошло проверку.
+
+    Разбивки по протоколам и странам делаются от полного списка: там
+    смысл именно в максимальном числе узлов на конкретный протокол или
+    страну.
+    """
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     updated = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
 
@@ -530,6 +547,15 @@ def write_outputs(nodes: list[Node], stats: Stats) -> dict:
     # Тот же список в открытом виде — удобно смотреть глазами.
     (OUTPUT_DIR / "all.txt").write_text(plain + "\n", encoding="utf-8")
 
+    # Полная подписка — те же два формата.
+    full_tagged = [retag(n, i + 1) for i, n in enumerate(full)]
+    full_plain = "\n".join(full_tagged)
+    (OUTPUT_DIR / "sub-full.txt").write_text(
+        base64.b64encode(full_plain.encode("utf-8")).decode("ascii"),
+        encoding="utf-8",
+    )
+    (OUTPUT_DIR / "all-full.txt").write_text(full_plain + "\n", encoding="utf-8")
+
     # Разбивка по протоколам. Старые файлы удаляем: если в этот раз,
     # например, не нашлось ни одного tuic, файл с прошлого прогона
     # не должен вводить в заблуждение.
@@ -540,7 +566,7 @@ def write_outputs(nodes: list[Node], stats: Stats) -> dict:
             stale.unlink()
 
     by_proto: dict[str, list[str]] = {}
-    for node, line in zip(nodes, tagged):
+    for node, line in zip(full, full_tagged):
         by_proto.setdefault(node.proto, []).append(line)
     for proto, lines in by_proto.items():
         (OUTPUT_DIR / f"{proto}.txt").write_text(
@@ -555,7 +581,7 @@ def write_outputs(nodes: list[Node], stats: Stats) -> dict:
         stale.unlink()
 
     by_country: dict[str, list[str]] = {}
-    for node, line in zip(nodes, tagged):
+    for node, line in zip(full, full_tagged):
         by_country.setdefault(node.country or "XX", []).append(line)
     for code, lines in by_country.items():
         (country_dir / f"{code.lower()}.txt").write_text(
@@ -568,7 +594,7 @@ def write_outputs(nodes: list[Node], stats: Stats) -> dict:
         )
     }
 
-    latencies = [n.latency_ms for n in nodes if n.latency_ms is not None]
+    latencies = [n.latency_ms for n in full if n.latency_ms is not None]
 
     report = {
         "updated": updated,
@@ -581,6 +607,7 @@ def write_outputs(nodes: list[Node], stats: Stats) -> dict:
         "tcp_alive": stats.tcp_alive,
         "verified": stats.verified,
         "published": len(nodes),
+        "published_full": len(full),
         "countries": len([c for c in by_country if c != "XX"]),
         "by_protocol": stats.by_proto,
         "by_country": stats.by_country,
@@ -760,7 +787,7 @@ def main() -> int:
         f"узлов...")
 
     working: list[Node] = []
-    for node, latency in probe.verify(candidates, need=MAX_OUTPUT * 3):
+    for node, latency in probe.verify(candidates, need=MAX_FULL):
         node.latency_ms = latency
         node.verified = True
         working.append(node)
@@ -785,16 +812,19 @@ def main() -> int:
     known = sum(1 for n in selected_pool if n.country)
     log(f"      Страна определена у {known}/{len(selected_pool)} узлов")
 
-    # --- Отбор в подписку ---
+    # --- Отбор в подписки ---
     selected_pool.sort(
         key=lambda n: (n.latency_ms if n.latency_ms is not None else 99999)
     )
-    published = pick_diverse(selected_pool, MAX_OUTPUT, MAX_PER_COUNTRY)
+    # Полная: всё проверенное, только с потолком на всякий случай.
+    full = selected_pool[:MAX_FULL]
+    # Основная: короткий список с перемешиванием по странам.
+    published = pick_diverse(full, MAX_OUTPUT, MAX_PER_COUNTRY)
 
     # --- Запись ---
-    report = write_outputs(published, stats)
-    log(f"Итог: в подписке {len(published)} узлов из "
-        f"{report['countries']} стран")
+    report = write_outputs(published, full, stats)
+    log(f"Итог: в основной подписке {len(published)} узлов, "
+        f"в полной {len(full)} из {report['countries']} стран")
     log(f"      По протоколам: {report['by_protocol']}")
     log(f"      Задержка: лучшая {report['best_latency_ms']} ms, "
         f"медиана {report['median_latency_ms']} ms")

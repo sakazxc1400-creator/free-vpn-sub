@@ -34,7 +34,7 @@ permissions:
 jobs:
   update:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 90
 
     steps:
       - name: Checkout
@@ -91,7 +91,9 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          COUNT=$(python -c "import json;print(json.load(open('output/stats.json'))['published'])")
+          MAIN=$(python -c "import json;print(json.load(open('output/stats.json'))['published'])")
+          FULL=$(python -c "import json;d=json.load(open('output/stats.json'));print(d.get('published_full', d['published']))")
+          COUNT="${MAIN}/${FULL}"
 
           # output/ — полностью генерируемый каталог. При гонке двух прогонов
           # мержить его содержимое бессмысленно: нужен свежий результат целиком.

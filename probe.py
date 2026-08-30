@@ -35,11 +35,16 @@ PROBE_URLS = (
     "http://cp.cloudflare.com/generate_204",
 )
 
-BATCH_SIZE = 80          # узлов на один процесс sing-box
+BATCH_SIZE = 150         # узлов на один процесс sing-box
 PROBE_TIMEOUT = 8.0      # сек на запрос через узел
-PROBE_WORKERS = 40       # параллельных запросов внутри батча
-STARTUP_TIMEOUT = 20.0   # сек на подъём sing-box
+PROBE_WORKERS = 75       # параллельных запросов внутри батча
+STARTUP_TIMEOUT = 30.0   # сек на подъём sing-box
 PORT_BASE = 24000
+
+# Потолок на всю проверку. Кандидатов может быть много тысяч, а прогон
+# ограничен временем job'а в CI, поэтому по истечении бюджета
+# останавливаемся и отдаём то, что уже нашли.
+VERIFY_BUDGET = 25 * 60
 
 
 def log(msg: str) -> None:
@@ -239,7 +244,8 @@ def verify_batch(nodes: list, singbox: str) -> list[tuple[object, int]]:
 
 def verify(nodes: list, need: int) -> list[tuple[object, int]]:
     """
-    Проверяет узлы батчами, пока не наберётся need рабочих.
+    Проверяет узлы батчами, пока не наберётся need рабочих, не кончатся
+    кандидаты или не выйдет бюджет времени (VERIFY_BUDGET).
     Возвращает пары (узел, задержка_мс), отсортированные по задержке.
     """
     singbox = find_singbox()
@@ -259,6 +265,7 @@ def verify(nodes: list, need: int) -> list[tuple[object, int]]:
 
     good: list[tuple[object, int]] = []
     checked = 0
+    deadline = time.time() + VERIFY_BUDGET
 
     for start in range(0, len(nodes), BATCH_SIZE):
         batch = nodes[start:start + BATCH_SIZE]
@@ -266,6 +273,9 @@ def verify(nodes: list, need: int) -> list[tuple[object, int]]:
         checked += len(batch)
         log(f"    проверено {checked}/{len(nodes)}, рабочих {len(good)}")
         if len(good) >= need:
+            break
+        if time.time() >= deadline:
+            log(f"    бюджет времени ({VERIFY_BUDGET}s) исчерпан, останавливаюсь")
             break
 
     good.sort(key=lambda pair: pair[1])

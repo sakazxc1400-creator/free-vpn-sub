@@ -2,6 +2,7 @@
 
 [![Update subscription](https://github.com/sakazxc1400-creator/free-vpn-sub/actions/workflows/update.yml/badge.svg)](https://github.com/sakazxc1400-creator/free-vpn-sub/actions/workflows/update.yml)
 [![Servers](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsakazxc1400-creator%2Ffree-vpn-sub%2Fmain%2Foutput%2Fstats.json&query=%24.published&label=servers&color=brightgreen)](output/all.txt)
+[![Total](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsakazxc1400-creator%2Ffree-vpn-sub%2Fmain%2Foutput%2Fstats.json&query=%24.published_full&label=total&color=green)](output/all-full.txt)
 [![Countries](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsakazxc1400-creator%2Ffree-vpn-sub%2Fmain%2Foutput%2Fstats.json&query=%24.countries&label=countries&color=blue)](output/by-country)
 [![Updated](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsakazxc1400-creator%2Ffree-vpn-sub%2Fmain%2Foutput%2Fstats.json&query=%24.updated&label=updated&color=informational)](output/stats.json)
 [![License MIT](https://img.shields.io/badge/license-MIT-lightgrey)](LICENSE)
@@ -15,15 +16,25 @@ verified: a real request goes out through every server, and only the ones that
 actually pass traffic make it to the list. Each server shows its country,
 protocol, and latency right in the name.
 
-Around a hundred servers per subscription. Not thousands — no client needs a
-list it will spend half an hour pinging while the phone heats up.
+Two subscription sizes: the main one holds around two hundred hand-picked
+servers, the full one holds everything that passed verification — usually over
+a thousand. The main list pings in seconds; the full one is there when you want
+to dig through every option.
 
 Protocols: VLESS (including Reality), VMess, Trojan, Shadowsocks, Hysteria2, TUIC.
 
 ## Subscription link
 
+Main — short list, for everyday use:
+
 ```
 https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/main/output/sub.txt
+```
+
+Full — everything that passed verification:
+
+```
+https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/main/output/sub-full.txt
 ```
 
 If `raw.githubusercontent.com` is blocked in your network, use a mirror. The
@@ -36,6 +47,8 @@ https://cdn.jsdelivr.net/gh/sakazxc1400-creator/free-vpn-sub@main/output/sub.txt
 ```
 https://gh-proxy.com/https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/main/output/sub.txt
 ```
+
+For the full subscription, swap the filename to `sub-full.txt` in either mirror.
 
 Both mirrors are tested. jsdelivr caches for a few hours, gh-proxy serves the
 latest version immediately.
@@ -52,8 +65,8 @@ Servers are sorted by latency, fastest first:
 05. 🇳🇱 Netherlands · ss · 408ms
 ```
 
-No single country takes more than 12 slots — otherwise half the list would be
-one datacenter in Hong Kong.
+In the main subscription no single country takes more than 12 slots — otherwise
+half the list would be one datacenter in Hong Kong. The full one has no such cap.
 
 ## Setup
 
@@ -120,8 +133,10 @@ top. Hysteria2 usually holds up best on bad connections.
 |------|----------|
 | `output/sub.txt` | Main subscription, base64 |
 | `output/all.txt` | Same as plain text |
-| `output/vless.txt` and others by protocol | Single protocol only |
-| `output/by-country/us.txt` etc. | Single country only |
+| `output/sub-full.txt` | Full subscription, base64 |
+| `output/all-full.txt` | Same as plain text |
+| `output/vless.txt` and others by protocol | Single protocol, from the full list |
+| `output/by-country/us.txt` etc. | Single country, from the full list |
 | `output/stats.json` | Stats from the last update |
 
 ## How it works
@@ -150,14 +165,16 @@ Then two verification stages. First a fast TCP connect, which weeds out dead
 addresses in a minute. Survivors go to the second stage: sing-box starts up, a
 local proxy is bound per server, and a request to `generate_204` goes through
 it. A 204 with an empty body means traffic really reached the internet and came
-back. Out of 900 candidates, 60–300 typically pass.
+back. Verification runs in batches of 150 until candidates or the time budget
+run out.
 
 QUIC protocols (Hysteria2, TUIC) skip the TCP filter: on a working server the
 TCP port is closed, so knocking there is pointless. They go straight to the
 second stage.
 
-Finally the country is resolved by IP, servers are sorted by latency, and a
-per-country quota decides what lands in the subscription.
+Finally the country is resolved by IP and servers are sorted by latency.
+Everything verified goes into the full subscription; the main one takes the top
+slice with a per-country quota.
 
 If the sources are unreachable or no server passes verification, the script
 exits with an error and leaves the old files alone. A slightly stale working
