@@ -1,1 +1,0 @@
-vless://17565eb3-3535-4fc1-bbaa-e9fbd94b2f0c@14.102.228.65:2053?security=tls&sni=fi1.v2vless.xyz&type=ws&host=fi1.v2vless.xyz&fp=chrome&alpn=h3,h2,http/1.1#25.%20%F0%9F%87%A8%F0%9F%87%BF%20%D0%A7%D0%B5%D1%85%D0%B8%D1%8F%20%C2%B7%20vless%20%C2%B7%202ms
