@@ -9,36 +9,34 @@
 
 **[Русская версия](README.md)**
 
-A free VPN server list that updates itself every hour.
+A free VPN subscription with servers that are checked and refreshed every hour.
 
-Configs are pulled from public GitHub sources, merged into a single link, and
-verified: a real request goes out through every server, and only the ones that
-actually pass traffic make it to the list. Each server shows its country,
-protocol, and latency right in the name.
+The script collects configs from public GitHub sources, tests them, and keeps only the servers that actually work. Each server name includes its country, protocol, and latency.
 
-Two subscription sizes: the main one holds around two hundred hand-picked
-servers, the full one holds everything that passed verification — usually over
-a thousand. The main list pings in seconds; the full one is there when you want
-to dig through every option.
+There are two subscription sizes:
 
-Protocols: VLESS (including Reality), VMess, Trojan, Shadowsocks, Hysteria2, TUIC.
+* the main list, with around 200 of the fastest servers;
+* the full list, with every server that passed verification, usually more than 1,000.
+
+The main list is quicker to load and is best for everyday use. The full list is useful when nothing in the main list connects or when you want to pick a server yourself.
+
+Supported protocols include VLESS, including Reality, VMess, Trojan, Shadowsocks, Hysteria2, and TUIC.
 
 ## Subscription link
 
-Main — short list, for everyday use:
+Main subscription:
 
 ```
 https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/main/output/sub.txt
 ```
 
-Full — everything that passed verification:
+Full subscription:
 
 ```
 https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/main/output/sub-full.txt
 ```
 
-If `raw.githubusercontent.com` is blocked in your network, use a mirror. The
-content is identical:
+If `raw.githubusercontent.com` is blocked on your network, try one of the mirrors below. The content is the same.
 
 ```
 https://cdn.jsdelivr.net/gh/sakazxc1400-creator/free-vpn-sub@main/output/sub.txt
@@ -48,14 +46,13 @@ https://cdn.jsdelivr.net/gh/sakazxc1400-creator/free-vpn-sub@main/output/sub.txt
 https://gh-proxy.com/https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/main/output/sub.txt
 ```
 
-For the full subscription, swap the filename to `sub-full.txt` in either mirror.
+For the full subscription, replace `sub.txt` with `sub-full.txt` in the link.
 
-Both mirrors are tested. jsdelivr caches for a few hours, gh-proxy serves the
-latest version immediately.
+jsdelivr may cache a version for a few hours. gh-proxy usually shows updates faster.
 
-## What the list looks like
+## What is in the list
 
-Servers are sorted by latency, fastest first:
+Servers are sorted from fastest to slowest. For example:
 
 ```
 01. 🇨🇦 Canada · vless · 25ms
@@ -65,165 +62,127 @@ Servers are sorted by latency, fastest first:
 05. 🇳🇱 Netherlands · ss · 408ms
 ```
 
-In the main subscription no single country takes more than 12 slots — otherwise
-half the list would be one datacenter in Hong Kong. The full one has no such cap.
+The main subscription includes no more than 12 servers from one country. This keeps the list from being filled almost entirely by a single datacenter. The full subscription has no country limit.
 
-## Setup
+## How to connect
 
 ### Windows
 
-Easiest with [Nekoray](https://github.com/MatsuriDayo/nekoray/releases):
-download `nekoray-*-windows64.zip`, unpack, run `nekoray.exe`.
+The easiest option is [Nekoray](https://github.com/MatsuriDayo/nekoray/releases). Download `nekoray-*-windows64.zip`, unpack it, and run `nekoray.exe`.
 
-1. Program → Preferences → Core → `sing-box`
-2. Server → Add profile from subscription, paste the link, OK
-3. Server → Update all subscriptions
-4. Pick a server from the top, press `Enter`
-5. `Ctrl+Alt+S` enables the system proxy
+1. Open the settings and choose the `sing-box` core.
+2. Go to the option for adding a profile from a subscription and paste the link.
+3. Update the subscriptions.
+4. Pick a server near the top of the list and press `Enter`.
+5. Press `Ctrl+Alt+S` to enable the system proxy.
 
-[v2rayN](https://github.com/2dust/v2rayN/releases) works too — subscriptions go
-under "Subscription → Subscription settings".
+You can also use [v2rayN](https://github.com/2dust/v2rayN/releases). Add the link in the Subscriptions section.
 
 ### Android
 
-[v2rayNG](https://github.com/2dust/v2rayNG/releases) or Google Play.
+Use [v2rayNG](https://github.com/2dust/v2rayNG/releases) or Hiddify.
 
-1. `≡` top left → Subscription group setting → `+`
-2. Paste the link into the URL field, save
-3. `⋮` top right → Update subscriptions
-4. Pick a server, tap connect
+1. Open the menu on the left and go to the subscription group settings.
+2. Tap `+`, paste the link, and save it.
+3. Open the menu on the right and update the subscriptions.
+4. Pick a server and tap the connect button.
 
-[Hiddify](https://github.com/hiddify/hiddify-next/releases) is also good,
-especially for Hysteria2 and TUIC. Add via `+` → "Add from link".
+[Hiddify](https://github.com/hiddify/hiddify-next/releases) is especially convenient for Hysteria2 and TUIC. Add the subscription through `+` and "Add from link".
 
-### iPhone / iPad
+### iPhone and iPad
 
-From the App Store: Streisand (free), v2Box (free), or Shadowrocket (paid).
-Same everywhere: subscription section → `+` → paste link → update → pick a server.
+You can use Streisand, v2Box, or Shadowrocket. The first two are free, while Shadowrocket is paid.
+
+Open the subscription section, tap `+`, paste the link, update the list, and choose a server.
 
 ### macOS
 
-[Hiddify](https://github.com/hiddify/hiddify-next/releases) or V2RayXS.
-Add the subscription by link, update, connect.
+Try [Hiddify](https://github.com/hiddify/hiddify-next/releases) or V2RayXS. Add the subscription by link, update the list, and connect to a server.
 
 ### Linux
 
-[Nekoray](https://github.com/MatsuriDayo/nekoray/releases) or
-[Hiddify](https://github.com/hiddify/hiddify-next/releases) as an AppImage.
+Use [Nekoray](https://github.com/MatsuriDayo/nekoray/releases) or [Hiddify](https://github.com/hiddify/hiddify-next/releases) in AppImage format.
 
 ## Troubleshooting
 
-**Server connects but there is no internet.** It happens: between the check and
-your connection the server may have gone down or hit its limit. Take the next
-one on the list.
+**The server connects, but there is no internet.** It may have stopped working or reached its limit after the last check. Try the next server in the list.
 
-**Nothing works at all.** Refresh the subscription in your client — the list
-changes every hour.
+**None of the servers work.** Refresh the subscription in your app. The list changes every hour.
 
-**Subscription won't load.** Use a mirror from the section above. If that is
-blocked too, download `output/all.txt` manually and paste its contents into the
-client via "Import from clipboard".
+**The subscription will not load.** Use one of the mirrors above. If that is blocked too, download `output/all.txt` and import its contents from the clipboard.
 
-**Slow.** Free servers are overloaded, that is normal. Take the ones near the
-top. Hysteria2 usually holds up best on bad connections.
+**The connection is slow.** Free servers can get overloaded. Start with the first few entries. Hysteria2 often performs better than other protocols on unstable connections.
 
 ## Files
 
 | File | Contents |
 |------|----------|
-| `output/sub.txt` | Main subscription, base64 |
-| `output/all.txt` | Same as plain text |
-| `output/sub-full.txt` | Full subscription, base64 |
-| `output/all-full.txt` | Same as plain text |
-| `output/vless.txt` and others by protocol | Single protocol, from the full list |
-| `output/by-country/us.txt` etc. | Single country, from the full list |
-| `output/stats.json` | Stats from the last update |
+| `output/sub.txt` | Main subscription in base64 |
+| `output/all.txt` | Main subscription as plain text |
+| `output/sub-full.txt` | Full subscription in base64 |
+| `output/all-full.txt` | Full subscription as plain text |
+| `output/vless.txt` and others | Servers using one protocol |
+| `output/by-country/us.txt` and others | Servers from one country |
+| `output/stats.json` | Statistics from the latest update |
 
 ## How it works
 
 ```
 sources.txt     list of sources
-collect.py      main script: download, parse, verify, write
-outbound.py     converts vless:// and friends into sing-box config
-probe.py        verification via sing-box: does traffic actually flow
-geo.py          country lookup by IP
-output/         results
+collect.py      download, parse, check, and save configs
+outbound.py     convert links into a sing-box config
+probe.py        check whether traffic passes through a server
+geo.py          look up the country by IP
+output/         generated lists
 ```
 
-Every hour GitHub Actions does the following.
+GitHub Actions runs the collection every hour.
 
-Downloads all sources in parallel, three attempts each. Handles both plain text
-and base64. Extracts links, drops junk: broken addresses, localhost, private
-subnets, out-of-range ports.
+First, the script downloads the sources in parallel, retrying each request up to three times. It handles plain text and base64, extracts the links, and removes junk such as broken addresses, localhost, private subnets, and invalid ports.
 
-Then deduplication by server address, not by link text. The same server often
-sits in five sources under different names, and without this step the list
-would be half duplicates. Out of 40,000 links about 11,000 distinct servers
-remain.
+Next, duplicate servers are merged. The same address often appears in several sources under different names. This leaves around 10,000 unique candidates.
 
-Then two verification stages. First a fast TCP connect, which weeds out dead
-addresses in a minute. Survivors go to the second stage: sing-box starts up, a
-local proxy is bound per server, and a request to `generate_204` goes through
-it. A 204 with an empty body means traffic really reached the internet and came
-back. Verification runs in batches of 150 until candidates or the time budget
-run out.
+Verification has two stages. The first is a quick TCP check that removes clearly unreachable addresses. Then sing-box starts a local proxy for each candidate and sends a request to `generate_204` through it. An empty response with status 204 means the server really passed traffic to the internet and returned the response.
 
-QUIC protocols (Hysteria2, TUIC) skip the TCP filter: on a working server the
-TCP port is closed, so knocking there is pointless. They go straight to the
-second stage.
+Hysteria2 and TUIC use QUIC, so they skip the TCP check and go straight to the second stage.
 
-Finally the country is resolved by IP and servers are sorted by latency.
-Everything verified goes into the full subscription; the main one takes the top
-slice with a per-country quota.
+After verification, the script looks up each server's country, measures latency, and sorts the results. The full list gets every working server. The main subscription takes the best ones while limiting the number from each country.
 
-If the sources are unreachable or no server passes verification, the script
-exits with an error and leaves the old files alone. A slightly stale working
-subscription beats an empty one.
+If the sources are unavailable or no server passes verification, the old files are kept. A working subscription with old data is better than an empty list.
 
 ### Running locally
 
 ```bash
-python selftest.py     # parsers
-python testconv.py     # link converter and geo
-python testsingbox.py  # config validity (needs sing-box)
-python e2etest.py      # full pipeline against a local server
+python selftest.py     # check the parsers
+python testconv.py     # check link conversion and country lookup
+python testsingbox.py  # check configs, sing-box required
+python e2etest.py      # run the full test scenario
 python collect.py      # build the subscription
 ```
 
-Python 3.9+, no dependencies. For full node verification put the
-[sing-box](https://github.com/SagerNet/sing-box/releases) binary next to the
-scripts; without it the script falls back to TCP checks and says so in the log.
+Python 3.9 or newer is required. No extra libraries are needed. For full server verification, place the [sing-box](https://github.com/SagerNet/sing-box/releases) binary next to the scripts. Without it, the script only performs TCP checks and says so in the log.
 
-### Adding sources
+### Adding a source
 
-Append links to `sources.txt`, one per line. `#` starts a comment. The content
-format is detected automatically.
+Add a link to `sources.txt`, one per line. Lines starting with `#` are comments. The source format is detected automatically.
 
-## Security notice
+## Important security note
 
-This matters — read it before you start.
+Please read this before using the subscription.
 
-The server owner sees your traffic. These servers were set up by unknown people
-for unknown reasons. The operator can see which sites you visit, and with a
-substituted certificate, the contents of your connections too.
+The server owner may be able to see your traffic. These servers are run by unknown people, and we do not know how they handle the traffic that passes through them. The operator may see which sites you visit. If they replace a certificate, they may also intercept the contents of your connections.
 
-Hence the simple rules. Do not log into banking, government services, or work
-email through such a VPN. Do not send passwords, documents, or payment details.
-This is a tool for bypassing blocks, not a privacy tool.
+Do not use these servers for banking, government services, work email, or other important accounts. Do not send passwords, documents, or payment details through them. This subscription is for bypassing blocks, not for complete privacy or anonymity.
 
-If you need actual privacy there are two options: a paid service with a
-reputation, or your own server. VLESS+Reality on a cheap VPS takes an evening to
-set up and runs noticeably faster than any free node.
+If you need privacy, choose a trusted paid service or set up your own server. VLESS+Reality on an inexpensive VPS is usually faster than free nodes.
 
-There is no way to verify these servers are run in good faith. Use at your own
-risk.
+There is no practical way to verify every server. Use the subscription at your own risk.
 
-## Support
+## Support the project
 
-The project is free and will stay that way. If you found it useful:
-[donate](https://www.donationalerts.com/r/saka1232131).
+The subscription is free and will stay free. If it has been useful, you can [support the project with a donation](https://www.donationalerts.com/r/saka1232131).
 
-Also accepted in TON:
+TON transfers are also welcome:
 
 ![TON donation QR code](assets/ton-qr.png)
 
@@ -231,11 +190,8 @@ Also accepted in TON:
 UQDj7y9AG8P_4oZ4KAnpRDfCulC-FsgnqSI_8xABobHvc1F3
 ```
 
-You can help without money too: star the repo so people who need it can find it.
-Found a dead source or know a good one? Open an
-[issue](../../issues) or edit `sources.txt` and send a pull request.
+The easiest way to help without spending money is to star the repository. If you find a broken source or know a good one, open an [issue](../../issues) or send a pull request with a change to `sources.txt`.
 
 ## License
 
-MIT. This project only collects publicly available configs into one list. The
-servers belong to third parties; this repository provides no VPN service.
+MIT. This repository collects public configs into one list and does not provide a VPN service. The servers belong to third parties.
