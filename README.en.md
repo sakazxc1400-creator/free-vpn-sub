@@ -225,6 +225,8 @@ The project is free and will stay that way. If you found it useful:
 
 Also accepted in TON:
 
+![TON donation QR code](assets/ton-qr.png)
+
 ```
 UQDj7y9AG8P_4oZ4KAnpRDfCulC-FsgnqSI_8xABobHvc1F3
 ```

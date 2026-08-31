@@ -224,6 +224,8 @@ python collect.py      # собрать подписку
 
 Также принимаю переводы в TON:
 
+![QR-код для перевода в TON](assets/ton-qr.png)
+
 ```
 UQDj7y9AG8P_4oZ4KAnpRDfCulC-FsgnqSI_8xABobHvc1F3
 ```
