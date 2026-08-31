@@ -1,3 +1,9 @@
-hy2://gf1%3Agfhysteria2024@185.156.44.99:443?insecure=1#297.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20370ms
-hy2://gf1%3Agfhysteria2024@185.156.44.99:443?insecure=1&sni=www.amazon.com#306.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20380ms
-hy2://STYyftThFn@freedom.chenlan.top:12765?insecure=1&sni=speedtest.tinkoff.ru#357.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20516ms
+hy2://STYyftThFn@freedom.chenlan.top:12765?insecure=1&sni=www.bing.com#417.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20555ms
+hy2://STYyftThFn@freedom.chenlan.top:12765?insecure=1&sni=google.com#421.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20563ms
+hy2://STYyftThFn@freedom.chenlan.top:12765?insecure=1&sni=speedtest.tinkoff.ru#430.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20602ms
+hy2://STYyftThFn@freedom.chenlan.top:12765?insecure=1&sni=freedom.chenlan.top#512.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20723ms
+hy2://gf1%3Agfhysteria2024@185.156.44.99:443?insecure=1#699.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%201783ms
+hy2://gf1%3Agfhysteria2024@185.156.44.99:443?insecure=1&sni=www.amazon.com#707.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%201930ms
+hy2://gf1%3Agfhysteria2024@185.156.44.99:443?insecure=1&sni=t.me#725.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%203548ms
+ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpRRld6Q3cydVg5QjlpNnFBWWVGQklF@bogging-eyeteeth-fly.freesocks.work:443#730.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20ss%20%C2%B7%205034ms
+ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpRRld6Q3cydVg5QjlpNnFBWWVGQklF@154.46.31.106:443#733.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20ss%20%C2%B7%205347ms
