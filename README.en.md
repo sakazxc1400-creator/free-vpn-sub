@@ -223,6 +223,12 @@ risk.
 The project is free and will stay that way. If you found it useful:
 [donate](https://www.donationalerts.com/r/saka1232131).
 
+Also accepted in TON:
+
+```
+UQDj7y9AG8P_4oZ4KAnpRDfCulC-FsgnqSI_8xABobHvc1F3
+```
+
 You can help without money too: star the repo so people who need it can find it.
 Found a dead source or know a good one? Open an
 [issue](../../issues) or edit `sources.txt` and send a pull request.
