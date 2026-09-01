@@ -1,2 +1,2 @@
-hy2://H7mP2xY9kJ4nQ8wR5tF6vB3z@vpn-tw-002.fastervpn.world:443?insecure=1#167.%20%F0%9F%87%B9%F0%9F%87%BC%20%D0%A2%D0%B0%D0%B9%D0%B2%D0%B0%D0%BD%D1%8C%20%C2%B7%20hysteria2%20%C2%B7%20809ms
-hy2://H7mP2xY9kJ4nQ8wR5tF6vB3z@160.187.100.109:443?insecure=1&sni=127.0.0.1#208.%20%F0%9F%87%B9%F0%9F%87%BC%20%D0%A2%D0%B0%D0%B9%D0%B2%D0%B0%D0%BD%D1%8C%20%C2%B7%20hysteria2%20%C2%B7%203801ms
+hy2://H7mP2xY9kJ4nQ8wR5tF6vB3z@vpn-tw-002.fastervpn.world:443?insecure=1&sni=speedtest.tinkoff.ru#673.%20%F0%9F%87%B9%F0%9F%87%BC%20%D0%A2%D0%B0%D0%B9%D0%B2%D0%B0%D0%BD%D1%8C%20%C2%B7%20hysteria2%20%C2%B7%20685ms
+hy2://H7mP2xY9kJ4nQ8wR5tF6vB3z@vpn-tw-002.fastervpn.world:443?insecure=1&sni=vk.com#677.%20%F0%9F%87%B9%F0%9F%87%BC%20%D0%A2%D0%B0%D0%B9%D0%B2%D0%B0%D0%BD%D1%8C%20%C2%B7%20hysteria2%20%C2%B7%20688ms

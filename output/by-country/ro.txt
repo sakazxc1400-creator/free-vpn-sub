@@ -1,3 +1,10 @@
-hy2://gf1%3Agfhysteria2024@185.156.44.99:443?insecure=1&sni=www.amazon.com#120.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20502ms
-hy2://STYyftThFn@85.121.122.25:12765?sni=freedom.chenlan.top#122.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20529ms
-hy2://gf1%3Agfhysteria2024@185.156.44.99:443?insecure=1#153.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20736ms
+hy2://gf1%3Agfhysteria2024@185.156.44.99:443?insecure=1&sni=www.bing.com#549.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20404ms
+hy2://STYyftThFn@freedom.chenlan.top:12765?insecure=1#579.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20487ms
+hy2://STYyftThFn@freedom.chenlan.top:12765?insecure=1&sni=css.rbxcdn.com#583.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20494ms
+hy2://STYyftThFn@freedom.chenlan.top:12765?insecure=1&sni=127.0.0.1#597.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20514ms
+hy2://STYyftThFn@freedom.chenlan.top:12765?insecure=1&sni=t.me#602.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20521ms
+hy2://STYyftThFn@freedom.chenlan.top:12765?insecure=1&sni=whatsapp.com#608.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20535ms
+hy2://STYyftThFn@freedom.chenlan.top:12765?insecure=1&sni=www.bing.com#612.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20542ms
+hy2://STYyftThFn@freedom.chenlan.top:12765?insecure=1&sni=google.com#614.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20545ms
+hy2://STYyftThFn@freedom.chenlan.top:12765?insecure=1&sni=freedom.chenlan.top#617.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20553ms
+hy2://STYyftThFn@freedom.chenlan.top:12765?insecure=1&sni=speedtest.tinkoff.ru#624.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20567ms
