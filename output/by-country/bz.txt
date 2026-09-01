@@ -1,2 +1,1 @@
-vless://6202b230-417c-4d8e-b624-0f71afa9c75d@45.131.209.30:8880?path=%2F&security=&encryption=none&host=vms.lifetime04.workers.dev&type=ws#98.%20%F0%9F%87%A7%F0%9F%87%BF%20BZ%20%C2%B7%20vless%20%C2%B7%2098ms
-vless://6202b230-417c-4d8e-b624-0f71afa9c75d@45.131.6.30:8880/?type=ws&encryption=none&flow=&host=vms.lifetime61.workers.dev&path=%2F#165.%20%F0%9F%87%A7%F0%9F%87%BF%20BZ%20%C2%B7%20vless%20%C2%B7%20138ms
+vless://6202b230-417c-4d8e-b624-0f71afa9c75d@45.131.211.30:8880?security=none&type=ws&path=/?ed=2560&https://t.me/youtube@ZYFXSрҹҮЁрҹҮі&host=vms.lifetime06.workers.dev&packetEncoding=xudp&encryption=none#262.%20%F0%9F%87%A7%F0%9F%87%BF%20BZ%20%C2%B7%20vless%20%C2%B7%20162ms
