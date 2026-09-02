@@ -1,0 +1,2 @@
+hysteria2://5bcodmhjtyfyyrqh@91.142.73.159:36758/?insecure=1&obfs=salamander&obfs-password=dzcb7hv6i2kx2zze&sni=cdn77.dmtr.ru#383.%20%F0%9F%87%B7%F0%9F%87%BA%20%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20617ms
+hy2://C91FbOXGY9XRymrcEebtax9R1Nj62UizoT8S6kCb7xwey8IE@start.wwwinternetvideo.click:443?security=tls&sni=fast.wwwinternetvideo.click#484.%20%F0%9F%87%B7%F0%9F%87%BA%20%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%201122ms
