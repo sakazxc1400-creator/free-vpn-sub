@@ -1,2 +1,11 @@
-hy2://gf1%3Agfhysteria2024@185.156.44.99:443?insecure=1&sni=t.me#327.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20407ms
-hy2://STYyftThFn@freedom.chenlan.top:12765?insecure=1&sni=speedtest.tinkoff.ru#364.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20532ms
+hy2://STYyftThFn@freedom.chenlan.top:12765?insecure=1&sni=css.rbxcdn.com#342.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20333ms
+hy2://STYyftThFn@freedom.chenlan.top:12765?insecure=1&sni=google.com#370.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20348ms
+hy2://STYyftThFn@freedom.chenlan.top:12765?insecure=1&sni=speedtest.tinkoff.ru#399.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20359ms
+hy2://STYyftThFn@freedom.chenlan.top:12765?insecure=1#431.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20380ms
+hy2://STYyftThFn@freedom.chenlan.top:12765?insecure=1&sni=vk.com#432.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20381ms
+hy2://STYyftThFn@freedom.chenlan.top:12765?insecure=1&sni=freedom.chenlan.top#433.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20382ms
+hy2://STYyftThFn@freedom.chenlan.top:12765?insecure=1&sni=127.0.0.1#471.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20427ms
+hy2://STYyftThFn@freedom.chenlan.top:12765?insecure=1&sni=whatsapp.com#489.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20456ms
+hy2://STYyftThFn@freedom.chenlan.top:12765?insecure=1&sni=t.me#530.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20507ms
+ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpRRld6Q3cydVg5QjlpNnFBWWVGQklF@154.46.31.106:443#539.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20ss%20%C2%B7%20518ms
+ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpRRld6Q3cydVg5QjlpNnFBWWVGQklF@bogging-eyeteeth-fly.freesocks.work:443?#559.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20ss%20%C2%B7%20533ms
