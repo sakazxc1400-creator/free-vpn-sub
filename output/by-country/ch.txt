@@ -1,1 +1,2 @@
-hy2://switzerland_hysteria2_fastlane_8r4fgh8f1%3ATRVdyaK5S0DUjC46peYVgtw2Ci4GwiCF@45.140.205.58:1935?insecure=1&sni=ch3.h.fastlanehosting.ru#607.%20%F0%9F%87%A8%F0%9F%87%AD%20%D0%A8%D0%B2%D0%B5%D0%B9%D1%86%D0%B0%D1%80%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20580ms
+hysteria2://84a506ca5aca505696a454d828420b3f@140.238.213.114:50160?insecure=1&sni=www.bing.com#519.%20%F0%9F%87%A8%F0%9F%87%AD%20%D0%A8%D0%B2%D0%B5%D0%B9%D1%86%D0%B0%D1%80%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20787ms
+hy2://switzerland_hysteria2_fastlane_8r4fgh8f1%3ATRVdyaK5S0DUjC46peYVgtw2Ci4GwiCF@45.140.205.58:1935?insecure=1&sni=ch3.h.fastlanehosting.ru#524.%20%F0%9F%87%A8%F0%9F%87%AD%20%D0%A8%D0%B2%D0%B5%D0%B9%D1%86%D0%B0%D1%80%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20857ms
