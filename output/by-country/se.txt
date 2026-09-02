@@ -1,2 +1,1 @@
-ss://MjAyMi1ibGFrZTMtYWVzLTI1Ni1nY206TUdNMU5HTTJObVEyTlRnNU5EZzNZMkV5TlRaak5HSmlObVU0WWpBME16Yz06WW1ReFlqUmlaREpoTXpFeU5ETXpaR0ZsTjJKa05XUXlPR1kxTUdGbU1tRT0@84.32.99.238:20146#424.%20%F0%9F%87%B8%F0%9F%87%AA%20%D0%A8%D0%B2%D0%B5%D1%86%D0%B8%D1%8F%20%C2%B7%20ss%20%C2%B7%20445ms
-hysteria2://Telegram@vpnjey@77.110.96.201:36264/?insecure=1&obfs=salamander&obfs-password=Telegram@vpnjey&sni=se.vpnjey2.dpdns.org#602.%20%F0%9F%87%B8%F0%9F%87%AA%20%D0%A8%D0%B2%D0%B5%D1%86%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20646ms
+hysteria2://Telegram@vpnjey@77.110.96.201:36264?sni=se.vpnjey2.dpdns.org&alpn=h3&obfs=salamander&obfs-password=Telegram@vpnjey&insecure=1#554.%20%F0%9F%87%B8%F0%9F%87%AA%20%D0%A8%D0%B2%D0%B5%D1%86%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20639ms
