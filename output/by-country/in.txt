@@ -1,1 +1,1 @@
-hy2://H7mP2xY9kJ4nQ8wR5tF6vB3z@vpn-in-001.fastervpn.world:443?insecure=1&sni=vpn-in-001.fastervpn.world#327.%20%F0%9F%87%AE%F0%9F%87%B3%20%D0%98%D0%BD%D0%B4%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%201215ms
+hy2://H7mP2xY9kJ4nQ8wR5tF6vB3z@vpn-in-001.fastervpn.world:443?insecure=1&sni=vpn-in-001.fastervpn.world#649.%20%F0%9F%87%AE%F0%9F%87%B3%20%D0%98%D0%BD%D0%B4%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20733ms
