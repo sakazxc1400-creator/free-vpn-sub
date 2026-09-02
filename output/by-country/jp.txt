@@ -1,9 +1,5 @@
-trojan://tsuchiya@aa.ccmusic.jp:443/?type=tcp&security=tls#407.%20%F0%9F%87%AF%F0%9F%87%B5%20%D0%AF%D0%BF%D0%BE%D0%BD%D0%B8%D1%8F%20%C2%B7%20trojan%20%C2%B7%20476ms
-hy2://954f9a43-b779-46a7-8a3e-8f951ad51a2e@x-rb7.xueshan168.cc:20201?insecure=1&sni=x-rb7.xueshan168.cc#417.%20%F0%9F%87%AF%F0%9F%87%B5%20%D0%AF%D0%BF%D0%BE%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20494ms
-hy2://954f9a43-b779-46a7-8a3e-8f951ad51a2e@rb.xueshan168.cc:20201?insecure=1&sni=rb.xueshan168.cc#442.%20%F0%9F%87%AF%F0%9F%87%B5%20%D0%AF%D0%BF%D0%BE%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20545ms
-hy2://954f9a43-b779-46a7-8a3e-8f951ad51a2e@x-rb.xueshan168.cc:20201?insecure=1&sni=x-rb1.xueshan168.cc#446.%20%F0%9F%87%AF%F0%9F%87%B5%20%D0%AF%D0%BF%D0%BE%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20561ms
-hy2://6c077487-06af-4fb1-9e46-d485d98f0a31@45.88.43.116:52454?insecure=1&sni=www.bing.com#454.%20%F0%9F%87%AF%F0%9F%87%B5%20%D0%AF%D0%BF%D0%BE%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20595ms
-trojan://tsuchiya@aa.ccmusic.jp:443?sni=aa.ccmusic.jp&type=tcp#462.%20%F0%9F%87%AF%F0%9F%87%B5%20%D0%AF%D0%BF%D0%BE%D0%BD%D0%B8%D1%8F%20%C2%B7%20trojan%20%C2%B7%20606ms
-hysteria2://4d6d97a82ddf959252e2ada36c3c3053@138.2.8.249:50160?insecure=1&security=tls&sni=www.bing.com#508.%20%F0%9F%87%AF%F0%9F%87%B5%20%D0%AF%D0%BF%D0%BE%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20693ms
-hy2://954f9a43-b779-46a7-8a3e-8f951ad51a2e@x-rb1.xueshan168.cc:20201?insecure=1&sni=x-rb1.xueshan168.cc#529.%20%F0%9F%87%AF%F0%9F%87%B5%20%D0%AF%D0%BF%D0%BE%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20729ms
-hy2://184cdec28da5a09450803c8debcd2cc9@138.3.208.26:50160/?insecure=1&sni=www.bing.com#624.%20%F0%9F%87%AF%F0%9F%87%B5%20%D0%AF%D0%BF%D0%BE%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20925ms
+hy2://954f9a43-b779-46a7-8a3e-8f951ad51a2e@x-rb5.xueshan168.cc:20201?insecure=1&sni=x-rb5.xueshan168.cc#346.%20%F0%9F%87%AF%F0%9F%87%B5%20%D0%AF%D0%BF%D0%BE%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20511ms
+hy2://954f9a43-b779-46a7-8a3e-8f951ad51a2e@x-rb3.xueshan168.cc:20201?insecure=1&sni=x-rb3.xueshan168.cc#362.%20%F0%9F%87%AF%F0%9F%87%B5%20%D0%AF%D0%BF%D0%BE%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20571ms
+hy2://4d6d97a82ddf959252e2ada36c3c3053@138.2.8.249:50160?insecure=1&sni=www.bing.com#429.%20%F0%9F%87%AF%F0%9F%87%B5%20%D0%AF%D0%BF%D0%BE%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20704ms
+hysteria2://954f9a43-b779-46a7-8a3e-8f951ad51a2e@x-rb8.xueshan168.cc:20201?insecure=1&sni=x-rb8.xueshan168.cc#449.%20%F0%9F%87%AF%F0%9F%87%B5%20%D0%AF%D0%BF%D0%BE%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20734ms
+hy2://954f9a43-b779-46a7-8a3e-8f951ad51a2e@x-rb1.xueshan168.cc:20201?insecure=1&sni=x-rb1.xueshan168.cc#498.%20%F0%9F%87%AF%F0%9F%87%B5%20%D0%AF%D0%BF%D0%BE%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20965ms
