@@ -1,8 +1,4 @@
-hy2://gf1%3Agfhysteria2024@185.156.44.99:443?insecure=1&sni=google.com#307.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20372ms
-hy2://gf1%3Agfhysteria2024@185.156.44.99:443?insecure=1&sni=vk.com#315.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20387ms
-hy2://gf1%3Agfhysteria2024@185.156.44.99:443?insecure=1&sni=css.rbxcdn.com#316.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20388ms
-hy2://gf1%3Agfhysteria2024@185.156.44.99:443?insecure=1#319.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20402ms
-hy2://gf1%3Agfhysteria2024@185.156.44.99:443?insecure=1&sni=t.me#329.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20464ms
-hy2://gf1%3Agfhysteria2024@185.156.44.99:443?insecure=1&sni=www.amazon.com#334.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20481ms
-hy2://STYyftThFn@freedom.chenlan.top:12765?insecure=1&sni=google.com#353.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20536ms
-hy2://STYyftThFn@freedom.chenlan.top:12765?insecure=1&sni=vk.com#357.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20558ms
+hy2://STYyftThFn@freedom.chenlan.top:12765?insecure=1&sni=speedtest.tinkoff.ru#571.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20363ms
+ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpRRld6Q3cydVg5QjlpNnFBWWVGQklF@154.46.31.106:443#641.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20ss%20%C2%B7%20480ms
+ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpRRld6Q3cydVg5QjlpNnFBWWVGQklF@bogging-eyeteeth-fly.freesocks.work:443?#656.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20ss%20%C2%B7%20502ms
+hy2://STYyftThFn@freedom.chenlan.top:12765?insecure=1&sni=css.rbxcdn.com#707.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20544ms
