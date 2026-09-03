@@ -1,2 +1,1 @@
-vless://dc8eccdb-ecfa-435f-9ac1-5dc4882e7b51@45.130.125.209:80?host=de.vpnbase.net&path=/http&security=none&type=ws#527.%20%F0%9F%87%B8%F0%9F%87%A8%20%D0%A1%D0%B5%D0%B9%D1%88%D0%B5%D0%BB%D1%8B%20%C2%B7%20vless%20%C2%B7%20308ms
-vless://dc8eccdb-ecfa-435f-9ac1-5dc4882e7b51@45.130.125.207:80?host=de.vpnbase.net&path=/http&security=none&type=ws#691.%20%F0%9F%87%B8%F0%9F%87%A8%20%D0%A1%D0%B5%D0%B9%D1%88%D0%B5%D0%BB%D1%8B%20%C2%B7%20vless%20%C2%B7%20482ms
+trojan://humanity@45.130.125.75:443?host=www.calmlunch.com&path=%2Fassignment&sni=www.calmlunch.com&type=ws#443.%20%F0%9F%87%B8%F0%9F%87%A8%20%D0%A1%D0%B5%D0%B9%D1%88%D0%B5%D0%BB%D1%8B%20%C2%B7%20trojan%20%C2%B7%20387ms
