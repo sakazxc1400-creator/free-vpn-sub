@@ -1,1 +1,0 @@
-vless://1e78f247-1e3e-400e-bf1f-bb0c908b9a60@45.131.4.115:80?encryption=none&security=none&sni=worker3.laton16859.workers.dev&type=ws&host=worker3.laton16859.workers.dev&path=/GXXYmLBSqSttMjgI#137.%20%F0%9F%87%AE%F0%9F%87%B7%20%D0%98%D1%80%D0%B0%D0%BD%20%C2%B7%20vless%20%C2%B7%20129ms
