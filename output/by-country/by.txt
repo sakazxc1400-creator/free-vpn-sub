@@ -1,0 +1,1 @@
+trojan://8qCNZU2XdtefT7uB4uPxgRR839btqMG8@by01.botovod.space:500?type=grpc&security=tls&fp=chrome&sni=by01.botovod.space&mode=gun&alpn=h2,http/1.1#986.%20%F0%9F%87%A7%F0%9F%87%BE%20%D0%91%D0%B5%D0%BB%D0%B0%D1%80%D1%83%D1%81%D1%8C%20%C2%B7%20trojan%20%C2%B7%201150ms
