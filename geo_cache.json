@@ -497,6 +497,7 @@
 "104.21.46.219": "CA",
 "104.21.46.242": "CA",
 "104.21.48.1": "CA",
+"104.21.5.173": "CA",
 "104.21.5.75": "CA",
 "104.21.50.18": "CA",
 "104.21.51.189": "CA",
@@ -831,6 +832,7 @@
 "140.174.25.216": "US",
 "140.238.2.250": "KR",
 "140.238.213.114": "CH",
+"140.245.108.164": "SG",
 "140.245.99.244": "SG",
 "140.248.185.253": "US",
 "140.248.186.45": "US",
@@ -1160,6 +1162,7 @@
 "167.68.11.30": "US",
 "167.68.4.199": "US",
 "168.100.9.178": "NL",
+"168.107.84.40": "SG",
 "168.138.43.75": "JP",
 "169.197.142.22": "US",
 "169.40.32.48": "DE",
@@ -1433,6 +1436,7 @@
 "172.67.200.222": "CA",
 "172.67.201.133": "CA",
 "172.67.201.213": "CA",
+"172.67.203.158": "CA",
 "172.67.204.84": "CA",
 "172.67.205.222": "CA",
 "172.67.208.1": "CA",
@@ -2626,6 +2630,7 @@
 "aged-silence-8d7d.tahaggs.workers.dev": "CA",
 "altaria.proxy.rlwy.net": "US",
 "am12.levikogjgfdd.ir": "ES",
+"ancient-glade-34d6.6-07d.workers.dev": "CA",
 "anydesk.com": "CA",
 "app-538961.user-y0o4gm.workers.dev": "CA",
 "app-q0zc4t.user-4gfyh5.workers.dev": "CA",
@@ -2845,6 +2850,7 @@
 "mlxy2.mangshe.xyz": "MY",
 "mn10.levikogjgfdd.ir": "US",
 "mn8.levikogjgfdd.ir": "US",
+"msjp.mangshe.xyz": "JP",
 "mtckundigepwu3up.v.3dns.vip": "HK",
 "mtn.v2plus.ovh": "US",
 "muddy-queen-cdda.181-cf9.workers.dev": "CA",
@@ -2998,6 +3004,7 @@
 "store.epicgames.com": "CA",
 "store.ubi.com": "CA",
 "streambox.wwwinternetvideo.click": "PL",
+"summer-butterfly-cbc8.26-971.workers.dev": "CA",
 "summer-meadow-af5b.woowoorrrkk.workers.dev": "CA",
 "super-sunset-010c.24-43d.workers.dev": "CA",
 "support.cloudflare.com": "CA",
@@ -3129,5 +3136,5 @@
 "ziro.skin": "CA",
 "zmaoz.faculty.ucdavis.edu": "US"
 },
-"saved_at": 1788498218.0852425
+"saved_at": 1788504933.4265668
 }
