@@ -1,4 +1,1 @@
-hy2://54d2f622-fd71-4f5f-8813-832b68f4ca3b@104.165.205.42:8443?sni=speedtestmark.com#623.%20%F0%9F%87%B1%F0%9F%87%BB%20%D0%9B%D0%B0%D1%82%D0%B2%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20555ms
-hy2://54d2f622-fd71-4f5f-8813-832b68f4ca3b@104.165.205.40:8443?sni=speedtestmark.com#631.%20%F0%9F%87%B1%F0%9F%87%BB%20%D0%9B%D0%B0%D1%82%D0%B2%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20573ms
-hysteria2://GSPOBvG-ZwYcBFMr0ekFGO_Zga3wK6v_@85.159.228.22:443?sni=hy2-latvia2.unlimited-access.ru#637.%20%F0%9F%87%B1%F0%9F%87%BB%20%D0%9B%D0%B0%D1%82%D0%B2%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20589ms
-hysteria2://GSPOBvG-ZwYcBFMr0ekFGO_Zga3wK6v_@hy2-latvia2.unlimited-access.ru:443/?sni=hy2-latvia2.unlimited-access.ru#666.%20%F0%9F%87%B1%F0%9F%87%BB%20%D0%9B%D0%B0%D1%82%D0%B2%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20644ms
+hy2://54d2f622-fd71-4f5f-8813-832b68f4ca3b@104.165.205.40:8443?sni=speedtestmark.com#453.%20%F0%9F%87%B1%F0%9F%87%BB%20%D0%9B%D0%B0%D1%82%D0%B2%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20504ms
