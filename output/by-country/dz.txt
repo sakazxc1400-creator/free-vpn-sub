@@ -1,5 +1,0 @@
-hy2://Jz40_mIJ934vK0_k9D3jz92_Vx48q_GHa1_sz0@85.204.107.174:8443?sni=hopp-romania-new.roxa.org#666.%20%F0%9F%87%A9%F0%9F%87%BF%20DZ%20%C2%B7%20hysteria2%20%C2%B7%20607ms
-hy2://Jz40_mIJ934vK0_k9D3jz92_Vx48q_GHa1_sz0@85.204.107.178:8080/?insecure=1&sni=hopp-romania-new.roxa.org#705.%20%F0%9F%87%A9%F0%9F%87%BF%20DZ%20%C2%B7%20hysteria2%20%C2%B7%20662ms
-hy2://Jz40_mIJ934vK0_k9D3jz92_Vx48q_GHa1_sz0@85.204.107.173:8443?sni=hopp-romania-new.roxa.org#730.%20%F0%9F%87%A9%F0%9F%87%BF%20DZ%20%C2%B7%20hysteria2%20%C2%B7%20692ms
-hy2://Jz40_mIJ934vK0_k9D3jz92_Vx48q_GHa1_sz0@85.204.107.173:8080?sni=hopp-romania-new.roxa.org#732.%20%F0%9F%87%A9%F0%9F%87%BF%20DZ%20%C2%B7%20hysteria2%20%C2%B7%20697ms
-hy2://Jz40_mIJ934vK0_k9D3jz92_Vx48q_GHa1_sz0@85.204.107.172:8080?sni=hopp-romania-new.roxa.org#751.%20%F0%9F%87%A9%F0%9F%87%BF%20DZ%20%C2%B7%20hysteria2%20%C2%B7%20749ms
