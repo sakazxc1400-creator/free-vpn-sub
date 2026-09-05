@@ -1,0 +1,2 @@
+trojan://humanity@45.130.125.160:443?host=www.calmlunch.com&path=/assignment&sni=www.calmlunch.com&type=ws#546.%20%F0%9F%87%B8%F0%9F%87%A8%20%D0%A1%D0%B5%D0%B9%D1%88%D0%B5%D0%BB%D1%8B%20%C2%B7%20trojan%20%C2%B7%20498ms
+vless://dc8eccdb-ecfa-435f-9ac1-5dc4882e7b51@45.130.125.207:80?fp=qq&host=de.vpnbase.net&path=%2Fhttp&security=none&type=ws#759.%20%F0%9F%87%B8%F0%9F%87%A8%20%D0%A1%D0%B5%D0%B9%D1%88%D0%B5%D0%BB%D1%8B%20%C2%B7%20vless%20%C2%B7%20763ms
