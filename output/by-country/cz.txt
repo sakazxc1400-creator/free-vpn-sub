@@ -1,1 +1,0 @@
-vless://dabb9a19-03ab-4cdf-8963-d3c45eb0f80d@5.39.202.127:443/?type=tcp&encryption=none&flow=xtls-rprx-vision&sni=czek1.kovsh.lol&fp=chrome&security=reality&pbk=crRdG3Hd_QtGCJi9fd1rtHpDIB7vnCx1Yexfu6XkIzU&sid=2cec07a8614696e5&packetEncoding=xudp#646.%20%F0%9F%87%A8%F0%9F%87%BF%20%D0%A7%D0%B5%D1%85%D0%B8%D1%8F%20%C2%B7%20vless%20%C2%B7%20397ms
