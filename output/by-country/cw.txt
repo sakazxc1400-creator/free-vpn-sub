@@ -1,2 +1,0 @@
-vless://6202b230-417c-4d8e-b624-0f71afa9c75d@5.10.246.30:8880?security=none&type=ws&path=%2F&host=vms.lifetime05.workers.dev&encryption=none#189.%20%F0%9F%87%A8%F0%9F%87%BC%20CW%20%C2%B7%20vless%20%C2%B7%20160ms
-vless://6202b230-417c-4d8e-b624-0f71afa9c75d@88.216.67.30:8880/?type=ws&encryption=none&flow=&host=vms.lifetime05.workers.dev&path=%2F#194.%20%F0%9F%87%A8%F0%9F%87%BC%20CW%20%C2%B7%20vless%20%C2%B7%20161ms
