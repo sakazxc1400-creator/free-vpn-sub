@@ -1,1 +1,2 @@
-hy2://8fb328f0-d8e0-4b11-a6db-3dadfc4f02a3@kz03hy01.tcp-reset-club.net:443?insecure=1&sni=kz03hy01.tcp-reset-club.net#645.%20%F0%9F%87%B0%F0%9F%87%BF%20%D0%9A%D0%B0%D0%B7%D0%B0%D1%85%D1%81%D1%82%D0%B0%D0%BD%20%C2%B7%20hysteria2%20%C2%B7%20891ms
+hy2://eb0e3aec-f67f-4fa2-8577-b0bff0484e77@kaz0001hy01.packet-drop-society.net:443?insecure=1&sni=kaz0001hy01.packet-drop-society.net#893.%20%F0%9F%87%B0%F0%9F%87%BF%20%D0%9A%D0%B0%D0%B7%D0%B0%D1%85%D1%81%D1%82%D0%B0%D0%BD%20%C2%B7%20hysteria2%20%C2%B7%201204ms
+hy2://8fb328f0-d8e0-4b11-a6db-3dadfc4f02a3@kz03hy01.tcp-reset-club.net:443?insecure=1&sni=kz03hy01.tcp-reset-club.net#896.%20%F0%9F%87%B0%F0%9F%87%BF%20%D0%9A%D0%B0%D0%B7%D0%B0%D1%85%D1%81%D1%82%D0%B0%D0%BD%20%C2%B7%20hysteria2%20%C2%B7%201217ms
