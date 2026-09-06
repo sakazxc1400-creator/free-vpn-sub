@@ -1,2 +1,3 @@
-hy2://0db4a6c709ca4a46153af8a401b7138a@se.allgoodvpn.su:8443?insecure=1&sni=se.allgoodvpn.su#841.%20%F0%9F%87%B8%F0%9F%87%AA%20%D0%A8%D0%B2%D0%B5%D1%86%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%201173ms
-hy2://0db4a6c709ca4a46153af8a401b7138a@se.allgoodvpn.su:8443?#857.%20%F0%9F%87%B8%F0%9F%87%AA%20%D0%A8%D0%B2%D0%B5%D1%86%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%201290ms
+hy2://0db4a6c709ca4a46153af8a401b7138a@se.allgoodvpn.su:8443?#632.%20%F0%9F%87%B8%F0%9F%87%AA%20%D0%A8%D0%B2%D0%B5%D1%86%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20693ms
+hy2://0db4a6c709ca4a46153af8a401b7138a@se.allgoodvpn.su:8443?sni=se.allgoodvpn.su#664.%20%F0%9F%87%B8%F0%9F%87%AA%20%D0%A8%D0%B2%D0%B5%D1%86%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20751ms
+vless://af00e0c4-decf-48f2-9013-56abe9c9efcd@150.241.72.143:12200/?type=tcp&encryption=none&flow=xtls-rprx-vision&sni=au.windconnect.pro&fp=chrome&security=reality&pbk=Kjw_K41-jWxqzAMtOby5y0KREhyjybuHsAHfCEFo6Sc&sid=222afa5374b722b9#710.%20%F0%9F%87%B8%F0%9F%87%AA%20%D0%A8%D0%B2%D0%B5%D1%86%D0%B8%D1%8F%20%C2%B7%20vless%20%C2%B7%20836ms
