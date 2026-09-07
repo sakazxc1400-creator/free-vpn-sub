@@ -1486,6 +1486,7 @@
 "172.67.131.125": "CA",
 "172.67.132.19": "CA",
 "172.67.132.85": "CA",
+"172.67.133.136": "CA",
 "172.67.133.170": "CA",
 "172.67.133.29": "CA",
 "172.67.133.44": "CA",
@@ -1894,6 +1895,7 @@
 "194.87.47.204": "IT",
 "194.87.55.90": "DE",
 "194.9.172.236": "FR",
+"194.93.61.100": "NL",
 "195.123.217.26": "NL",
 "195.123.235.177": "US",
 "195.133.23.200": "RU",
@@ -3206,6 +3208,7 @@
 "mute-math-d64e.0e503992ad7026.workers.dev": "CA",
 "mute-surf-0003.209.workers.dev": "CA",
 "mute-violet-0186.farhan-poco-x-6.workers.dev": "CA",
+"mxp6jvjacystdp-s4f.kjnnv3i410u6mq-itd.workers.dev": "CA",
 "mybb.com": "CA",
 "mycareer.verizon.com": "CA",
 "mz.hkychina.com": "HK",
@@ -3214,6 +3217,7 @@
 "nahan-core.fatitelegram.workers.dev": "CA",
 "nameless-moon-7c4d.shafmrhjlos23.workers.dev": "CA",
 "nasnet-162191099-direct.mbghalibaf.com": "FR",
+"neth9.lunariai.ru": "NL",
 "netlivpn5002.whwbbb.workers.dev": "CA",
 "netlivpn5505.ffffdsaaa.workers.dev": "CA",
 "newrelax.relaxedboy.online": "DE",
@@ -3306,6 +3310,7 @@
 "sc-thenetherlands2.09vpn.com": "NL",
 "se.allgoodvpn.su": "SE",
 "select-hk.ddnskunlun.com": "SG",
+"select-sg.ddnskunlun.com": "SG",
 "select-us.ddnskunlun.com": "SG",
 "server10.sotowoy673.workers.dev": "CA",
 "server15.peekconf1-741.workers.dev": "CA",
@@ -3513,5 +3518,5 @@
 "ziro.skin": "CA",
 "zmaoz.faculty.ucdavis.edu": "US"
 },
-"saved_at": 1788737716.7925103
+"saved_at": 1788740472.60684
 }
