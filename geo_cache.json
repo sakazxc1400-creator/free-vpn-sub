@@ -364,6 +364,7 @@
 "104.19.45.188": "CA",
 "104.19.45.19": "CA",
 "104.19.45.194": "CA",
+"104.19.45.195": "CA",
 "104.19.45.2": "CA",
 "104.19.45.212": "CA",
 "104.19.45.237": "CA",
@@ -1752,6 +1753,7 @@
 "185.220.100.168": "DE",
 "185.220.238.77": "JP",
 "185.225.195.30": "AE",
+"185.225.68.232": "HU",
 "185.226.172.8": "DE",
 "185.24.151.83": "IR",
 "185.24.151.84": "IR",
@@ -3036,6 +3038,7 @@
 "chat.openai.com": "CA",
 "chatgpt.com": "US",
 "china.mfa.gov.ua": "CA",
+"cloudflare-dns.com": "CA",
 "cloudflare.net": "CA",
 "cloudinary.com": "CA",
 "cnmfangbinxing.cnmfangbinxing-f.workers.dev": "CA",
@@ -3060,6 +3063,7 @@
 "deepl.com": "CA",
 "dereserv.just-cloud.org": "DE",
 "deu0003ntrhy01.tcp-reset-club.net": "DE",
+"developers.cloudflare.com": "CA",
 "dggg.wsone.icu": "DE",
 "digitalocean.com": "CA",
 "divine-sound-9e93.22-be2.workers.dev": "CA",
@@ -3516,6 +3520,7 @@
 "www.calmlunch.com": "US",
 "www.canva.com": "CA",
 "www.epicgames.com": "CA",
+"www.fbi.gov": "CA",
 "www.gov.ua": "CA",
 "www.ipget.net": "CA",
 "www.iplocation.net": "CA",
@@ -3525,8 +3530,10 @@
 "www.researchgate.net": "CA",
 "www.shopify.com": "CA",
 "www.speedtest.net": "CA",
+"www.udemy.com": "CA",
 "www.visa.com.sg": "CA",
 "www.whatismyip.com": "CA",
+"www.whatismyip.net": "CA",
 "www.wilshire.com": "US",
 "www.wto.org": "CA",
 "www.zendesk.com": "CA",
@@ -3559,5 +3566,5 @@
 "ziro.skin": "CA",
 "zmaoz.faculty.ucdavis.edu": "US"
 },
-"saved_at": 1788806850.0928667
+"saved_at": 1788814835.9514513
 }
