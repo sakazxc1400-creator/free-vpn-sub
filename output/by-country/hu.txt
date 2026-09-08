@@ -1,0 +1,2 @@
+trojan://humanity@185.225.68.232:443?Telegram=@GozargahAzad,@GozargahAzad,@GozargahAzad,@GozargahAzad,@GozargahAzad,@GozargahAzad,@GozargahAzad&path=/assignment&security=tls&insecure=0&host=www.calmlunch.com&type=ws&allowInsecure=0&sni=www.calmlunch.com#571.%20%F0%9F%87%AD%F0%9F%87%BA%20%D0%92%D0%B5%D0%BD%D0%B3%D1%80%D0%B8%D1%8F%20%C2%B7%20trojan%20%C2%B7%20843ms
+trojan://C0ldyfh-vpnjantit.com@46.29.142.57:4443?allowInsecure=1&sni=hu2.vpnjantit.com&type=tcp#664.%20%F0%9F%87%AD%F0%9F%87%BA%20%D0%92%D0%B5%D0%BD%D0%B3%D1%80%D0%B8%D1%8F%20%C2%B7%20trojan%20%C2%B7%203663ms
