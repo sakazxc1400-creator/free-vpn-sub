@@ -100,6 +100,7 @@
 "104.16.240.83": "CA",
 "104.16.241.253": "CA",
 "104.16.242.174": "CA",
+"104.16.242.208": "CA",
 "104.16.246.179": "CA",
 "104.16.247.58": "CA",
 "104.16.25.46": "CA",
@@ -943,6 +944,7 @@
 "138.2.161.254": "DE",
 "138.2.73.238": "SG",
 "138.2.8.249": "JP",
+"138.2.89.249": "SG",
 "138.3.208.26": "JP",
 "139.177.103.135": "MX",
 "139.28.168.54": "US",
@@ -1585,6 +1587,7 @@
 "172.67.148.180": "CA",
 "172.67.148.254": "CA",
 "172.67.148.26": "CA",
+"172.67.148.41": "CA",
 "172.67.149.60": "CA",
 "172.67.150.198": "CA",
 "172.67.150.239": "CA",
@@ -3146,7 +3149,9 @@
 "cf.udpid.org": "CA",
 "cf10.466688.xyz": "CA",
 "cf2.466688.xyz": "CA",
+"cf3.466688.xyz": "CA",
 "cf4.466688.xyz": "CA",
+"cf5.466688.xyz": "CA",
 "cf6.466688.xyz": "CA",
 "cf8.466688.xyz": "CA",
 "cf9.466688.xyz": "CA",
@@ -3436,6 +3441,7 @@
 "polished-field-4448.186-705.workers.dev": "CA",
 "polished-firefly-3e2d.20-645.workers.dev": "CA",
 "polished-meadow-2ac5.228-76d.workers.dev": "CA",
+"pori.cjlife.ir": "TR",
 "prisonvpnc-production-8e1b.up.railway.app": "US",
 "proud-cloud-7bdd.208-a52.workers.dev": "CA",
 "purple-butterfly-8496.erfannull36.workers.dev": "CA",
@@ -3711,5 +3717,5 @@
 "ziro.skin": "CA",
 "zmaoz.faculty.ucdavis.edu": "US"
 },
-"saved_at": 1788930840.8253486
+"saved_at": 1788932583.2699864
 }
