@@ -1,1 +1,1 @@
-vless://14eb2c19-89ba-4a10-bd52-cbf6a5f5cae0@194.110.207.48:443/?type=tcp&encryption=none&flow=xtls-rprx-vision&sni=kibi-institut.de&fp=chrome&security=reality&pbk=SiSky02wHz-S0TDHKFTdYhnrlT8Y3CfRsekZlcdLXDY&sid=fd55b698ee8c3629#912.%20%F0%9F%87%B3%F0%9F%87%B4%20%D0%9D%D0%BE%D1%80%D0%B2%D0%B5%D0%B3%D0%B8%D1%8F%20%C2%B7%20vless%20%C2%B7%206131ms
+ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpBUmd2R1p5d0ErZ2FjZ0dWMjZCdm11MDUrd1ptUlcvaitBZFUrWjhCdDQ0PQ==@185.213.23.63:990#1032.%20%F0%9F%87%B3%F0%9F%87%B4%20%D0%9D%D0%BE%D1%80%D0%B2%D0%B5%D0%B3%D0%B8%D1%8F%20%C2%B7%20ss%20%C2%B7%204657ms

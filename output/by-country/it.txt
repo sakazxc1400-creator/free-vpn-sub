@@ -1,3 +1,1 @@
-vless://d4b08cd6-0903-411a-9dac-45dbdf5c9712@57.131.38.163:2053?encryption=none&fp=chrome&pbk=Ej2H5ucT7qKegYcT8wODdlxa-cLHr7F4hDVUHzAhcnc&security=reality&sid=5b8a942318178e7b&sni=www.apple.com&type=tcp#391.%20%F0%9F%87%AE%F0%9F%87%B9%20%D0%98%D1%82%D0%B0%D0%BB%D0%B8%D1%8F%20%C2%B7%20vless%20%C2%B7%20330ms
-vless://1e280316-0408-47c4-b058-05b8f1f17f02@57.131.32.191:80?alpn=http%2F1.1&fp=chrome&path=%2Fvless%2F&security=none&type=ws#406.%20%F0%9F%87%AE%F0%9F%87%B9%20%D0%98%D1%82%D0%B0%D0%BB%D0%B8%D1%8F%20%C2%B7%20vless%20%C2%B7%20338ms
-vless://1e280316-0408-47c4-b058-05b8f1f17f02@57.131.32.191:80?encryption=none&security=none&fp=chrome&type=ws&host=ov-italy1.09vpn.com&path=/vless/#435.%20%F0%9F%87%AE%F0%9F%87%B9%20%D0%98%D1%82%D0%B0%D0%BB%D0%B8%D1%8F%20%C2%B7%20vless%20%C2%B7%20364ms
+ss://YWVzLTI1Ni1nY206aXR6dnBuQDMyMQ@57.131.48.45:8388#655.%20%F0%9F%87%AE%F0%9F%87%B9%20%D0%98%D1%82%D0%B0%D0%BB%D0%B8%D1%8F%20%C2%B7%20ss%20%C2%B7%20547ms
