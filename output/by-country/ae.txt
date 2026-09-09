@@ -1,1 +1,0 @@
-ss://chacha20-ietf-poly1305:tunnel-astrovpn_official@188.208.110.58:8444#577.%20%F0%9F%87%A6%F0%9F%87%AA%20%D0%9E%D0%90%D0%AD%20%C2%B7%20ss%20%C2%B7%20664ms
