@@ -1,129 +1,46 @@
-name: Update VPN subscription
+name: Update Subscriptions
 
 on:
   schedule:
-    # Дважды в час, на "тихих" минутах.
-    #
-    # Почему не ":00" и не ":07": в начале часа очередь Actions перегружена,
-    # и запуски по расписанию GitHub задерживает или пропускает совсем.
-    # Некруглые минуты попадают в куда меньшую очередь.
-    #
-    # Почему дважды: даже если один запуск потеряется, обновление всё равно
-    # выйдет примерно раз в час.
-    - cron: "23 * * * *"
-    - cron: "53 * * * *"
-  workflow_dispatch: {}
-  push:
-    branches: [main]
-    paths:
-      - "collect.py"
-      - "probe.py"
-      - "outbound.py"
-      - "geo.py"
-      - "sources.txt"
-      - ".github/workflows/update.yml"
-
-# Не даём двум прогонам писать в репозиторий одновременно.
-concurrency:
-  group: update-subscription
-  cancel-in-progress: false
+    - cron: '0 */4 * * *'
+  workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  update:
+  build:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v5
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v6
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: '3.11'
 
-      - name: Install sing-box
+      - name: Restore Geo Cache
+        uses: actions/cache@v4
+        with:
+          path: geo_cache.json
+          key: geo-cache-${{ github.run_id }}
+          restore-keys: |
+            geo-cache-
+
+      - name: Install dependencies
         run: |
-          set -euo pipefail
-          VERSION=$(curl -fsSL https://api.github.com/repos/SagerNet/sing-box/releases/latest \
-            | python -c "import json,sys;print(json.load(sys.stdin)['tag_name'].lstrip('v'))")
-          echo "sing-box $VERSION"
-          curl -fsSL -o sb.tar.gz \
-            "https://github.com/SagerNet/sing-box/releases/download/v${VERSION}/sing-box-${VERSION}-linux-amd64.tar.gz"
-          tar -xzf sb.tar.gz
-          mv "sing-box-${VERSION}-linux-amd64/sing-box" ./sing-box
-          chmod +x ./sing-box
-          rm -rf sb.tar.gz "sing-box-${VERSION}-linux-amd64"
-          ./sing-box version
+          python -m pip install --upgrade pip
+          pip install requests aiohttp aiohttp-socks
 
-      - name: Raise file descriptor limit
-        run: ulimit -n 65535 || true
-
-      - name: Run unit tests
-        run: python selftest.py
-
-      - name: Run converter tests
-        run: python testconv.py
-
-      - name: Run end-to-end test
-        run: python e2etest.py
-
-      - name: Collect configs
-        id: collect
-        run: python collect.py
-
-      - name: Show result
-        if: always()
+      - name: Run collector & tester
         run: |
-          if [ -f output/stats.json ]; then
-            cat output/stats.json
-          else
-            echo "stats.json отсутствует"
-          fi
+          python collect.py
 
-      - name: Commit and push
-        if: steps.collect.outcome == 'success'
-        run: |
-          set -u
-          git config user.name  "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          MAIN=$(python -c "import json;print(json.load(open('output/stats.json'))['published'])")
-          FULL=$(python -c "import json;d=json.load(open('output/stats.json'));print(d.get('published_full', d['published']))")
-          COUNT="${MAIN}/${FULL}"
-
-          # output/ — полностью генерируемый каталог. При гонке двух прогонов
-          # мержить его содержимое бессмысленно: нужен свежий результат целиком.
-          # Поэтому сохраняем файлы, перечитываем remote и накладываем заново.
-          rm -rf "$RUNNER_TEMP/output-fresh"
-          cp -r output "$RUNNER_TEMP/output-fresh"
-          cp geo_cache.json "$RUNNER_TEMP/geo_cache.json" 2>/dev/null || true
-
-          for attempt in 1 2 3 4 5; do
-            git add -A output/ geo_cache.json
-            if git diff --cached --quiet; then
-              echo "Изменений нет — коммит не нужен."
-              exit 0
-            fi
-
-            git commit -m "auto: обновление подписки — ${COUNT} узлов [skip ci]"
-
-            if git push; then
-              echo "Запушено с попытки $attempt."
-              exit 0
-            fi
-
-            echo "push отклонён (попытка $attempt) — синхронизируюсь с remote."
-            git fetch origin main
-            git reset --hard origin/main
-            rm -rf output
-            cp -r "$RUNNER_TEMP/output-fresh" output
-            cp "$RUNNER_TEMP/geo_cache.json" geo_cache.json 2>/dev/null || true
-            sleep $((attempt * 3))
-          done
-
-          echo "Не удалось запушить за 5 попыток."
-          exit 1
+      - name: Deploy subscriptions to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./output
+          keep_files: false
+          force_orphan: true
