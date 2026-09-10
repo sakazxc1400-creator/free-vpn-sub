@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -20,7 +20,7 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Restore Geo Cache
+      - name: Restore / Save Geo Cache
         uses: actions/cache@v4
         with:
           path: geo_cache.json
@@ -33,11 +33,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests aiohttp aiohttp-socks
 
-      - name: Run collector & tester
+      - name: Run collector
         run: |
           python collect.py
 
-      - name: Deploy subscriptions to gh-pages
+      - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
