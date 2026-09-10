@@ -1,0 +1,2 @@
+hysteria2://3a702d4d1de4949005d8431220e040fb@152.67.75.161:443?insecure=1&sni=www.bing.com&obfs=salamander&obfs-password=c13f29db6a638ad2b211b9ce2669ef27#319.%20%F0%9F%87%A8%F0%9F%87%AD%20%D0%A8%D0%B2%D0%B5%D0%B9%D1%86%D0%B0%D1%80%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20543ms
+trojan://humanity@91.245.225.79:2053?path=/assignment&security=tls&insecure=0&host=www.calmlunch.com&type=ws&allowInsecure=0&sni=www.calmlunch.com#375.%20%F0%9F%87%A8%F0%9F%87%AD%20%D0%A8%D0%B2%D0%B5%D0%B9%D1%86%D0%B0%D1%80%D0%B8%D1%8F%20%C2%B7%20trojan%20%C2%B7%20647ms
