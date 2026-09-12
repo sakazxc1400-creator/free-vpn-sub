@@ -1,0 +1,17 @@
+ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpEMVZYZmlQOWI5VmVYOVpE@20.234.82.250:443#%F0%9F%87%AE%F0%9F%87%AA%20IE%20%2301
+ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpGOUV2YUs1MmZ3S2JROExm@40.112.71.34:443#%F0%9F%87%AE%F0%9F%87%AA%20IE%20%2302
+ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTprWWhGNFJXcW9oVHBiVmF1@20.234.82.250:443#%F0%9F%87%AE%F0%9F%87%AA%20IE%20%2303
+ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpxRENTd0ppS20xZ1l0N0F1@20.223.136.145:443#%F0%9F%87%AE%F0%9F%87%AA%20IE%20%2304
+ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpyS0U1T2NoSHFUcmthbXp4@94.245.92.85:443#%F0%9F%87%AE%F0%9F%87%AA%20IE%20%2305
+ss://YWVzLTI1Ni1jZmI6YW1hem9uc2tyMDU@52.214.208.36:443#%F0%9F%87%AE%F0%9F%87%AA%20IE%20%2306
+vless://cd3bb7d9-7df3-4644-ac05-c260990ac277@ir-new1.failspace.top:443?&security=tls&flow=xtls-rprx-vision&fp=chrome&type=tcp&headerType=none&host=ir-new1.failspace.top&path=%2F#%F0%9F%87%AE%F0%9F%87%AA%20IE%20%2307
+ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTo5ek42V0R3NVdiYWQ3WlZi@20.223.152.73:443#%F0%9F%87%AE%F0%9F%87%AA%20IE%20%2308
+trojan://EQ30679154@well-goshawk.rooster465.autos:443?security=tls#%F0%9F%87%AE%F0%9F%87%AA%20IE%20%2309
+trojan://FH72359861@proven-stud.rooster465.autos:443?allowInsecure=0&sni=proven-stud.rooster465.autos#%F0%9F%87%AE%F0%9F%87%AA%20IE%20%2310
+trojan://FH72359861@stable-racer.rooster465.autos:443?sni=stable-racer.rooster465.autos&allowInsecure=1&type=tcp#%F0%9F%87%AE%F0%9F%87%AA%20IE%20%2311
+trojan://JA96378052@apparent-wasp.rooster465.autos:443?allowInsecure=0&sni=apparent-wasp.rooster465.autos#%F0%9F%87%AE%F0%9F%87%AA%20IE%20%2312
+trojan://JA96378052@proven-stud.rooster465.autos:443?allowInsecure=1&sni=proven-stud.rooster465.autos#%F0%9F%87%AE%F0%9F%87%AA%20IE%20%2313
+trojan://JA96378052@stable-racer.rooster465.autos:443?allowInsecure=0&sni=stable-racer.rooster465.autos#%F0%9F%87%AE%F0%9F%87%AA%20IE%20%2314
+trojan://ON38567014@well-goshawk.rooster465.autos:443?sni=well-goshawk.rooster465.autos&type=tcp&fp=chrome#%F0%9F%87%AE%F0%9F%87%AA%20IE%20%2315
+trojan://PQ05174892@apparent-wasp.rooster465.autos:443?security=tls#%F0%9F%87%AE%F0%9F%87%AA%20IE%20%2316
+ss://YWVzLTI1Ni1jZmI6ODQ2MDQwMDEzMEAzLjI0OS41Mi4xNDg6NTAwMDM#%F0%9F%87%AE%F0%9F%87%AA%20IE%20%2317

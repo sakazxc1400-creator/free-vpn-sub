@@ -1,0 +1,2 @@
+vless://2a9ed01e-5455-44b4-a66a-76ee8165f0ac@77.73.232.61:19747?security=reality&encryption=none&pbk=ZO9dTeg1slvTXgVsBsaJ1BDvz_YUImTLJjbHs-GdVyM&host=/?BIA_TELEGRAM@MARAMBASHI_MARAMBASHI_MARAMBASHI_MARAMBASHI_MARAMBASHI&headerType=none&fp=chrome&type=tcp&sni=yahoo.com&sid=2001#%F0%9F%87%B0%F0%9F%87%BF%20KZ%20%2301
+hysteria2://eb0e3aec-f67f-4fa2-8577-b0bff0484e77@194.238.40.185:443?insecure=1&sni=kaz0001hy01.packet-drop-society.net#%F0%9F%87%B0%F0%9F%87%BF%20KZ%20%2302
