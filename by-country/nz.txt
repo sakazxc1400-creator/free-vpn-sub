@@ -1,0 +1,2 @@
+vless://50414e45-4c5f-5a45-5553-aaa41f0d0cbc@114.129.43.26:443?path=/stream/PANEL_ZEUS/aaa41f0d0cbc&security=tls&encryption=none&insecure=0&host=z-e-u-s-panel-xxqeq4.hwiwkcmekwk.workers.dev&type=ws&allowInsecure=0&sni=z-e-u-s-panel-xxqeq4.hwiwkcmekwk.workers.dev#%F0%9F%87%B3%F0%9F%87%BF%20NZ%20%2301
+vless://79978027-ef16-4137-b18e-905f8c18f845@172.64.197.116:8080?security=none&type=ws&host=cdnanycasteuorg.fjacz6xe.workers.dev#%F0%9F%87%B3%F0%9F%87%BF%20NZ%20%2302
