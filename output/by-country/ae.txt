@@ -1,0 +1,1 @@
+vless://6202b230-417c-4d8e-b624-0f71afa9c75d@77.232.140.40:8880?host=vms.lifetime61.workers.dev&path=%2F%3Fed%3D2560&security=none&type=ws#45.%20%F0%9F%87%A6%F0%9F%87%AA%20%D0%9E%D0%90%D0%AD%20%C2%B7%20vless%20%C2%B7%20112ms
