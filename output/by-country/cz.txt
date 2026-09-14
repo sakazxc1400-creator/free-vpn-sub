@@ -1,0 +1,1 @@
+hy2://56ae4ec4-6705-43d0-bf3a-bc36ab3b3545@cze-01.node.lumixnet.com:443?sni=cze-01.node.lumixnet.com#370.%20%F0%9F%87%A8%F0%9F%87%BF%20%D0%A7%D0%B5%D1%85%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20673ms
