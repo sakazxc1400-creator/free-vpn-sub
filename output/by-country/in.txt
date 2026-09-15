@@ -1,9 +1,0 @@
-vless://6202b230-417c-4d8e-b624-0f71afa9c75d@108.165.152.30:8880?security=none&type=ws&path=/&host=vms.lifetime61.workers.dev&packetEncoding=xudp&encryption=none#275.%20%F0%9F%87%AE%F0%9F%87%B3%20%D0%98%D0%BD%D0%B4%D0%B8%D1%8F%20%C2%B7%20vless%20%C2%B7%20206ms
-hysteria2://H7mP2xY9kJ4nQ8wR5tF6vB3z@65.2.178.161:443?insecure=1&sni=vpn-in-001.fastervpn.world#515.%20%F0%9F%87%AE%F0%9F%87%B3%20%D0%98%D0%BD%D0%B4%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20653ms
-hy2://H7mP2xY9kJ4nQ8wR5tF6vB3z@vpn-in-001.fastervpn.world:443?insecure=1&sni=vk.com#524.%20%F0%9F%87%AE%F0%9F%87%B3%20%D0%98%D0%BD%D0%B4%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20678ms
-hysteria2://H7mP2xY9kJ4nQ8wR5tF6vB3z@vpn-in-001.fastervpn.world:443?insecure=1&sni=vpn-in-001.fastervpn.world#525.%20%F0%9F%87%AE%F0%9F%87%B3%20%D0%98%D0%BD%D0%B4%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20679ms
-hy2://H7mP2xY9kJ4nQ8wR5tF6vB3z@vpn-in-001.fastervpn.world:443?insecure=1&sni=google.com#534.%20%F0%9F%87%AE%F0%9F%87%B3%20%D0%98%D0%BD%D0%B4%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20699ms
-hy2://H7mP2xY9kJ4nQ8wR5tF6vB3z@vpn-in-001.fastervpn.world:443?insecure=1&sni=speedtest.tinkoff.ru#536.%20%F0%9F%87%AE%F0%9F%87%B3%20%D0%98%D0%BD%D0%B4%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20704ms
-hy2://H7mP2xY9kJ4nQ8wR5tF6vB3z@vpn-in-001.fastervpn.world:443?insecure=1&sni=t.me#541.%20%F0%9F%87%AE%F0%9F%87%B3%20%D0%98%D0%BD%D0%B4%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20723ms
-hy2://H7mP2xY9kJ4nQ8wR5tF6vB3z@vpn-in-001.fastervpn.world:443?insecure=1&sni=whatsapp.com#548.%20%F0%9F%87%AE%F0%9F%87%B3%20%D0%98%D0%BD%D0%B4%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20782ms
-hy2://H7mP2xY9kJ4nQ8wR5tF6vB3z@65.2.178.161:443?insecure=1#554.%20%F0%9F%87%AE%F0%9F%87%B3%20%D0%98%D0%BD%D0%B4%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20824ms
