@@ -1,2 +1,0 @@
-vless://1d16c6e0-1bbe-435b-b661-90043fee999c@185.193.28.123:443?host=notls.lukongtou.eu.org&path=telegram-wangcai2%F0%9F%87%A8%F0%9F%87%B3&security=tls&sni=notls.lukongtou.eu.org&type=ws#54.%20%F0%9F%87%AB%F0%9F%87%B7%20%D0%A4%D1%80%D0%B0%D0%BD%D1%86%D0%B8%D1%8F%20%C2%B7%20vless%20%C2%B7%20142ms
-vless://6202b230-417c-4d8e-b624-0f71afa9c75d@185.193.28.50:8880/?type=ws&encryption=none&flow=&host=vms.lifetime07.workers.dev&path=%2F%3Fed%3D2560#70.%20%F0%9F%87%AB%F0%9F%87%B7%20%D0%A4%D1%80%D0%B0%D0%BD%D1%86%D0%B8%D1%8F%20%C2%B7%20vless%20%C2%B7%20165ms
