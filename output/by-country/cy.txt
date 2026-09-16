@@ -1,1 +1,1 @@
-vless://b2593749-691c-428c-9481-14979cba3446@cy2.zuoai.cf:443?fp=chrome&host=xi.tbv.ccwu.cc&path=%2Fproxyip%3Dus.xiabibi.cf&security=tls&sni=xi.tbv.ccwu.cc&type=ws#108.%20%F0%9F%87%A8%F0%9F%87%BE%20%D0%9A%D0%B8%D0%BF%D1%80%20%C2%B7%20vless%20%C2%B7%20262ms
+vless://b2593749-691c-428c-9481-14979cba3446@cy2.zuoai.cf:443?fp=chrome&host=xi.tbv.ccwu.cc&path=%2Fproxyip%3Dus.xiabibi.cf&security=tls&sni=xi.tbv.ccwu.cc&type=ws#169.%20%F0%9F%87%A8%F0%9F%87%BE%20%D0%9A%D0%B8%D0%BF%D1%80%20%C2%B7%20vless%20%C2%B7%20168ms
