@@ -1,2 +1,0 @@
-vless://424fa201-3f94-479e-b533-d5257cf9a207@45.131.208.4:80?security=none&type=ws&path=%2Fpyip%3DTelegram%F0%9F%87%A8%F0%9F%87%B3%20%40WangCai2&host=floral-thunder-10d3.82-67d.workers.dev&packetEncoding=xudp#94.%20%F0%9F%87%A7%F0%9F%87%BF%20BZ%20%C2%B7%20vless%20%C2%B7%20153ms
-vless://6202b230-417c-4d8e-b624-0f71afa9c75d@45.131.211.30:8880?security=none&type=ws&path=/?ed=2560&https://t.me/youtube@ZYFXS🇨🇳&host=vms.lifetime06.workers.dev&packetEncoding=xudp&encryption=none#151.%20%F0%9F%87%A7%F0%9F%87%BF%20BZ%20%C2%B7%20vless%20%C2%B7%20187ms
