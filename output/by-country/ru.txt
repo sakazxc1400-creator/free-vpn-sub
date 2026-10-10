@@ -1,1 +1,2 @@
-hysteria2://YutbgyXL1mGaSlBXDoEucWvYbrDCINgUcQ6R6_At5Pjr2xCc@go.wwwinternetvideo.click:443?insecure=1&sni=admin.wwwinternetvideo.click#140.%20%F0%9F%87%B7%F0%9F%87%BA%20%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20675ms
+vless://8de76932-518a-4ac8-ac92-be6b1f17ddd8@196.240.125.5:8443?flow=xtls-rprx-vision&fp=firefox&security=tls&sni=api-v1-6ac7858f.vmagnum.win&type=tcp#168.%20%F0%9F%87%B7%F0%9F%87%BA%20%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D1%8F%20%C2%B7%20vless%20%C2%B7%20364ms
+vless://8de76932-518a-4ac8-ac92-be6b1f17ddd8@196.240.125.251:8443?alpn=h2&flow=xtls-rprx-vision&fp=ios&security=tls&sni=api-v1-6ac7858f.vmagnum.win&type=tcp#172.%20%F0%9F%87%B7%F0%9F%87%BA%20%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D1%8F%20%C2%B7%20vless%20%C2%B7%20374ms
