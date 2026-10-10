@@ -1,0 +1,2 @@
+vless://06c4e938-2954-478f-a870-ca1b163e30e9@94.183.170.135:443?encryption=none&path=/&security=none&type=ws#110.%20%F0%9F%87%AA%F0%9F%87%AA%20%D0%AD%D1%81%D1%82%D0%BE%D0%BD%D0%B8%D1%8F%20%C2%B7%20vless%20%C2%B7%20419ms
+vless://6c713691-3ca2-4446-ad25-113d1bed6b03@194.26.141.148:8443?&security=tls&fp=firefox&sni=fdghyt.com&type=ws&headerType=none&host=fdghyt.com&path=%2Fvpn-wss%2Ffluxor%2F59011%2F#204.%20%F0%9F%87%AA%F0%9F%87%AA%20%D0%AD%D1%81%D1%82%D0%BE%D0%BD%D0%B8%D1%8F%20%C2%B7%20vless%20%C2%B7%20650ms
