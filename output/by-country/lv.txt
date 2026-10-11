@@ -1,0 +1,2 @@
+trojan://humanity@94.158.219.126:443?security=tls&sni=www.pleadcourt.org&type=ws&host=www.pleadcourt.org&path=/assignment#513.%20%F0%9F%87%B1%F0%9F%87%BB%20%D0%9B%D0%B0%D1%82%D0%B2%D0%B8%D1%8F%20%C2%B7%20trojan%20%C2%B7%20758ms
+trojan://humanity@85.31.102.163:443?sni=www.calmlunch.com&type=ws&path=%2Fassignment&host=www.calmlunch.com#514.%20%F0%9F%87%B1%F0%9F%87%BB%20%D0%9B%D0%B0%D1%82%D0%B2%D0%B8%D1%8F%20%C2%B7%20trojan%20%C2%B7%20761ms
