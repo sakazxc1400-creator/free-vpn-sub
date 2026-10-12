@@ -1,0 +1,2 @@
+hy2://c-E0lamG8OnEj9M_uh3oJPmIXqYIVGctO-NHELF1TmNYs7Jl@cz.h2.cleanersaz.help:443?insecure=1#112.%20%F0%9F%87%A8%F0%9F%87%BF%20%D0%A7%D0%B5%D1%85%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20465ms
+hy2://c-E0lamG8OnEj9M_uh3oJPmIXqYIVGctO-NHELF1TmNYs7Jl@cz.h2.cleanersaz.help:443?insecure=1&sni=cz.h2.cleanersaz.help#141.%20%F0%9F%87%A8%F0%9F%87%BF%20%D0%A7%D0%B5%D1%85%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20508ms
