@@ -1,1 +1,0 @@
-hysteria2://b42d90fa667942aebc734d60@137.23.2.56:20000?insecure=1&obfs=salamander&obfs-password=b42d90fa667942aebc734d60&sni=rmgyvpn.rest&mport=20000-30000#273.%20%F0%9F%87%A6%F0%9F%87%BA%20%D0%90%D0%B2%D1%81%D1%82%D1%80%D0%B0%D0%BB%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%205983ms
