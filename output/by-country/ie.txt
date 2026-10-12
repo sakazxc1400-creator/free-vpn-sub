@@ -1,5 +1,1 @@
-trojan://UX82473651@master-possum.rooster465.autos:443?allowInsecure=1&sni=master-possum.rooster465.autos&type=tcp#66.%20%F0%9F%87%AE%F0%9F%87%AA%20%D0%98%D1%80%D0%BB%D0%B0%D0%BD%D0%B4%D0%B8%D1%8F%20%C2%B7%20trojan%20%C2%B7%20356ms
-trojan://UX82473651@master-possum.rooster465.autos:443?allowInsecure=1#68.%20%F0%9F%87%AE%F0%9F%87%AA%20%D0%98%D1%80%D0%BB%D0%B0%D0%BD%D0%B4%D0%B8%D1%8F%20%C2%B7%20trojan%20%C2%B7%20364ms
-trojan://UX82473651@adapting-basilisk.rooster465.autos:443?allowInsecure=1&type=tcp#72.%20%F0%9F%87%AE%F0%9F%87%AA%20%D0%98%D1%80%D0%BB%D0%B0%D0%BD%D0%B4%D0%B8%D1%8F%20%C2%B7%20trojan%20%C2%B7%20404ms
-trojan://UX82473651@34.242.77.118:443?security=tls&insecure=0&headerType=none&fp=chrome&type=tcp&allowInsecure=0&sni=sacred-anemone.rooster465.autos#96.%20%F0%9F%87%AE%F0%9F%87%AA%20%D0%98%D1%80%D0%BB%D0%B0%D0%BD%D0%B4%D0%B8%D1%8F%20%C2%B7%20trojan%20%C2%B7%20535ms
-trojan://UX82473651@3.253.106.233:443?allowInsecure=0&sni=loved-shark.rooster465.autos#168.%20%F0%9F%87%AE%F0%9F%87%AA%20%D0%98%D1%80%D0%BB%D0%B0%D0%BD%D0%B4%D0%B8%D1%8F%20%C2%B7%20trojan%20%C2%B7%201212ms
+trojan://UX82473651@3.253.106.233:443?security=tls&insecure=0&headerType=none&type=tcp&allowInsecure=0&sni=loved-shark.rooster465.autos#68.%20%F0%9F%87%AE%F0%9F%87%AA%20%D0%98%D1%80%D0%BB%D0%B0%D0%BD%D0%B4%D0%B8%D1%8F%20%C2%B7%20trojan%20%C2%B7%20464ms
