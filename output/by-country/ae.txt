@@ -1,1 +1,1 @@
-vless://f8842728-bf43-47e2-83bf-283e21f33664@94.249.188.202:43000?security=reality&encryption=none&pbk=TdLpPmh5-Tbcj3bUPp7uw9znQ_Asao8z9jG7Eccrhwk&headerType=none&fp=chrome&type=tcp&flow=xtls-rprx-vision&sni=94.249.188.202&sid=7887c27d#106.%20%F0%9F%87%A6%F0%9F%87%AA%20%D0%9E%D0%90%D0%AD%20%C2%B7%20vless%20%C2%B7%20453ms
+vless://6202b230-417c-4d8e-b624-0f71afa9c75d@185.225.195.30:8880?host=vms.lifetime18.workers.dev&path=%2F&security=none&sni=vms.lifetime18.workers.dev&type=ws#261.%20%F0%9F%87%A6%F0%9F%87%AA%20%D0%9E%D0%90%D0%AD%20%C2%B7%20vless%20%C2%B7%20211ms
