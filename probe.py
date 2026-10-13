@@ -41,6 +41,10 @@ PROBE_WORKERS = 75       # параллельных запросов внутр�
 STARTUP_TIMEOUT = 30.0   # сек на подъём sing-box
 PORT_BASE = 24000
 
+# Ниже этого размера батч при падении sing-box не делим: слишком мало
+# узлов, чтобы окупить перезапуски.
+MIN_BATCH = 20
+
 # Потолок на всю проверку. Кандидатов может быть много тысяч, а прогон
 # ограничен временем job'а в CI, поэтому по истечении бюджета
 # останавливаемся и отдаём то, что уже нашли.
@@ -131,10 +135,19 @@ def build_config(pairs: list[tuple[int, dict]]) -> dict:
     }
 
 
-def wait_ready(ports: list[int], deadline: float) -> bool:
-    """Ждёт, пока sing-box начнёт слушать порты."""
+def wait_ready(proc, ports: list[int], deadline: float) -> str:
+    """
+    Ждёт, пока sing-box начнёт слушать порты. Возвращает статус:
+      "ready"   — порты поднялись, можно проверять;
+      "exited"  — процесс завершился сам (обычно битый конфиг);
+      "timeout" — время вышло, процесс ещё жив.
+    Ранний выход на "exited" важен: битый конфиг убивает sing-box за
+    секунду, и ждать оставшиеся STARTUP_TIMEOUT смысла нет.
+    """
     probe = ports[: min(5, len(ports))]
     while time.time() < deadline:
+        if proc.poll() is not None:
+            return "exited"
         ready = 0
         for port in probe:
             try:
@@ -143,9 +156,26 @@ def wait_ready(ports: list[int], deadline: float) -> bool:
             except OSError:
                 break
         if ready == len(probe):
-            return True
+            return "ready"
         time.sleep(0.4)
-    return False
+    return "timeout"
+
+
+def stop_singbox(proc, error_tail: bool = False) -> str:
+    """
+    Останавливает процесс sing-box. При error_tail возвращает последние
+    строки stderr — там sing-box пишет причину, почему не стартовал.
+    """
+    err = ""
+    proc.terminate()
+    try:
+        _, stderr = proc.communicate(timeout=5)
+        if error_tail and stderr:
+            err = " | ".join(stderr.decode("utf-8", "ignore").strip().splitlines()[-2:])
+    except subprocess.TimeoutExpired:
+        proc.kill()
+        proc.communicate()
+    return err
 
 
 def probe_one(port: int) -> int | None:
@@ -183,7 +213,10 @@ def verify_batch(nodes: list, singbox: str) -> list[tuple[object, int]]:
             prepared.append((node, built))
     if not prepared:
         return []
+    return _verify_prepared(prepared, singbox)
 
+
+def _verify_prepared(prepared: list[tuple[object, dict]], singbox: str) -> list:
     ports = free_ports(len(prepared))
     if len(ports) < len(prepared):
         prepared = prepared[: len(ports)]
@@ -203,15 +236,20 @@ def verify_batch(nodes: list, singbox: str) -> list[tuple[object, int]]:
             stderr=subprocess.PIPE,
         )
         try:
-            if not wait_ready(ports, time.time() + STARTUP_TIMEOUT):
-                proc.terminate()
-                err = b""
-                try:
-                    _, err = proc.communicate(timeout=5)
-                except subprocess.TimeoutExpired:
-                    proc.kill()
-                tail = err.decode("utf-8", "ignore").strip().splitlines()[-2:]
-                log(f"    sing-box не поднялся: {' | '.join(tail) or 'нет вывода'}")
+            status = wait_ready(proc, ports, time.time() + STARTUP_TIMEOUT)
+            if status != "ready":
+                err = stop_singbox(proc, error_tail=(status == "exited"))
+                if status == "exited" and len(prepared) >= MIN_BATCH * 2:
+                    # Один битый конфиг валит весь процесс sing-box. Без
+                    # деления здесь терялись бы все 150 узлов батча из-за
+                    # одной ссылки. Делим пополам и спасаем здоровую часть.
+                    log(f"    батч не стартовал ({err or 'без объяснений'}), "
+                        f"делю {len(prepared)} узлов пополам")
+                    mid = len(prepared) // 2
+                    return (_verify_prepared(prepared[:mid], singbox)
+                            + _verify_prepared(prepared[mid:], singbox))
+                log(f"    батч из {len(prepared)} узлов пропущен: "
+                    f"{err or 'sing-box не поднялся'}")
                 return []
 
             results: list[tuple[object, int]] = []
@@ -230,11 +268,8 @@ def verify_batch(nodes: list, singbox: str) -> list[tuple[object, int]]:
                         results.append((node, latency))
             return results
         finally:
-            proc.terminate()
-            try:
-                proc.wait(timeout=5)
-            except subprocess.TimeoutExpired:
-                proc.kill()
+            if proc.poll() is None:
+                stop_singbox(proc)
     finally:
         try:
             os.unlink(tmp.name)

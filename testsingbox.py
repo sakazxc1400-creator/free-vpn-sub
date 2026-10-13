@@ -34,6 +34,100 @@ def b64(s: str) -> str:
     return b64encode(s.encode()).decode()
 
 
+class FakeNode:
+    def __init__(self, link):
+        self.raw = link
+
+
+# ---------------------------------------------------------------------------
+# Спасение батча при падении sing-box. Настоящий sing-box не нужен:
+# используется фейковый скрипт с тем же поведением на старте.
+#
+# Фейк отклоняет конфиг, если среди аутбаундов есть сервер bad.invalid
+# (имитация одной биты, из-за которой sing-box не поднимается), иначе
+# слушает порты всех инбаундов и отвечает 204, как живой прокси.
+# ---------------------------------------------------------------------------
+
+FAKE_SINGBOX = """\
+#!/usr/bin/env python3
+import json, socket, sys, threading, time
+
+path = sys.argv[3]
+with open(path, encoding="utf-8") as f:
+    cfg = json.load(f)
+
+if any(o.get("server") == "bad.invalid" for o in cfg.get("outbounds", [])):
+    print("FATAL startup error: bad node", file=sys.stderr)
+    sys.exit(1)
+
+servers = []
+for inb in cfg.get("inbounds", []):
+    if inb.get("type") != "http":
+        continue
+    srv = socket.socket()
+    srv.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    srv.bind((inb["listen"], inb["listen_port"]))
+    srv.listen(16)
+    servers.append(srv)
+
+
+def handle(conn):
+    try:
+        conn.recv(4096)
+        conn.sendall(b"HTTP/1.1 204 No Content\\r\\n"
+                     b"Connection: close\\r\\nContent-Length: 0\\r\\n\\r\\n")
+    finally:
+        conn.close()
+
+
+def serve(srv):
+    while True:
+        try:
+            conn, _ = srv.accept()
+            threading.Thread(target=handle, args=(conn,), daemon=True).start()
+        except OSError:
+            return
+
+
+for srv in servers:
+    threading.Thread(target=serve, args=(srv,), daemon=True).start()
+while True:
+    time.sleep(3600)
+"""
+
+print("== спасение батча: один битый узел не топит остальные ==")
+import os
+
+fd = tempfile.NamedTemporaryFile("w", suffix=".py", delete=False, encoding="utf-8")
+fd.write(FAKE_SINGBOX)
+fd.close()
+os.chmod(fd.name, 0o755)
+fake = fd.name
+
+try:
+    good_links = [
+        f"vless://11111111-2222-3333-4444-555555555555@good{i}.invalid:443"
+        f"?security=tls&sni=g.com&type=tcp#g{i}"
+        for i in range(99)
+    ]
+    bad_link = ("vless://11111111-2222-3333-4444-555555555555"
+                "@bad.invalid:443?security=tls&type=tcp#bad")
+    # Битый узел первым: без деления батча вся сотня потеряна бы.
+    nodes = [FakeNode(bad_link)] + [FakeNode(l) for l in good_links]
+
+    results = probe.verify_batch(nodes, fake)
+    salvaged = {n.raw for n, _ in results}
+    check("битый узел не в результатах",
+          not any("bad.invalid" in raw for raw in salvaged))
+    # Ветка с битым узлом делится, пока не станет меньше 2*MIN_BATCH,
+    # поэтому потери ограничены этим размером, а не всем батчем.
+    check("здоровая часть батча спасена", len(results) >= 70,
+          f"спасено {len(results)} из 99")
+    check("задержки посчитаны",
+          all(isinstance(lat, int) and lat >= 0 for _, lat in results))
+finally:
+    os.unlink(fake)
+
 binary = probe.find_singbox()
 if not binary:
     print("sing-box не найден — проверка конфигов пропущена.")
@@ -153,13 +247,6 @@ finally:
 print("== реальный запуск: узлы недоступны, но sing-box стартует ==")
 # Узлы фиктивные, поэтому рабочих быть не должно. Проверяем, что процесс
 # поднимается и корректно возвращает пустой результат, а не падает.
-
-
-class FakeNode:
-    def __init__(self, link):
-        self.raw = link
-
-
 nodes = [FakeNode(link) for _, link in LINKS[:4]]
 results = probe.verify_batch(nodes, binary)
 check("процесс не упал", isinstance(results, list))
