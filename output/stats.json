@@ -1,33 +1,45 @@
 {
-  "updated": "2026-10-13 10:10:54 UTC",
+  "updated": "2026-10-13 16:31:29 UTC",
   "sources_total": 30,
   "sources_ok": 29,
   "sources_failed": [
     "https://raw.githubusercontent.com/mfuu/v2ray/master/v2ray"
   ],
-  "links_found": 45599,
-  "parsed": 45039,
-  "unique": 13705,
-  "tcp_alive": 10573,
-  "verified": 94,
-  "published": 94,
-  "published_full": 94,
-  "countries": 9,
+  "links_found": 43735,
+  "parsed": 43185,
+  "unique": 12403,
+  "tcp_alive": 9327,
+  "verified": 124,
+  "published": 124,
+  "published_full": 124,
+  "countries": 18,
   "by_protocol": {
-    "trojan": 19,
-    "vless": 75
+    "hysteria2": 43,
+    "ss": 45,
+    "trojan": 25,
+    "vless": 4,
+    "vmess": 7
   },
   "by_country": {
-    "CA": 69,
-    "KR": 6,
-    "JP": 5,
+    "US": 28,
+    "NL": 25,
+    "TW": 12,
+    "CA": 11,
+    "HK": 10,
+    "JP": 9,
+    "DE": 6,
+    "KR": 5,
     "SG": 4,
-    "US": 4,
-    "NL": 3,
-    "CY": 1,
-    "GB": 1,
-    "HK": 1
+    "FR": 3,
+    "CH": 2,
+    "FI": 2,
+    "RU": 2,
+    "IE": 1,
+    "IN": 1,
+    "RO": 1,
+    "TH": 1,
+    "ZA": 1
   },
-  "best_latency_ms": 38,
-  "median_latency_ms": 98
+  "best_latency_ms": 87,
+  "median_latency_ms": 599
 }

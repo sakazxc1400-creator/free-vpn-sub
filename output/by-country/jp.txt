@@ -1,5 +1,9 @@
-trojan://UX82473651@3.112.188.176:443?sni=live-stallion.rooster465.autos&allowInsecure=1&type=tcp#74.%20%F0%9F%87%AF%F0%9F%87%B5%20%D0%AF%D0%BF%D0%BE%D0%BD%D0%B8%D1%8F%20%C2%B7%20trojan%20%C2%B7%20381ms
-trojan://UX82473651@amazed-mako.rooster465.autos:443?security=tls&sni=amazed-mako.rooster465.autos#76.%20%F0%9F%87%AF%F0%9F%87%B5%20%D0%AF%D0%BF%D0%BE%D0%BD%D0%B8%D1%8F%20%C2%B7%20trojan%20%C2%B7%20475ms
-trojan://UX82473651@promoted-rattler.rooster465.autos:443?allowInsecure=1&type=tcp#82.%20%F0%9F%87%AF%F0%9F%87%B5%20%D0%AF%D0%BF%D0%BE%D0%BD%D0%B8%D1%8F%20%C2%B7%20trojan%20%C2%B7%20584ms
-trojan://UX82473651@normal-macaque.rooster465.autos:443?security=tls&sni=normal-macaque.rooster465.autos#89.%20%F0%9F%87%AF%F0%9F%87%B5%20%D0%AF%D0%BF%D0%BE%D0%BD%D0%B8%D1%8F%20%C2%B7%20trojan%20%C2%B7%20992ms
-trojan://UX82473651@evolving-platypus.rooster465.autos:443?allowInsecure=1&type=tcp#94.%20%F0%9F%87%AF%F0%9F%87%B5%20%D0%AF%D0%BF%D0%BE%D0%BD%D0%B8%D1%8F%20%C2%B7%20trojan%20%C2%B7%202102ms
+hy2://u63SxILNwtrQZ7Y1ZrFaZfsA@8.211.175.236:8443?insecure=1#39.%20%F0%9F%87%AF%F0%9F%87%B5%20%D0%AF%D0%BF%D0%BE%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20445ms
+trojan://UX82473651@54.249.36.167:443?sni=comic-poodle.rooster465.autos&type=tcp#65.%20%F0%9F%87%AF%F0%9F%87%B5%20%D0%AF%D0%BF%D0%BE%D0%BD%D0%B8%D1%8F%20%C2%B7%20trojan%20%C2%B7%20601ms
+ss://YWVzLTI1Ni1nY206M2VPRmVOc3NkZTdQWVlNdg==@84.247.155.196:443#69.%20%F0%9F%87%AF%F0%9F%87%B5%20%D0%AF%D0%BF%D0%BE%D0%BD%D0%B8%D1%8F%20%C2%B7%20ss%20%C2%B7%20619ms
+trojan://UX82473651@3.112.29.244:443?sni=evident-ant.rooster465.autos&type=tcp&fp=chrome#75.%20%F0%9F%87%AF%F0%9F%87%B5%20%D0%AF%D0%BF%D0%BE%D0%BD%D0%B8%D1%8F%20%C2%B7%20trojan%20%C2%B7%20669ms
+trojan://UX82473651@promoted-rattler.rooster465.autos:443?type=tcp#79.%20%F0%9F%87%AF%F0%9F%87%B5%20%D0%AF%D0%BF%D0%BE%D0%BD%D0%B8%D1%8F%20%C2%B7%20trojan%20%C2%B7%20695ms
+trojan://UX82473651@13.230.139.12:443?sni=brief-glider.rooster465.autos&path=/#85.%20%F0%9F%87%AF%F0%9F%87%B5%20%D0%AF%D0%BF%D0%BE%D0%BD%D0%B8%D1%8F%20%C2%B7%20trojan%20%C2%B7%20760ms
+trojan://UX82473651@normal-macaque.rooster465.autos:443?sni=normal-macaque.rooster465.autos#90.%20%F0%9F%87%AF%F0%9F%87%B5%20%D0%AF%D0%BF%D0%BE%D0%BD%D0%B8%D1%8F%20%C2%B7%20trojan%20%C2%B7%20782ms
+trojan://UX82473651@musical-terrier.rooster465.autos:443?sni=musical-terrier.rooster465.autos#102.%20%F0%9F%87%AF%F0%9F%87%B5%20%D0%AF%D0%BF%D0%BE%D0%BD%D0%B8%D1%8F%20%C2%B7%20trojan%20%C2%B7%201063ms
+trojan://UX82473651@stable-python.rooster465.autos:443?sni=stable-python.rooster465.autos#115.%20%F0%9F%87%AF%F0%9F%87%B5%20%D0%AF%D0%BF%D0%BE%D0%BD%D0%B8%D1%8F%20%C2%B7%20trojan%20%C2%B7%202880ms
