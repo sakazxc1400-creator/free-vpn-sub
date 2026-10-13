@@ -1,0 +1,2 @@
+vless://8afeb33c-b686-43e9-a629-0d98f991ec28@144.172.65.72:8443?type=tcp&security=reality&flow=xtls-rprx-vision&fp=random&pbk=f25sygANXTpzdc9YPCwkggwSmm3piA3BluSeHdfG-hg&sni=www.tradingview.com&encryption=none#66.%20%F0%9F%87%A6%F0%9F%87%BA%20%D0%90%D0%B2%D1%81%D1%82%D1%80%D0%B0%D0%BB%D0%B8%D1%8F%20%C2%B7%20vless%20%C2%B7%20445ms
+hy2://H7mP2xY9kJ4nQ8wR5tF6vB3z@vpn-au-001.fastervpn.world:443?insecure=1&sni=vpn-au-001.fastervpn.world#101.%20%F0%9F%87%A6%F0%9F%87%BA%20%D0%90%D0%B2%D1%81%D1%82%D1%80%D0%B0%D0%BB%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20498ms
