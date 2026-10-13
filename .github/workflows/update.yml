@@ -59,21 +59,27 @@ jobs:
           rm -rf sb.tar.gz "sing-box-${VERSION}-linux-amd64"
           ./sing-box version
 
-      - name: Raise file descriptor limit
-        run: ulimit -n 65535 || true
-
       - name: Run unit tests
         run: python selftest.py
 
       - name: Run converter tests
         run: python testconv.py
 
+      - name: Run sing-box config tests
+        run: python testsingbox.py
+
       - name: Run end-to-end test
         run: python e2etest.py
 
+      # ulimit должен стоять в том же шаге, что и сбор: каждый шаг run
+      # выполняется в отдельной оболочке, лимит из соседнего шага не
+      # наследуется. На раннере по умолчанию nofile = 1024, а у sing-box
+      # по инбаунду на каждый узел батча.
       - name: Collect configs
         id: collect
-        run: python collect.py
+        run: |
+          ulimit -n 65535 || true
+          python collect.py
 
       - name: Show result
         if: always()
