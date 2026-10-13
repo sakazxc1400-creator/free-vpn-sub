@@ -1,6 +1,7 @@
-trojan://UX82473651@working-tomcat.rooster465.autos:443?sni=working-tomcat.rooster465.autos#285.%20%F0%9F%87%B0%F0%9F%87%B7%20%D0%9A%D0%BE%D1%80%D0%B5%D1%8F%20%C2%B7%20trojan%20%C2%B7%20513ms
-trojan://Trojan@82164024@kr.tronsg.com:443?sni=kr.tronsg.com&allowInsecure=1&type=tcp&fp=chrome#289.%20%F0%9F%87%B0%F0%9F%87%B7%20%D0%9A%D0%BE%D1%80%D0%B5%D1%8F%20%C2%B7%20trojan%20%C2%B7%20523ms
-trojan://UX82473651@central-jawfish.rooster465.autos:443?type=tcp#293.%20%F0%9F%87%B0%F0%9F%87%B7%20%D0%9A%D0%BE%D1%80%D0%B5%D1%8F%20%C2%B7%20trojan%20%C2%B7%20529ms
-trojan://UX82473651@central-jawfish.rooster465.autos:443?sni=central-jawfish.rooster465.autos#296.%20%F0%9F%87%B0%F0%9F%87%B7%20%D0%9A%D0%BE%D1%80%D0%B5%D1%8F%20%C2%B7%20trojan%20%C2%B7%20545ms
-trojan://Trojan%4082164024@kr.tronsg.com:443?allowInsecure=1&sni=kr.tronsg.com#298.%20%F0%9F%87%B0%F0%9F%87%B7%20%D0%9A%D0%BE%D1%80%D0%B5%D1%8F%20%C2%B7%20trojan%20%C2%B7%20548ms
-trojan://UX82473651@noted-cougar.rooster465.autos:443?allowInsecure=1&type=tcp#317.%20%F0%9F%87%B0%F0%9F%87%B7%20%D0%9A%D0%BE%D1%80%D0%B5%D1%8F%20%C2%B7%20trojan%20%C2%B7%20703ms
+trojan://UX82473651@cunning-grub.rooster465.autos:443?type=tcp#156.%20%F0%9F%87%B0%F0%9F%87%B7%20%D0%9A%D0%BE%D1%80%D0%B5%D1%8F%20%C2%B7%20trojan%20%C2%B7%20616ms
+trojan://UX82473651@3.36.50.213:443?sni=pure-kodiak.rooster465.autos&type=tcp#157.%20%F0%9F%87%B0%F0%9F%87%B7%20%D0%9A%D0%BE%D1%80%D0%B5%D1%8F%20%C2%B7%20trojan%20%C2%B7%20617ms
+trojan://UX82473651@kind-stork.rooster465.autos:443?type=tcp#160.%20%F0%9F%87%B0%F0%9F%87%B7%20%D0%9A%D0%BE%D1%80%D0%B5%D1%8F%20%C2%B7%20trojan%20%C2%B7%20636ms
+trojan://UX82473651@inviting-rabbit.rooster465.autos:443?sni=inviting-rabbit.rooster465.autos#178.%20%F0%9F%87%B0%F0%9F%87%B7%20%D0%9A%D0%BE%D1%80%D0%B5%D1%8F%20%C2%B7%20trojan%20%C2%B7%20836ms
+trojan://UX82473651@delicate-buck.rooster465.autos:443?allowInsecure=1&type=tcp#183.%20%F0%9F%87%B0%F0%9F%87%B7%20%D0%9A%D0%BE%D1%80%D0%B5%D1%8F%20%C2%B7%20trojan%20%C2%B7%20963ms
+trojan://UX82473651@main-fawn.rooster465.autos:443?type=tcp#185.%20%F0%9F%87%B0%F0%9F%87%B7%20%D0%9A%D0%BE%D1%80%D0%B5%D1%8F%20%C2%B7%20trojan%20%C2%B7%20999ms
+trojan://UX82473651@engaging-toucan.rooster465.autos:443?sni=engaging-toucan.rooster465.autos#186.%20%F0%9F%87%B0%F0%9F%87%B7%20%D0%9A%D0%BE%D1%80%D0%B5%D1%8F%20%C2%B7%20trojan%20%C2%B7%201144ms
