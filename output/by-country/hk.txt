@@ -1,3 +1,1 @@
-trojan://7e70223b-f331-41d5-9313-02b8d2df2885@krhtybay.catcat321.com:20010?allowInsecure=1&sni=krhtybay.catcat321.com&type=tcp#179.%20%F0%9F%87%AD%F0%9F%87%B0%20%D0%93%D0%BE%D0%BD%D0%BA%D0%BE%D0%BD%D0%B3%20%C2%B7%20trojan%20%C2%B7%20848ms
-trojan://7e70223b-f331-41d5-9313-02b8d2df2885@krhtybay.catcat321.com:20035?sni=hk.catxstar.com&type=tcp#181.%20%F0%9F%87%AD%F0%9F%87%B0%20%D0%93%D0%BE%D0%BD%D0%BA%D0%BE%D0%BD%D0%B3%20%C2%B7%20trojan%20%C2%B7%20906ms
-trojan://7e70223b-f331-41d5-9313-02b8d2df2885@d3.catcat321.com:20117?allowInsecure=1&sni=hk.catxstar.com&type=tcp#187.%20%F0%9F%87%AD%F0%9F%87%B0%20%D0%93%D0%BE%D0%BD%D0%BA%D0%BE%D0%BD%D0%B3%20%C2%B7%20trojan%20%C2%B7%201315ms
+trojan://7e70223b-f331-41d5-9313-02b8d2df2885@d3.catcat321.com:20018?sni=hk.catxstar.com&type=tcp#91.%20%F0%9F%87%AD%F0%9F%87%B0%20%D0%93%D0%BE%D0%BD%D0%BA%D0%BE%D0%BD%D0%B3%20%C2%B7%20trojan%20%C2%B7%201054ms
