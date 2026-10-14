@@ -1,2 +1,0 @@
-trojan://humanity@203.202.232.211:443?path=/assignment&security=tls&alpn=http/1.1&insecure=0&host=www.volumeroot.com&type=ws&allowInsecure=0&sni=www.volumeroot.com#605.%20%F0%9F%87%B9%F0%9F%87%B7%20%D0%A2%D1%83%D1%80%D1%86%D0%B8%D1%8F%20%C2%B7%20trojan%20%C2%B7%203826ms
-vless://c4edb87e-8544-4fa4-bd1c-b0cda9a34b46@155.103.71.142:443?path=%2Fws&security=tls&encryption=none&insecure=0&host=a.cwvps.eu.org&type=ws&allowInsecure=0&sni=a.cwvps.eu.org#625.%20%F0%9F%87%B9%F0%9F%87%B7%20%D0%A2%D1%83%D1%80%D1%86%D0%B8%D1%8F%20%C2%B7%20vless%20%C2%B7%205046ms
