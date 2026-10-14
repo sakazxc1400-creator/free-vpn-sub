@@ -1,1 +1,1 @@
-vless://ace33fb8-c593-4b17-8f72-f3359b6e9638@5.39.202.125:443?encryption=none&flow=xtls-rprx-vision&security=reality&sni=czekkk.loknietotop.digital&fp=random&pbk=WU5baXUzRH9BceiYI8MPBmDMEloTFImx2vvE5uh1yjM&sid=f19e02a2fb573c18&type=tcp#209.%20%F0%9F%87%A8%F0%9F%87%BF%20%D0%A7%D0%B5%D1%85%D0%B8%D1%8F%20%C2%B7%20vless%20%C2%B7%20298ms
+trojan://f8b-U5TxjNRYKLvU0Js_6YeMCdj_82km@cz-musicc.moritech.net:443?allowInsecure=1&alpn=h2&type=grpc&serviceName=grpcbeast#216.%20%F0%9F%87%A8%F0%9F%87%BF%20%D0%A7%D0%B5%D1%85%D0%B8%D1%8F%20%C2%B7%20trojan%20%C2%B7%20638ms
