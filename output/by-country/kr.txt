@@ -1,7 +1,8 @@
-ss://YWVzLTI1Ni1nY206ZTRGQ1dyZ3BramkzUVk=@141.164.45.187:9101#92.%20%F0%9F%87%B0%F0%9F%87%B7%20%D0%9A%D0%BE%D1%80%D0%B5%D1%8F%20%C2%B7%20ss%20%C2%B7%20403ms
-hy2://1beb216e3f60aea9555dae60d219a5ca@152-69-231-175.liao.kdns.fr:50160?insecure=1&sni=152-69-231-175.liao.kdns.fr#122.%20%F0%9F%87%B0%F0%9F%87%B7%20%D0%9A%D0%BE%D1%80%D0%B5%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20638ms
-hy2://1beb216e3f60aea9555dae60d219a5ca@152-69-231-175.liao.kdns.fr:50160?insecure=1#131.%20%F0%9F%87%B0%F0%9F%87%B7%20%D0%9A%D0%BE%D1%80%D0%B5%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20712ms
-trojan://UX82473651@central-jawfish.rooster465.autos:443?allowInsecure=1&type=tcp#154.%20%F0%9F%87%B0%F0%9F%87%B7%20%D0%9A%D0%BE%D1%80%D0%B5%D1%8F%20%C2%B7%20trojan%20%C2%B7%201034ms
-trojan://UX82473651@3.35.168.225:443?sni=noted-cougar.rooster465.autos&allowInsecure=1&type=tcp&fp=chrome#158.%20%F0%9F%87%B0%F0%9F%87%B7%20%D0%9A%D0%BE%D1%80%D0%B5%D1%8F%20%C2%B7%20trojan%20%C2%B7%201172ms
-trojan://UX82473651@3.34.192.47:443?sni=central-jawfish.rooster465.autos&allowInsecure=1#177.%20%F0%9F%87%B0%F0%9F%87%B7%20%D0%9A%D0%BE%D1%80%D0%B5%D1%8F%20%C2%B7%20trojan%20%C2%B7%201914ms
-trojan://UX82473651@pretty-rat.rooster465.autos:443?type=tcp#180.%20%F0%9F%87%B0%F0%9F%87%B7%20%D0%9A%D0%BE%D1%80%D0%B5%D1%8F%20%C2%B7%20trojan%20%C2%B7%202369ms
+hy2://1671a252e2a97dc2bda4e515475931da@132.226.226.189:50160?insecure=1&sni=off#65.%20%F0%9F%87%B0%F0%9F%87%B7%20%D0%9A%D0%BE%D1%80%D0%B5%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20468ms
+hy2://1671a252e2a97dc2bda4e515475931da@132.226.226.189:50160?insecure=1#66.%20%F0%9F%87%B0%F0%9F%87%B7%20%D0%9A%D0%BE%D1%80%D0%B5%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20476ms
+hy2://3d7634af8cb2c6cb4bac1c0efad8b43d@152.67.200.82:50160?insecure=1&sni=whatsapp.com#77.%20%F0%9F%87%B0%F0%9F%87%B7%20%D0%9A%D0%BE%D1%80%D0%B5%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20503ms
+hy2://3d7634af8cb2c6cb4bac1c0efad8b43d@152.67.200.82:50160?insecure=1&sni=speedtest.tinkoff.ru#85.%20%F0%9F%87%B0%F0%9F%87%B7%20%D0%9A%D0%BE%D1%80%D0%B5%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20520ms
+hy2://3d7634af8cb2c6cb4bac1c0efad8b43d@152.67.200.82:50160?insecure=1&sni=vk.com#94.%20%F0%9F%87%B0%F0%9F%87%B7%20%D0%9A%D0%BE%D1%80%D0%B5%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20549ms
+trojan://UX82473651@3.35.207.188:443?Telegram=@GozargahAzad,@GozargahAzad,@GozargahAzad,@GozargahAzad,@GozargahAzad,@GozargahAzad,@GozargahAzad&security=tls&insecure=0&headerType=none&fp=chrome&type=tcp&allowInsecure=0&sni=main-fawn.rooster465.autos#119.%20%F0%9F%87%B0%F0%9F%87%B7%20%D0%9A%D0%BE%D1%80%D0%B5%D1%8F%20%C2%B7%20trojan%20%C2%B7%20650ms
+hy2://1671a252e2a97dc2bda4e515475931da@132.226.226.189:50160?insecure=1&sni=132.226.226.189#122.%20%F0%9F%87%B0%F0%9F%87%B7%20%D0%9A%D0%BE%D1%80%D0%B5%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20662ms
+trojan://UX82473651@3.35.168.225:443?sni=noted-cougar.rooster465.autos&allowInsecure=1&type=tcp&fp=chrome#139.%20%F0%9F%87%B0%F0%9F%87%B7%20%D0%9A%D0%BE%D1%80%D0%B5%D1%8F%20%C2%B7%20trojan%20%C2%B7%20813ms
