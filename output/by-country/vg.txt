@@ -1,1 +1,0 @@
-trojan://70756c73-0000-4000-8000-650000000000@104.234.239.139:443?security=tls&sni=parsa-panel-u48we.wotic15356.workers.dev&fp=chrome&type=ws&host=parsa-panel-u48we.wotic15356.workers.dev&path=/pulse#489.%20%F0%9F%87%BB%F0%9F%87%AC%20VG%20%C2%B7%20trojan%20%C2%B7%20510ms
