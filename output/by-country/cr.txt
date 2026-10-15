@@ -1,1 +1,0 @@
-trojan://humanity@190.93.245.148:443?path=/assignment&security=tls&insecure=0&host=www.pleadcourt.org&type=ws&allowInsecure=0&sni=www.pleadcourt.org#301.%20%F0%9F%87%A8%F0%9F%87%B7%20%D0%9A%D0%BE%D1%81%D1%82%D0%B0-%D0%A0%D0%B8%D0%BA%D0%B0%20%C2%B7%20trojan%20%C2%B7%20509ms

@@ -1,9 +1,5 @@
-ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpRRld6Q3cydVg5QjlpNnFBWWVGQklF@154.46.31.106:443#177.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20ss%20%C2%B7%20365ms
-hy2://gf1%3Agfhysteria2024@185.156.44.99:443?insecure=1&sni=www.amazon.com#492.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%201011ms
-hy2://gf1%3Agfhysteria2024@185.156.44.99:443?insecure=1&sni=speedtest.tinkoff.ru#511.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%201184ms
-hy2://gf1%3Agfhysteria2024@185.156.44.99:443?insecure=1&sni=google.com#513.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%201219ms
-hy2://gf1%3Agfhysteria2024@185.156.44.99:443?insecure=1&sni=vk.com#520.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%201342ms
-hy2://gf1%3Agfhysteria2024@185.156.44.99:443?insecure=1&sni=css.rbxcdn.com#571.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%201787ms
-hy2://gf1%3Agfhysteria2024@185.156.44.99:443?insecure=1&sni=185.156.44.99#594.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%202407ms
-hy2://gf1%3Agfhysteria2024@185.156.44.99:443?insecure=1#598.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%202598ms
-vless://40abbe13-f02e-4da2-9b19-966c2c3eb4ee@146.70.124.85:443?security=reality&encryption=none&sni=www.datadoghq.com&fp=firefox&pbk=byzvlw97wjAAAfHs5AZRV0P0H6_JKBEZ4yfLS0HNewE&sid=fe24f8a0a560056e&flow=xtls-rprx-vision&spx=%2F%20#605.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20vless%20%C2%B7%203197ms
+hy2://gf1%3Agfhysteria2024@185.156.44.99:443?insecure=1&sni=css.rbxcdn.com#389.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20449ms
+hy2://gf1%3Agfhysteria2024@185.156.44.99:443?insecure=1&sni=speedtest.tinkoff.ru#392.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20454ms
+hy2://gf1%3Agfhysteria2024@185.156.44.99:443?insecure=1&sni=whatsapp.com#398.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20459ms
+hy2://gf1%3Agfhysteria2024@185.156.44.99:443?insecure=1#420.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20483ms
+hy2://gf1%3Agfhysteria2024@185.156.44.99:443?insecure=1&sni=www.amazon.com#440.%20%F0%9F%87%B7%F0%9F%87%B4%20%D0%A0%D1%83%D0%BC%D1%8B%D0%BD%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20514ms
