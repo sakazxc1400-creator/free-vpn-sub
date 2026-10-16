@@ -1,5 +1,6 @@
 # Free VPN Subscription
 
+[![Сайт](https://img.shields.io/badge/%D1%81%D0%B0%D0%B9%D1%82-%D0%B6%D0%B8%D0%B2%D0%BE%D0%B9%20%D1%81%D0%BF%D0%B8%D1%81%D0%BE%D0%BA-blueviolet)](https://sakazxc1400-creator.github.io/free-vpn-sub/)
 [![Обновление подписки](https://github.com/sakazxc1400-creator/free-vpn-sub/actions/workflows/update.yml/badge.svg)](https://github.com/sakazxc1400-creator/free-vpn-sub/actions/workflows/update.yml)
 [![Серверов](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsakazxc1400-creator%2Ffree-vpn-sub%2Fmain%2Foutput%2Fstats.json&query=%24.published&label=%D1%81%D0%B5%D1%80%D0%B2%D0%B5%D1%80%D0%BE%D0%B2&color=brightgreen)](output/all.txt)
 [![Всего](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsakazxc1400-creator%2Ffree-vpn-sub%2Fmain%2Foutput%2Fstats.json&query=%24.published_full&label=%D0%B2%D1%81%D0%B5%D0%B3%D0%BE&color=green)](output/all-full.txt)

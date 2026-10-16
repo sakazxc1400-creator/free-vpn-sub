@@ -1,5 +1,6 @@
 # Free VPN Subscription
 
+[![Website](https://img.shields.io/badge/website-live%20list-blueviolet)](https://sakazxc1400-creator.github.io/free-vpn-sub/)
 [![Update subscription](https://github.com/sakazxc1400-creator/free-vpn-sub/actions/workflows/update.yml/badge.svg)](https://github.com/sakazxc1400-creator/free-vpn-sub/actions/workflows/update.yml)
 [![Servers](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsakazxc1400-creator%2Ffree-vpn-sub%2Fmain%2Foutput%2Fstats.json&query=%24.published&label=servers&color=brightgreen)](output/all.txt)
 [![Total](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsakazxc1400-creator%2Ffree-vpn-sub%2Fmain%2Foutput%2Fstats.json&query=%24.published_full&label=total&color=green)](output/all-full.txt)
