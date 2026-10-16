@@ -41,6 +41,18 @@ PROBE_WORKERS = 75       # параллельных запросов внутр�
 STARTUP_TIMEOUT = 30.0   # сек на подъём sing-box
 PORT_BASE = 24000
 
+# Сколько процессов sing-box гонять одновременно. Каждый батч раньше
+# ждал своей очереди, из-за чего за отведённый бюджет успевало
+# провериться меньше половины кандидатов. Теперь несколько батчей идут
+# параллельно: проверка упирается в сеть, а не в CPU, поэтому на 4 ядрах
+# раннера три процесса дают почти трёхкратный выигрыш по времени и,
+# значит, больше найденных рабочих узлов за тот же бюджет.
+VERIFY_PARALLEL = max(1, int(os.environ.get("VERIFY_PARALLEL", "3")))
+
+# Каждый батч получает свой отрезок портов, чтобы параллельные
+# процессы sing-box не подрались за один и тот же порт.
+PORT_SEGMENT = BATCH_SIZE + 16
+
 # Ниже этого размера батч при падении sing-box не делим: слишком мало
 # узлов, чтобы окупить перезапуски.
 MIN_BATCH = 20
@@ -69,10 +81,10 @@ def find_singbox() -> str | None:
     return None
 
 
-def free_ports(count: int) -> list[int]:
-    """Подбирает свободные порты, начиная с PORT_BASE."""
+def free_ports(count: int, start: int = PORT_BASE) -> list[int]:
+    """Подбирает свободные порты, начиная с start."""
     ports: list[int] = []
-    port = PORT_BASE
+    port = start
     while len(ports) < count and port < 65000:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
             sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -204,8 +216,13 @@ def probe_one(port: int) -> int | None:
     return None
 
 
-def verify_batch(nodes: list, singbox: str) -> list[tuple[object, int]]:
-    """Проверяет один батч узлов. Возвращает пары (узел, задержка_мс)."""
+def verify_batch(nodes: list, singbox: str,
+                 port_base: int = PORT_BASE) -> list[tuple[object, int]]:
+    """Проверяет один батч узлов. Возвращает пары (узел, задержка_мс).
+
+    port_base — начало отрезка портов для этого батча. Параллельные
+    батчи получают разные отрезки и не мешают друг другу.
+    """
     prepared: list[tuple[object, dict]] = []
     for node in nodes:
         built = outbound.build(node.raw)
@@ -213,11 +230,12 @@ def verify_batch(nodes: list, singbox: str) -> list[tuple[object, int]]:
             prepared.append((node, built))
     if not prepared:
         return []
-    return _verify_prepared(prepared, singbox)
+    return _verify_prepared(prepared, singbox, port_base)
 
 
-def _verify_prepared(prepared: list[tuple[object, dict]], singbox: str) -> list:
-    ports = free_ports(len(prepared))
+def _verify_prepared(prepared: list[tuple[object, dict]], singbox: str,
+                     port_base: int = PORT_BASE) -> list:
+    ports = free_ports(len(prepared), port_base)
     if len(ports) < len(prepared):
         prepared = prepared[: len(ports)]
     pairs = [(ports[i], cfg) for i, (_, cfg) in enumerate(prepared)]
@@ -246,8 +264,11 @@ def _verify_prepared(prepared: list[tuple[object, dict]], singbox: str) -> list:
                     log(f"    батч не стартовал ({err or 'без объяснений'}), "
                         f"делю {len(prepared)} узлов пополам")
                     mid = len(prepared) // 2
-                    return (_verify_prepared(prepared[:mid], singbox)
-                            + _verify_prepared(prepared[mid:], singbox))
+                    # Второй половине даём порты после первой, чтобы
+                    # хвост закрывающегося процесса не столкнулся с ним.
+                    return (_verify_prepared(prepared[:mid], singbox, port_base)
+                            + _verify_prepared(prepared[mid:], singbox,
+                                               port_base + mid))
                 log(f"    батч из {len(prepared)} узлов пропущен: "
                     f"{err or 'sing-box не поднялся'}")
                 return []
@@ -282,6 +303,10 @@ def verify(nodes: list, need: int) -> list[tuple[object, int]]:
     Проверяет узлы батчами, пока не наберётся need рабочих, не кончатся
     кандидаты или не выйдет бюджет времени (VERIFY_BUDGET).
     Возвращает пары (узел, задержка_мс), отсортированные по задержке.
+
+    Батчи идут в несколько потоков (VERIFY_PARALLEL процессов sing-box):
+    так за тот же бюджет успевает провериться больше кандидатов, и
+    рабочих узлов в итоге больше.
     """
     singbox = find_singbox()
     if not singbox:
@@ -302,10 +327,31 @@ def verify(nodes: list, need: int) -> list[tuple[object, int]]:
     checked = 0
     deadline = time.time() + VERIFY_BUDGET
 
-    for start in range(0, len(nodes), BATCH_SIZE):
-        batch = nodes[start:start + BATCH_SIZE]
-        good.extend(verify_batch(batch, singbox))
-        checked += len(batch)
+    # Раскладываем кандидатов по батчам и даём каждому свой отрезок портов.
+    batches = [
+        (index // BATCH_SIZE, nodes[index:index + BATCH_SIZE])
+        for index in range(0, len(nodes), BATCH_SIZE)
+    ]
+    log(f"    параллельно процессов: {VERIFY_PARALLEL}")
+
+    for wave_start in range(0, len(batches), VERIFY_PARALLEL):
+        wave = batches[wave_start:wave_start + VERIFY_PARALLEL]
+        with ThreadPoolExecutor(max_workers=len(wave)) as pool:
+            futures = {
+                pool.submit(
+                    verify_batch, batch, singbox,
+                    PORT_BASE + batch_index * PORT_SEGMENT,
+                ): batch
+                for batch_index, batch in wave
+            }
+            for fut in as_completed(futures):
+                batch = futures[fut]
+                try:
+                    good.extend(fut.result())
+                except Exception as exc:
+                    log(f"    батч из {len(batch)} узлов упал: "
+                        f"{type(exc).__name__}")
+                checked += len(batch)
         log(f"    проверено {checked}/{len(nodes)}, рабочих {len(good)}")
         if len(good) >= need:
             break

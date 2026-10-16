@@ -9,6 +9,8 @@
 
 **[Русская версия](README.md)**
 
+Website with the live server list, statistics, and guides: **https://sakazxc1400-creator.github.io/free-vpn-sub/**
+
 A free VPN subscription with servers that are checked and refreshed every hour.
 
 The script collects configs from public GitHub sources, tests them, and keeps only the servers that actually work. Each server name includes its country, protocol, and latency.
@@ -134,19 +136,26 @@ outbound.py     convert links into a sing-box config
 probe.py        check whether traffic passes through a server
 geo.py          look up the country by IP
 output/         generated lists
+docs/           website for GitHub Pages
 ```
 
 GitHub Actions runs the collection every hour.
 
 First, the script downloads the sources in parallel, retrying each request up to three times. It handles plain text and base64, extracts the links, and removes junk such as broken addresses, localhost, private subnets, and invalid ports.
 
-Next, duplicate servers are merged. The same address often appears in several sources under different names. This leaves around 10,000 unique candidates.
+Next, duplicate servers are merged. The same address often appears in several sources under different names. This leaves more than 20,000 unique candidates.
 
 Verification has two stages. The first is a quick TCP check that removes clearly unreachable addresses. Then sing-box starts a local proxy for each candidate and sends a request to `generate_204` through it. An empty response with status 204 means the server really passed traffic to the internet and returned the response.
 
+Servers are checked by several sing-box processes at once, so more candidates get verified within the same time budget.
+
 Hysteria2 and TUIC use QUIC, so they skip the TCP check and go straight to the second stage.
 
+Before verification, the script drops configs that make sing-box fail to start and take the whole batch down with them: an unknown uTLS fingerprint (such as `unsafe`), a broken Reality key, a TUIC node without a valid UUID, shadowsocks-2022 with a key of the wrong length, and an invented VMess cipher. Such a node would not work anyway, but without this filter it would stop its neighbours from being checked.
+
 After verification, the script looks up each server's country, measures latency, and sorts the results. The full list gets every working server. The main subscription takes the best ones while limiting the number from each country.
+
+Servers with the same address and port are merged into one, keeping the fastest. The same node often appears in the sources as a dozen copies with different UUIDs, and without this the subscription would fill up with duplicates.
 
 If the sources are unavailable or no server passes verification, the old files are kept. A working subscription with old data is better than an empty list.
 

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Free VPN Sub — свободные VPN-серверы, обновление каждый час</title>
+<meta name="description" content="Подписка на свободные VPN-серверы. Узлы собираются из открытых источников, проверяются через sing-box и обновляются каждый час. VLESS, Reality, VMess, Trojan, Shadowsocks, Hysteria2, TUIC.">
+<meta name="theme-color" content="#0a0e16">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Free VPN Sub">
+<meta property="og:description" content="Свободные VPN-серверы одной ссылкой. Проверка каждый час, только рабочие узлы.">
+<meta property="og:image" content="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=IBM+Plex+Sans:wght@300;400;500;600&amp;display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<canvas id="net" aria-hidden="true"></canvas>
+
+<header class="topbar">
+  <a class="brand" href="#top">
+    <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#0f1624"/><path d="M17.6 5 8 18h6.2l-1.8 9L23 13h-6.4z" fill="#f4b942"/></svg>
+    <span class="brand-text">Free<em>VPN</em>Sub</span>
+  </a>
+  <nav class="topnav" aria-label="Разделы">
+    <a href="#nodes">Узлы</a>
+    <a href="#stats">Статистика</a>
+    <a href="#connect">Подключение</a>
+    <a href="#links">Ссылки</a>
+    <a href="#check">Проверка</a>
+  </nav>
+  <a class="ghost-btn gh-link" href="https://github.com/sakazxc1400-creator/free-vpn-sub" target="_blank" rel="noopener">
+    <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38v-1.3c-2.23.48-2.7-1.07-2.7-1.07-.36-.93-.89-1.18-.89-1.18-.73-.5.05-.49.05-.49.8.06 1.23.83 1.23.83.72 1.23 1.88.87 2.34.67.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.03 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.28.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48v2.2c0 .21.15.46.55.38A8 8 0 0 0 8 0Z"/></svg>
+    <span>GitHub</span>
+  </a>
+</header>
+
+<main id="top">
+
+  <section class="hero">
+    <div class="hero-copy">
+      <h1>Свободные <span class="nowrap">VPN-узлы</span>, живые прямо сейчас</h1>
+      <p class="lead">Каждый час собираю конфиги из открытых источников, прогоняю через sing-box и оставляю только те серверы, через которые реально идёт трафик. В названии видно страну, протокол и задержку.</p>
+      <div class="cta-row">
+        <button class="primary-btn" id="hero-copy" data-copy="https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/main/output/sub.txt">
+          Скопировать подписку
+          <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path fill="currentColor" d="M4 1.5A1.5 1.5 0 0 1 5.5 0h6A1.5 1.5 0 0 1 13 1.5v1h-1.5v-1h-6v9h1V12h-1A1.5 1.5 0 0 1 4 10.5v-9Zm4 3A1.5 1.5 0 0 1 9.5 3h4A1.5 1.5 0 0 1 15 4.5v9A1.5 1.5 0 0 1 13.5 15h-4A1.5 1.5 0 0 1 8 13.5v-9Zm1.5 0v9h4v-9h-4Z"/></svg>
+        </button>
+        <a class="ghost-btn" href="#connect">Как подключиться</a>
+      </div>
+      <p class="micro" id="copy-note" role="status" aria-live="polite"></p>
+    </div>
+
+    <aside class="live" id="live-panel" aria-label="Состояние подписки">
+      <div class="live-head">
+        <span class="pulse" aria-hidden="true"></span>
+        <span id="live-status">Загружаю состояние…</span>
+      </div>
+      <dl class="live-grid">
+        <div><dt>серверов</dt><dd data-num="published">—</dd></div>
+        <div><dt>в полной</dt><dd data-num="published_full">—</dd></div>
+        <div><dt>стран</dt><dd data-num="countries">—</dd></div>
+        <div><dt>лучшая задержка</dt><dd><span data-num="best_latency_ms">—</span><small>ms</small></dd></div>
+      </dl>
+      <p class="live-foot"><span id="live-updated">обновление: —</span></p>
+    </aside>
+  </section>
+
+  <section class="band" id="nodes">
+    <div class="band-head">
+      <h2>Проверенные узлы</h2>
+      <p>Список отсортирован от быстрых к медленным. Фильтруй по протоколу или ищи страну.</p>
+    </div>
+    <div class="board">
+      <div class="board-tools">
+        <div class="chips" id="proto-chips" role="group" aria-label="Фильтр по протоколу">
+          <button class="chip is-active" data-proto="">Все</button>
+        </div>
+        <label class="search">
+          <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M11.7 10.3a6 6 0 1 0-1.4 1.4l3 3a1 1 0 0 0 1.4-1.4l-3-3ZM10 6.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"/></svg>
+          <input type="search" id="node-search" placeholder="Страна или адрес" aria-label="Поиск по стране или адресу">
+        </label>
+      </div>
+      <div class="board-head" aria-hidden="true">
+        <span>#</span><span>Сервер</span><span>Протокол</span><span>Задержка</span><span>Адрес</span>
+      </div>
+      <ol class="board-rows" id="board-rows" aria-live="polite"></ol>
+      <noscript><p class="micro" style="padding:0 1.1rem">Список узлов и статистика подгружаются скриптом. Без JavaScript они не появятся, но ссылку на подписку можно скопировать выше или взять в <a href="https://github.com/sakazxc1400-creator/free-vpn-sub">репозитории</a>.</p></noscript>
+      <div class="board-more">
+        <button class="ghost-btn" id="more-btn" hidden>Показать ещё</button>
+        <p class="micro" id="board-note">Загружаю список…</p>
+      </div>
+      <div class="sweep" aria-hidden="true"></div>
+    </div>
+  </section>
+
+  <section class="band" id="stats">
+    <div class="band-head">
+      <h2>Что внутри</h2>
+      <p>Числа последнего обновления и раскладка по протоколам и странам.</p>
+    </div>
+    <div class="stat-cards">
+      <div class="stat-card"><span class="stat-num" data-num="unique">—</span><span class="stat-cap">уникальных кандидатов</span></div>
+      <div class="stat-card"><span class="stat-num" data-num="tcp_alive">—</span><span class="stat-cap">прошли TCP-проверку</span></div>
+      <div class="stat-card"><span class="stat-num" data-num="verified">—</span><span class="stat-cap">реально работают</span></div>
+      <div class="stat-card"><span class="stat-num" data-num="servers">—</span><span class="stat-cap">уникальных адресов</span></div>
+    </div>
+    <div class="split">
+      <div class="panel">
+        <h3>Протоколы</h3>
+        <ul class="bars" id="proto-bars"></ul>
+      </div>
+      <div class="panel">
+        <h3>Страны</h3>
+        <ul class="bars" id="country-bars"></ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="connect">
+    <div class="band-head">
+      <h2>Как подключиться</h2>
+      <p>Выбери систему, вставишь ссылку в клиент и обновишь подписку.</p>
+    </div>
+    <div class="tabs" role="tablist" aria-label="Система">
+      <button class="tab is-active" role="tab" aria-selected="true" data-tab="windows">Windows</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="android">Android</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="ios">iPhone</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="macos">macOS</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="linux">Linux</button>
+    </div>
+    <div class="tab-body" id="tab-body"></div>
+  </section>
+
+  <section class="band" id="links">
+    <div class="band-head">
+      <h2>Ссылки на подписку</h2>
+      <p>Основная легче грузится. Полная пригодится, если в основной ничего не подключается.</p>
+    </div>
+    <div class="split">
+      <div class="link-card">
+        <div class="link-card-head"><h3>Основная</h3><span class="tag-live">~200 узлов</span></div>
+        <code class="url" id="url-main"></code>
+        <div class="link-actions">
+          <button class="primary-btn small" data-copy-el="url-main">Скопировать</button>
+          <button class="ghost-btn small" data-qr-el="url-main">QR-код</button>
+          <a class="ghost-btn small" id="dl-main" href="#" target="_blank" rel="noopener">Открыть txt</a>
+        </div>
+        <div class="qr" hidden></div>
+      </div>
+      <div class="link-card">
+        <div class="link-card-head"><h3>Полная</h3><span class="tag-live">все рабочие</span></div>
+        <code class="url" id="url-full"></code>
+        <div class="link-actions">
+          <button class="primary-btn small" data-copy-el="url-full">Скопировать</button>
+          <button class="ghost-btn small" data-qr-el="url-full">QR-код</button>
+          <a class="ghost-btn small" id="dl-full" href="#" target="_blank" rel="noopener">Открыть txt</a>
+        </div>
+        <div class="qr" hidden></div>
+      </div>
+    </div>
+    <div class="mirrors">
+      <p>Если <code>raw.githubusercontent.com</code> не открывается, есть зеркала. Содержимое то же.</p>
+      <div class="mirror-list" id="mirror-list"></div>
+    </div>
+  </section>
+
+  <section class="band" id="check">
+    <div class="band-head">
+      <h2>Проверка подписки</h2>
+      <p>Проверяет доступность ссылки и свежесть списка из браузера. Отдельные серверы так проверить нельзя, для этого в клиенте есть тест задержки.</p>
+    </div>
+    <div class="check-panel">
+      <button class="primary-btn" id="check-btn">Проверить сейчас</button>
+      <ul class="check-out" id="check-out">
+        <li class="muted">Ещё не запускалось.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="band warn" id="safety">
+    <div class="band-head">
+      <h2>Про безопасность</h2>
+      <p>Прочитай перед использованием.</p>
+    </div>
+    <p>Владелец сервера может видеть твой трафик. Эти серверы запускают неизвестные люди, и я не знаю, как они с ним обращаются. Оператор может узнать, какие сайты ты посещаешь. При подмене сертификата он сможет перехватывать содержимое соединений.</p>
+    <p>Не используй такие серверы для банковских приложений, госуслуг, рабочей почты и важных аккаунтов. Не передавай через них пароли, документы и платёжные данные.</p>
+    <p>Подписка нужна для обхода блокировок, а не для полной анонимности. Если нужна приватность, бери платный сервис или поднимай свой сервер, VLESS+Reality на недорогом VPS работает быстрее бесплатных узлов.</p>
+  </section>
+
+  <section class="band" id="support">
+    <div class="band-head">
+      <h2>Поддержать проект</h2>
+      <p>Подписка была и остаётся бесплатной. Если пригодилась, можно помочь.</p>
+    </div>
+    <div class="split">
+      <div class="panel support">
+        <a class="primary-btn" href="https://www.donationalerts.com/r/saka1232131" target="_blank" rel="noopener">Донат</a>
+        <p class="micro">Самый простой способ помочь без денег: поставить звезду репозиторию.</p>
+        <a class="ghost-btn" href="https://github.com/sakazxc1400-creator/free-vpn-sub" target="_blank" rel="noopener">Открыть на GitHub</a>
+      </div>
+      <div class="panel ton">
+        <h3>Перевод в TON</h3>
+        <img src="assets/ton-qr.png" alt="QR-код для перевода в TON" width="180" height="180">
+        <code class="url" id="ton-addr">UQDj7y9AG8P_4oZ4KAnpRDfCulC-FsgnqSI_8xABobHvc1F3</code>
+        <button class="ghost-btn small" data-copy-el="ton-addr">Скопировать адрес</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <p>Free VPN Sub · MIT · репозиторий собирает публичные конфиги в один список и не предоставляет VPN-услуги. Серверы принадлежат третьим лицам.</p>
+  <p><a href="https://github.com/sakazxc1400-creator/free-vpn-sub" target="_blank" rel="noopener">github.com/sakazxc1400-creator/free-vpn-sub</a></p>
+</footer>
+
+<script src="vendor/qrcode.min.js" defer></script>
+<script src="app.js" defer></script>
+</body>
+</html>

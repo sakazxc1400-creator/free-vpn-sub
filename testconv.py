@@ -45,16 +45,58 @@ check("ws path", o and o["transport"]["path"] == "/ws")
 check("ws Host", o and o["transport"]["headers"]["Host"] == "b.com")
 
 print("== outbound: vless reality ==")
+# Reality-ключ — настоящие 32 байта в base64url, иначе sing-box падает.
+REALITY_KEY = "jNXHt1yRo0vDuchQlIP6Z0ZvjT3KtzVI-T4E7RoLJS0"
 o = outbound.build(
-    "vless://aaaa-bbbb@5.6.7.8:443?security=reality&pbk=PUBKEY123&sid=ab"
+    "vless://aaaa-bbbb@5.6.7.8:443?security=reality&pbk=" + REALITY_KEY + "&sid=ab"
     "&sni=ya.ru&flow=xtls-rprx-vision&type=tcp#r"
 )
 check("reality вкл", o and o["tls"]["reality"]["enabled"] is True)
-check("public_key", o and o["tls"]["reality"]["public_key"] == "PUBKEY123")
+check("public_key", o and o["tls"]["reality"]["public_key"] == REALITY_KEY)
 check("short_id", o and o["tls"]["reality"]["short_id"] == "ab")
 check("flow", o and o.get("flow") == "xtls-rprx-vision")
 check("utls автодобавлен", o and "utls" in o["tls"])
 check("tcp без transport", o and "transport" not in o)
+
+print("== outbound: защита от конфигов, роняющих sing-box ==")
+# Каждое такое значение в свободной подписке встречается постоянно и
+# валит весь батч sing-box, если его пропустить в конфиг.
+check("битый reality-ключ -> None",
+      outbound.build("vless://u@1.2.3.4:443?security=reality&pbk=SHORT&sni=a.com") is None)
+check("reality без ключа -> None",
+      outbound.build("vless://u@1.2.3.4:443?security=reality&sni=a.com") is None)
+check("левое значение scy -> auto",
+      (lambda x: x is not None and x["security"] == "auto")(
+          outbound.build("vmess://" + b64(json.dumps(
+              {"add": "1.2.3.4", "port": 443, "id": "x", "scy": "xyz"})))))
+check("валидный scy сохраняется",
+      (lambda x: x is not None and x["security"] == "chacha20-poly1305")(
+          outbound.build("vmess://" + b64(json.dumps(
+              {"add": "1.2.3.4", "port": 443, "id": "x",
+               "scy": "chacha20-poly1305"})))))
+check("tuic без UUID -> None",
+      outbound.build("tuic://not-a-uuid:p@1.2.3.4:443?sni=a.com") is None)
+check("tuic с UUID собран",
+      outbound.build("tuic://11111111-2222-3333-4444-555555555555:p"
+                     "@1.2.3.4:443?sni=a.com") is not None)
+check("левое congestion -> bbr",
+      (lambda x: x is not None and x["congestion_control"] == "bbr")(
+          outbound.build("tuic://11111111-2222-3333-4444-555555555555:p"
+                         "@1.2.3.4:443?congestion_control=zzz")))
+check("ss2022 короткий ключ -> None",
+      outbound.build("ss://" + b64("2022-blake3-aes-128-gcm:short")
+                     + "@1.1.1.1:8388#x") is None)
+check("ss2022 верный ключ собран",
+      outbound.build("ss://" + b64("2022-blake3-aes-128-gcm:"
+                                   "AAAAAAAAAAAAAAAAAAAAAA==")
+                     + "@1.1.1.1:8388#x") is not None)
+check("неизвестный fp убран",
+      (lambda x: x is not None and "utls" not in x.get("tls", {}))(
+          outbound.build("vless://u@1.2.3.4:443?security=tls&fp=unsafe&type=tcp#n")))
+check("известный fp сохранён",
+      (lambda x: x is not None
+       and x["tls"]["utls"]["fingerprint"] == "chrome")(
+          outbound.build("vless://u@1.2.3.4:443?security=tls&fp=chrome&type=tcp#n")))
 
 print("== outbound: vless grpc ==")
 o = outbound.build("vless://u1@9.9.9.9:443?type=grpc&serviceName=svc&security=tls#g")
@@ -108,9 +150,10 @@ check("obfs", o and o["obfs"]["type"] == "salamander")
 check("obfs pw", o and o["obfs"]["password"] == "op")
 check("alpn h3", o and o["tls"]["alpn"] == ["h3"])
 
-o = outbound.build("tuic://uuid-x:pw-y@2.2.2.2:443?congestion_control=bbr#tu")
+o = outbound.build("tuic://11111111-2222-3333-4444-555555555555:pw-y"
+                   "@2.2.2.2:443?congestion_control=bbr#tu")
 check("tuic", o and o["type"] == "tuic")
-check("uuid", o and o["uuid"] == "uuid-x")
+check("uuid", o and o["uuid"] == "11111111-2222-3333-4444-555555555555")
 check("password", o and o["password"] == "pw-y")
 
 print("== outbound: устойчивость ==")

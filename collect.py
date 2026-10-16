@@ -60,7 +60,7 @@ FETCH_RETRIES = 3           # попыток на источник
 FETCH_WORKERS = 12          # параллельных загрузок
 
 CHECK_TIMEOUT = 3.0         # сек на TCP-коннект к узлу
-CHECK_WORKERS = 200         # параллельных проверок
+CHECK_WORKERS = 300         # параллельных проверок
 CHECK_LIMIT = 20000         # максимум узлов, отправляемых на TCP-проверку
 
 # Подписка выходит в двух размерах.
@@ -72,9 +72,11 @@ MAX_OUTPUT = 200
 MAX_FULL = 5000
 
 # Сколько кандидатов прогонять через sing-box. Доля реально работающих —
-# обычно 5-15%, поэтому берём пул с большим запасом; сколько успеем
-# проверить, ограничивает VERIFY_BUDGET в probe.py.
-VERIFY_CANDIDATES = 7000
+# обычно 5-15%, поэтому берём пул с большим запасом. Проверка идёт
+# параллельными процессами (VERIFY_PARALLEL в probe.py), поэтому потолок
+# можно держать высоким: почти все живые по TCP узлы успевают провериться,
+# а сколько именно — ограничивает VERIFY_BUDGET в probe.py.
+VERIFY_CANDIDATES = 12000
 
 # Протоколы поверх QUIC/UDP. TCP-коннектом их проверить нельзя — порт
 # на TCP закрыт даже у полностью рабочего сервера, поэтому они идут сразу
@@ -136,6 +138,7 @@ class Stats:
     tcp_alive: int = 0
     verified: int = 0
     alive: int = 0
+    servers: int = 0
     by_proto: dict[str, int] = field(default_factory=dict)
     by_country: dict[str, int] = field(default_factory=dict)
 
@@ -606,6 +609,7 @@ def write_outputs(nodes: list[Node], full: list[Node], stats: Stats) -> dict:
         "unique": stats.unique,
         "tcp_alive": stats.tcp_alive,
         "verified": stats.verified,
+        "servers": stats.servers,
         "published": len(nodes),
         "published_full": len(full),
         "countries": len([c for c in by_country if c != "XX"]),
@@ -645,6 +649,29 @@ def interleave(*groups: list[Node]) -> list[Node]:
         if not added:
             return result
         index += 1
+
+
+def dedupe_servers(nodes: list[Node]) -> list[Node]:
+    """
+    Оставляет по одному узлу на каждый адрес сервера (host:port).
+
+    Один и тот же сервер часто лежит в источниках десятком копий с
+    разными uuid, sni и названиями. Для клиента это дубли: подписка
+    пухнет, а выбора не прибавляется. Оставляем самый быстрый вариант
+    на адрес.
+    """
+    best: dict[tuple[str, int], Node] = {}
+    for node in nodes:
+        key = (node.host, node.port)
+        current = best.get(key)
+        if current is None:
+            best[key] = node
+            continue
+        current_ms = current.latency_ms if current.latency_ms is not None else 99999
+        node_ms = node.latency_ms if node.latency_ms is not None else 99999
+        if node_ms < current_ms:
+            best[key] = node
+    return list(best.values())
 
 
 def pick_diverse(nodes: list[Node], limit: int, per_country: int) -> list[Node]:
@@ -803,6 +830,15 @@ def main() -> int:
         selected_pool = tcp_alive + alive_udp
 
     stats.alive = len(selected_pool)
+
+    # Один сервер попадает в источники десятком копий с разными uuid и
+    # sni. В подписке это дубли: остаётся по одному узлу на адрес.
+    servers = dedupe_servers(selected_pool)
+    stats.servers = len(servers)
+    if len(servers) < len(selected_pool):
+        log(f"      Уникальных адресов: {len(servers)} "
+            f"(из {len(selected_pool)} рабочих конфигов)")
+    selected_pool = servers
 
     # --- Страны ---
     log("[6/6] Определяю страны...")

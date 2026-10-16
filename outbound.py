@@ -26,12 +26,82 @@ SS_METHODS = {
     "none",
 }
 
+# Методы shadowsocks-2022: пароль это base64-ключ строго заданной длины.
+SS2022_KEY_LEN = {
+    "2022-blake3-aes-128-gcm": 16,
+    "2022-blake3-aes-256-gcm": 32,
+    "2022-blake3-chacha20-poly1305": 32,
+}
+
+# Отпечатки uTLS, которые принимает sing-box. В свободных подписках
+# часто пишут "unsafe", "golang", "chrome_133" и подобное — для sing-box
+# это фатальная ошибка, и один такой узел валит весь батч из 150 штук.
+# Неизвестное значение просто не передаём.
+UTLS_FINGERPRINTS = {
+    "chrome", "firefox", "edge", "safari", "360", "qq",
+    "ios", "android", "random", "randomized",
+}
+
+# Шифры VMess, которые принимает sing-box. В подписках встречаются
+# выдуманные значения, на которых sing-box падает на старте. "none"
+# намеренно не в списке: его, как и раньше, заменяем на "auto".
+VMESS_SECURITIES = {
+    "auto", "zero", "aes-128-gcm", "chacha20-poly1305",
+}
+
+# Алгоритмы контроля перегрузки TUIC. Иное значение — фатальная ошибка.
+TUIC_CONGESTION = {"bbr", "cubic", "new_reno"}
+
+# Канонический UUID. Для TUIC он обязателен, иначе sing-box не стартует.
+UUID_RE = re.compile(
+    r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}"
+    r"-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+)
+
 # Транспорты, которые мы умеем описать.
 NET_WS = {"ws", "websocket"}
 NET_GRPC = {"grpc", "gun"}
 NET_HTTP = {"h2", "http", "h2mux"}
 NET_UPGRADE = {"httpupgrade"}
 NET_PLAIN = {"tcp", "raw", "", "none"}
+
+
+def _norm_fingerprint(value: str) -> str:
+    """Оставляет только отпечатки, известные sing-box."""
+    fp = (value or "").strip().lower()
+    return fp if fp in UTLS_FINGERPRINTS else ""
+
+
+def _is_uuid(value: str) -> bool:
+    return bool(UUID_RE.fullmatch((value or "").strip()))
+
+
+def _b64_size(value: str) -> int:
+    """Длина base64-строки в байтах или -1, если это не base64."""
+    cleaned = re.sub(r"\s+", "", value or "")
+    if not cleaned:
+        return -1
+    cleaned = cleaned.replace("-", "+").replace("_", "/")
+    cleaned += "=" * (-len(cleaned) % 4)
+    try:
+        return len(base64.b64decode(cleaned, validate=False))
+    except (binascii.Error, ValueError):
+        return -1
+
+
+def _reality_key_ok(value: str) -> bool:
+    """Reality-ключ — это ровно 32 байта в base64. Иначе sing-box падает."""
+    return _b64_size(value) == 32
+
+
+def _ss2022_key_ok(method: str, password: str) -> bool:
+    """У shadowsocks-2022 пароль обязан быть ключом нужной длины."""
+    need = SS2022_KEY_LEN.get(method)
+    if need is None:
+        return True
+    # Мультиюзерный вариант: server_key:user_key, обе части — ключи.
+    parts = password.split(":") if password else []
+    return bool(parts) and all(_b64_size(part) == need for part in parts)
 
 
 def _b64(data: str) -> str | None:
@@ -81,6 +151,7 @@ def _tls_block(
         tls["insecure"] = True
     if alpn:
         tls["alpn"] = alpn
+    fingerprint = _norm_fingerprint(fingerprint)
     if fingerprint:
         tls["utls"] = {"enabled": True, "fingerprint": fingerprint}
     if public_key:
@@ -157,6 +228,13 @@ def _from_vless(link: str) -> dict | None:
     public_key = _first(params, "pbk", "publicKey")
     net = _first(params, "type", "net", default="tcp")
 
+    # Reality с битым или отсутствующим ключом всё равно не поднимется,
+    # а sing-box на таком конфиге падает целиком, унося с собой батч.
+    if public_key and not _reality_key_ok(public_key):
+        return None
+    if security == "reality" and not public_key:
+        return None
+
     transport = _transport_block(
         net,
         path=urllib.parse.unquote(_first(params, "path")),
@@ -230,7 +308,7 @@ def _from_vmess(link: str) -> dict | None:
         alter_id = 0
 
     cipher = str(cfg.get("scy", cfg.get("security", "auto")) or "auto").lower()
-    if cipher in ("", "auto", "none"):
+    if cipher not in VMESS_SECURITIES:
         cipher = "auto"
 
     out: dict = {
@@ -321,6 +399,10 @@ def _from_ss(link: str) -> dict | None:
     method = method.strip().lower()
     if method not in SS_METHODS:
         return None
+    # У 2022-методов пароль должен быть ключом нужной длины, иначе
+    # sing-box падает на старте и роняет весь батч.
+    if not _ss2022_key_ok(method, password):
+        return None
 
     host, _, port_str = endpoint.strip().strip("/").rpartition(":")
     host = host.strip("[]").lower()
@@ -385,6 +467,16 @@ def _from_tuic(link: str) -> dict | None:
     uuid = urllib.parse.unquote(parsed.username or "")
     if not host or not port or not uuid:
         return None
+    # TUIC отвергает всё, что не канонический UUID, и валит этим весь
+    # процесс sing-box вместе с остальными узлами батча.
+    if not _is_uuid(uuid):
+        return None
+
+    congestion = _first(
+        params, "congestion_control", "congestion", default="bbr"
+    ).lower()
+    if congestion not in TUIC_CONGESTION:
+        congestion = "bbr"
 
     out: dict = {
         "type": "tuic",
@@ -392,9 +484,7 @@ def _from_tuic(link: str) -> dict | None:
         "server_port": port,
         "uuid": uuid,
         "password": urllib.parse.unquote(parsed.password or ""),
-        "congestion_control": _first(
-            params, "congestion_control", "congestion", default="bbr"
-        ),
+        "congestion_control": congestion,
         "udp_relay_mode": _first(params, "udp_relay_mode", default="native"),
     }
     out["tls"] = _tls_block(

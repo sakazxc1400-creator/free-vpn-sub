@@ -16,6 +16,21 @@ https://raw.githubusercontent.com/peasoft/NoMoreWalls/master/list_raw.txt
 https://raw.githubusercontent.com/Pawdroid/Free-servers/main/sub
 https://raw.githubusercontent.com/freefq/free/master/v2
 
+# --- Крупные агрегаторы: больше протоколов и стран ---
+# mheidari98/.proxy — самый большой из проверенных списков, много
+# hysteria2 и trojan. Surfboardv2ray и ALIILAPRO дают много vmess.
+# Epodonios/.../All — полный микс, включая hysteria2, которой нет в
+# файлах по отдельным протоколам.
+https://raw.githubusercontent.com/mheidari98/.proxy/main/all
+https://raw.githubusercontent.com/Epodonios/v2ray-configs/main/All_Configs_Sub.txt
+https://raw.githubusercontent.com/Surfboardv2ray/TGParse/main/splitted/mixed
+https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/sub_merge.txt
+https://raw.githubusercontent.com/ALIILAPRO/v2rayNG-Config/main/sub.txt
+https://raw.githubusercontent.com/LalatinaHub/Mineral/master/result/nodes
+https://raw.githubusercontent.com/w1770946466/Auto_proxy/main/Long_term_subscription_num
+https://raw.githubusercontent.com/ts-sf/fly/main/v2
+https://raw.githubusercontent.com/roosterkid/openproxylist/main/V2RAY_RAW.txt
+
 # --- 0xRadikal: узлы с предварительной проверкой на стороне источника ---
 https://raw.githubusercontent.com/0xRadikal/Free-v2ray-Configs/main/verified/configs.txt
 https://raw.githubusercontent.com/0xRadikal/Free-v2ray-Configs/main/top100.txt
@@ -24,13 +39,11 @@ https://raw.githubusercontent.com/0xRadikal/Free-v2ray-Configs/main/protocols/vm
 https://raw.githubusercontent.com/0xRadikal/Free-v2ray-Configs/main/protocols/trojan.txt
 https://raw.githubusercontent.com/0xRadikal/Free-v2ray-Configs/main/protocols/shadowsocks.txt
 https://raw.githubusercontent.com/0xRadikal/Free-v2ray-Configs/main/protocols/hysteria2.txt
-https://raw.githubusercontent.com/0xRadikal/Free-v2ray-Configs/main/protocols/tuic.txt
 
 # --- Au1rxx: тоже с верификацией ---
 https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/v2ray-base64.txt
 https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/all-verified/v2ray-base64-0001.txt
 https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/all-verified/v2ray-base64-0002.txt
-https://raw.githubusercontent.com/Au1rxx/free-vpn-subscriptions/main/output/all-verified/v2ray-base64-0005.txt
 
 # --- VLESS / Reality ---
 https://raw.githubusercontent.com/barry-far/V2ray-Config/main/Splitted-By-Protocol/vless.txt
