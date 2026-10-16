@@ -46,16 +46,23 @@
 
   function animateNum(el, target, suffix = "") {
     if (!Number.isFinite(target)) { setNum(el, target); return; }
-    if (reduceMotion) { el.textContent = target.toLocaleString("ru-RU") + suffix; return; }
+    const final = target.toLocaleString("ru-RU") + suffix;
+    if (reduceMotion) { el.textContent = final; return; }
     const dur = 900;
     const t0 = performance.now();
+    let done = false;
+    // requestAnimationFrame не работает в фоновой вкладке, поэтому финальное
+    // число всё равно выставляем по таймеру: иначе останется заглушка.
+    const finish = () => { if (!done) { done = true; el.textContent = final; } };
     const step = (now) => {
+      if (done) return;
       const p = Math.min(1, (now - t0) / dur);
       const eased = 1 - Math.pow(1 - p, 3);
       el.textContent = Math.round(target * eased).toLocaleString("ru-RU") + suffix;
       if (p < 1) requestAnimationFrame(step);
     };
     requestAnimationFrame(step);
+    setTimeout(finish, dur + 150);
   }
 
   async function copyText(text) {
@@ -209,8 +216,13 @@
       li.append(name, track, val);
       container.appendChild(li);
       const pct = Math.max(4, Math.round((value / max) * 100));
-      if (reduceMotion) { fill.style.width = pct + "%"; }
-      else { requestAnimationFrame(() => { fill.style.width = pct + "%"; }); }
+      if (reduceMotion) {
+        fill.style.width = pct + "%";
+      } else {
+        // Полоска должна быть видна и в фоновой вкладке, где rAF приостановлен.
+        requestAnimationFrame(() => { fill.style.width = pct + "%"; });
+        setTimeout(() => { fill.style.width = pct + "%"; }, 60);
+      }
     }
   }
 
@@ -368,6 +380,15 @@
     });
 
     ol.appendChild(frag);
+
+    // В фоновой вкладке CSS-анимация может заморозиться и строки остались бы
+    // прозрачными, поэтому через паузу принудительно показываем их.
+    setTimeout(() => {
+      ol.querySelectorAll("li").forEach((li) => {
+        li.style.opacity = "1";
+        li.style.transform = "none";
+      });
+    }, 1500);
 
     $("#more-btn").hidden = shown.length >= rows.length;
     const note = $("#board-note");
