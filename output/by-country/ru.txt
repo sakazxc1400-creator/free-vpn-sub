@@ -1,3 +1,4 @@
-vless://6202b230-417c-4d8e-b624-0f71afa9c75d@185.148.106.50:8880?security=none&type=ws&path=/&host=vms.lifetime54.workers.dev&ed=2560&packetEncoding=xudp&encryption=none#87.%20%F0%9F%87%B7%F0%9F%87%BA%20%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D1%8F%20%C2%B7%20vless%20%C2%B7%2090ms
-hy2://7ab3c77e-8fcc-4848-918f-cae3d4eac794@194.87.118.184:2053?insecure=1&sni=194.87.118.184#459.%20%F0%9F%87%B7%F0%9F%87%BA%20%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20477ms
-hy2://7ab3c77e-8fcc-4848-918f-cae3d4eac794@194.87.118.184:2053?sni=match-stream.lovkisport.blog#494.%20%F0%9F%87%B7%F0%9F%87%BA%20%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20609ms
+hy2://7ab3c77e-8fcc-4848-918f-cae3d4eac794@194.87.118.184:2053?insecure=1&sni=off#426.%20%F0%9F%87%B7%F0%9F%87%BA%20%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20727ms
+hysteria2://7ab3c77e-8fcc-4848-918f-cae3d4eac794@194.87.118.184:2053?insecure=1#428.%20%F0%9F%87%B7%F0%9F%87%BA%20%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20737ms
+hy2://7ab3c77e-8fcc-4848-918f-cae3d4eac794@194.87.118.184:2053?sni=match-stream.lovkisport.blog#436.%20%F0%9F%87%B7%F0%9F%87%BA%20%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20761ms
+hy2://7ab3c77e-8fcc-4848-918f-cae3d4eac794@194.87.118.184:2053?insecure=1&sni=194.87.118.184#445.%20%F0%9F%87%B7%F0%9F%87%BA%20%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D1%8F%20%C2%B7%20hysteria2%20%C2%B7%20793ms
