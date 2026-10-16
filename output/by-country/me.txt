@@ -1,2 +1,1 @@
-vless://e6df2095-a73c-4043-8693-8d5a03686870@31.57.190.17:443?allowInsecure=0&sni=lucasjow.us.ci&alpn=http/1.1&type=ws&host=lucasjow.us.ci&path=/cart/docs/www/proxyip=108.160.132.132fp=unsafe&security=tls#393.%20%F0%9F%87%B2%F0%9F%87%AA%20ME%20%C2%B7%20vless%20%C2%B7%20655ms
-trojan://humanity@31.57.190.34:443?allowInsecure=0&sni=www.pleadcourt.org&alpn=http/1.1&type=ws&host=www.pleadcourt.org&path=/assignment#582.%20%F0%9F%87%B2%F0%9F%87%AA%20ME%20%C2%B7%20trojan%20%C2%B7%202801ms
+trojan://humanity@31.57.190.34:443?allowInsecure=0&sni=www.volumeroot.com&type=ws&host=www.volumeroot.com&path=/assignment#480.%20%F0%9F%87%B2%F0%9F%87%AA%20ME%20%C2%B7%20trojan%20%C2%B7%20821ms
