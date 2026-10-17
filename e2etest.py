@@ -1,13 +1,5 @@
 #!/usr/bin/env python3
-"""
-End-to-end проверка пайплайна без внешней сети.
-
-Поднимает локальный HTTP-сервер, который отдаёт поддельные подписки,
-подменяет sources.txt и слушающие порты, затем гоняет collect.main().
-Проверяет, что output/* создаются корректно.
-
-Запуск:  py e2etest.py
-"""
+"""End-to-end прогон collect.main() на локальном сервере, без внешней сети."""
 
 import base64
 import http.server
@@ -41,7 +33,7 @@ def b64(s: str) -> str:
     return base64.b64encode(s.encode()).decode()
 
 
-# --- Поднимаем "живые" TCP-порты, чтобы проверка доступности их нашла ---
+# живые TCP-порты, чтобы проверка доступности их нашла
 live_servers = []
 live_ports = []
 for _ in range(3):
@@ -50,11 +42,9 @@ for _ in range(3):
     threading.Thread(target=srv.serve_forever, daemon=True).start()
     live_servers.append(srv)
 
-DEAD_PORT = 1  # порт 1 почти наверняка закрыт
+DEAD_PORT = 1  # почти наверняка закрыт
 
-# --- Готовим поддельные подписки ---
-# Живые узлы (127.0.0.1 нормально не пройдёт is_routable, поэтому
-# для e2e временно разрешаем loopback).
+# loopback разрешаем ниже, иначе is_routable его отбросит
 plain_sub = "\n".join([
     f"vless://uuid-aaa-111@127.0.0.1:{live_ports[0]}?type=tcp&sni=a.com#live-1",
     f"trojan://pass123@127.0.0.1:{live_ports[1]}?sni=b.com#live-2",
@@ -102,7 +92,6 @@ base_url = f"http://127.0.0.1:{port}"
 
 print(f"== локальный сервер на {base_url} ==")
 
-# --- Бэкап реальных файлов ---
 if BACKUP.exists():
     shutil.rmtree(BACKUP)
 BACKUP.mkdir()
@@ -118,13 +107,11 @@ if (ROOT / "geo_cache.json").exists():
     shutil.copy2(ROOT / "geo_cache.json", GEO_BACKUP)
 
 try:
-    # История от настоящих прогонов сделала бы проверки неповторяемыми:
-    # тест обязан начинаться с пустой истории.
+    # тест должен начинаться с пустой истории
     history_file = ROOT / "output" / "history.json"
     if history_file.exists():
         history_file.unlink()
 
-    # Подменяем источники.
     (ROOT / "sources.txt").write_text("\n".join([
         "# e2e",
         f"{base_url}/plain",
@@ -134,19 +121,15 @@ try:
         f"{base_url}/fail",
     ]) + "\n", encoding="utf-8")
 
-    # Разрешаем loopback только на время теста.
     collect.is_routable = lambda host: True
     collect.CHECK_TIMEOUT = 1.0
-    # Защита от плохой сборки рассчитана на настоящие прогоны: в тесте
-    # узлов заведомо меньше, чем в прошлой подписке, и она бы сработала.
+    # иначе сработала бы защита от плохой сборки
     os.environ["ALLOW_SHRINK"] = "1"
-    # Для проверки стабильной подписки хватит двух прогонов подряд.
     collect.STABLE_RUNS = 2
-    # sing-box в тесте не запускаем: проверяем именно откат на TCP-режим.
+    # sing-box не запускаем: проверяем откат на TCP
     collect.probe.verify = lambda nodes, need: []
-    # Замер скорости тоже: он ходит в сеть через узлы.
     collect.probe.measure_speed = lambda nodes, singbox=None: 0
-    # Сеть для гео не трогаем, подставляем фиксированные страны.
+    # вместо сети отдаём фиксированную страну
     collect.geo.annotate = lambda hosts: {h: "NL" for h in hosts}
 
     print("== прогон collect.main() ==")
@@ -191,7 +174,6 @@ try:
     check("by_country заполнен", stats["by_country"].get("NL") == 3,
           str(stats["by_country"]))
 
-    # --- Лимиты размера подписок ---
     print("== лимиты размера подписок ==")
     check("не больше MAX_OUTPUT",
           stats["published"] <= collect.MAX_OUTPUT,
@@ -217,7 +199,6 @@ try:
     check("в all-full.txt 3 строки",
           len([l for l in full_plain.splitlines() if l.strip()]) == 3)
 
-    # --- Новые файлы: структура узлов, история, Clash ---
     print("== nodes.json, история, Clash ==")
     nodes_json = json.loads((out / "nodes.json").read_text(encoding="utf-8"))
     check("nodes.json совпадает с основной подпиской",
@@ -258,7 +239,6 @@ try:
               and len(parsed_clash.get("proxies") or []) == stats["published"],
               str(type(parsed_clash)))
 
-    # --- Сценарий: все источники мертвы -> подписка не должна затираться ---
     print("== сценарий: все источники недоступны ==")
     before = (out / "sub.txt").read_text(encoding="utf-8")
     (ROOT / "sources.txt").write_text(f"{base_url}/fail\n", encoding="utf-8")
@@ -267,7 +247,6 @@ try:
     check("main() вернул ошибку", rc2 == 1, f"rc={rc2}")
     check("старая подписка не затёрта", before == after)
 
-    # --- Сценарий: источник отвечает, но узлов нет ---
     print("== сценарий: источник без узлов ==")
     (ROOT / "sources.txt").write_text(f"{base_url}/junk\n", encoding="utf-8")
     rc3 = collect.main()
@@ -275,15 +254,13 @@ try:
     check("main() вернул ошибку", rc3 == 1, f"rc={rc3}")
     check("старая подписка не затёрта", before == after2)
 
-    # --- Сценарий: sing-box работает и часть узлов реально живая ---
     print("== сценарий: проверка через sing-box ==")
     (ROOT / "sources.txt").write_text("\n".join([
         f"{base_url}/plain", f"{base_url}/b64",
     ]) + "\n", encoding="utf-8")
 
     def fake_verify(nodes, need):
-        # Первые два узла "работают". У второго сертификат не проверился:
-        # он обязан оказаться ниже первого и получить пометку.
+        # у второго сертификат не проверился, он должен идти ниже
         result = []
         for i, node in enumerate(nodes[:2]):
             node.tls_ok = i == 0
@@ -309,8 +286,7 @@ try:
     check("посчитаны узлы с проверенным сертификатом", stats4["tls_ok"] == 1,
           str(stats4["tls_ok"]))
 
-    # Второй прогон: те же адреса живы второй раз подряд. Значит, они
-    # стабильные и должны попасть в отдельную подписку.
+    # второй прогон: те же адреса, значит стабильные
     rc5 = collect.main()
     stats5 = json.loads((out / "stats.json").read_text(encoding="utf-8"))
     check("второй прогон прошёл", rc5 == 0, f"rc={rc5}")
@@ -322,7 +298,6 @@ try:
           "ч" in urllib.parse.unquote(stable_plain),
           urllib.parse.unquote(stable_plain)[:200])
 
-    # --- Сценарий: резкое падение числа узлов -> публиковать нельзя ---
     print("== сценарий: защита от плохой сборки ==")
     os.environ.pop("ALLOW_SHRINK", None)
     spoiled = dict(stats5)
@@ -339,14 +314,12 @@ finally:
     httpd.shutdown()
     for s in live_servers:
         s.shutdown()
-    # Восстанавливаем.
     if (BACKUP / "sources.txt").exists():
         shutil.copy2(BACKUP / "sources.txt", ROOT / "sources.txt")
     if (ROOT / "output").exists():
         shutil.rmtree(ROOT / "output")
     if (BACKUP / "output").exists():
         shutil.copytree(BACKUP / "output", ROOT / "output")
-    # Кэш гео, созданный тестом, не должен попасть в репозиторий.
     if GEO_BACKUP.exists():
         shutil.copy2(GEO_BACKUP, ROOT / "geo_cache.json")
     elif (ROOT / "geo_cache.json").exists():

@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
-"""
-Тесты конвертера Clash: разбор ссылок, поля прокси, сборка конфига.
-
-Запуск: python3 testclash.py
-"""
+"""Тесты конвертера Clash: ссылки, поля прокси, сборка конфига."""
 
 from __future__ import annotations
 
@@ -26,8 +22,6 @@ def check(name: str, ok: bool, extra: str = "") -> None:
 
 
 class FakeNode:
-    """Заглушка узла: конвертеру хватает этих полей."""
-
     def __init__(self, raw: str, country: str = "", proto: str = "",
                  latency_ms: int | None = None) -> None:
         self.raw = raw

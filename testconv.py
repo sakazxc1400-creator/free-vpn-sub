@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
-"""
-Тесты конвертера ссылок в outbound sing-box и логики geo/отбора.
-Сеть не нужна.  Запуск:  py testconv.py
-"""
+"""Тесты конвертера ссылок в outbound и логики geo/отбора, сеть не нужна."""
 
 import json
 import sys
@@ -45,7 +42,7 @@ check("ws path", o and o["transport"]["path"] == "/ws")
 check("ws Host", o and o["transport"]["headers"]["Host"] == "b.com")
 
 print("== outbound: vless reality ==")
-# Reality-ключ — настоящие 32 байта в base64url, иначе sing-box падает.
+# reality-ключ: 32 байта в base64url
 REALITY_KEY = "jNXHt1yRo0vDuchQlIP6Z0ZvjT3KtzVI-T4E7RoLJS0"
 o = outbound.build(
     "vless://aaaa-bbbb@5.6.7.8:443?security=reality&pbk=" + REALITY_KEY + "&sid=ab"
@@ -59,8 +56,6 @@ check("utls автодобавлен", o and "utls" in o["tls"])
 check("tcp без transport", o and "transport" not in o)
 
 print("== outbound: защита от конфигов, роняющих sing-box ==")
-# Каждое такое значение в свободной подписке встречается постоянно и
-# валит весь батч sing-box, если его пропустить в конфиг.
 check("битый reality-ключ -> None",
       outbound.build("vless://u@1.2.3.4:443?security=reality&pbk=SHORT&sni=a.com") is None)
 check("reality без ключа -> None",
@@ -108,8 +103,6 @@ check("kcp -> None", outbound.build("vless://u@1.1.1.1:443?type=kcp#k") is None)
 check("xhttp -> None", outbound.build("vless://u@1.1.1.1:443?type=xhttp#x") is None)
 
 print("== outbound: битый процент в пути ==")
-# sing-box падает на разборе "/x%zz" и уносит с собой весь батч,
-# поэтому одиночные проценты экранируются.
 o = outbound.build("vless://u@1.1.1.1:443?type=ws&path=/x%zz#bad")
 check("узел не потерян", o is not None)
 check("битый процент экранирован",

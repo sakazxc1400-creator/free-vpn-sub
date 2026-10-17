@@ -1,35 +1,15 @@
 /**
- * Зеркало подписок free-vpn-sub для Cloudflare Workers.
- *
- * Зачем: raw.githubusercontent.com и сам GitHub Pages в России часто
- * недоступны. Воркер живёт на домене Cloudflare, который обычно открыт,
- * и отдаёт те же файлы.
- *
- * Что делать с кодом (всё в браузере, без установки чего-либо):
- *   1. Открой dash.cloudflare.com и войди (бесплатного аккаунта хватит).
- *   2. Workers & Pages -> Create -> Workers -> Start from scratch.
- *   3. Имя воркера, например free-vpn-sub.
- *   4. Вставь этот файл целиком вместо шаблона, нажми Deploy.
- *   5. Получишь адрес вида https://free-vpn-sub.ТВОЙ-АККАУНТ.workers.dev
- *
- * После этого:
- *   - https://free-vpn-sub.ТВОЙ-АККАУНТ.workers.dev/sub.txt это подписка;
- *   - адрес можно вписать в клиент напрямую;
- *   - добавь его в EXTRA_MIRRORS в docs/app.js, чтобы он появился на сайте.
- *
- * Бесплатный тариф это 100 000 запросов в сутки, для подписки хватает
- * с большим запасом. Файлы кэшируются на краю Cloudflare на 5 минут.
+ * Зеркало подписок на Cloudflare Workers, файлы берёт из ветки data.
+ * Как развернуть: mirror/README.md.
  */
 
 const REPO = "sakazxc1400-creator/free-vpn-sub";
-// Данные живут в плоской ветке data: свежий снимок подписок одним
-// коммитом, история там не копится.
 const BRANCH = "data";
 const UPSTREAM = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/output/`;
 const FALLBACK = `https://cdn.jsdelivr.net/gh/${REPO}@${BRANCH}/output/`;
 const SITE = "https://sakazxc1400-creator.github.io/free-vpn-sub/";
 
-// Отдаём только эти файлы: воркер не должен превращаться в открытый прокси.
+// воркер не должен стать открытым прокси
 const ALLOWED = new Set([
   "sub.txt",
   "sub-full.txt",
@@ -96,7 +76,7 @@ export default {
       );
     }
 
-    // Кэш Cloudflare: свой, чтобы не дёргать GitHub на каждый запрос клиента.
+    // свой кэш Cloudflare, чтобы не дёргать GitHub на каждый запрос
     const cache = caches.default;
     const cacheKey = new Request(`https://free-vpn-sub.mirror/${path}`, { method: "GET" });
     const cached = await cache.match(cacheKey);

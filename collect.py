@@ -1,22 +1,5 @@
 #!/usr/bin/env python3
-"""
-Агрегатор бесплатных VPN-подписок.
-
-Что делает:
-  1. Скачивает конфиги из списка источников (sources.txt).
-  2. Понимает форматы: plain-text и base64.
-  3. Извлекает ссылки протоколов vless/vmess/trojan/ss/hysteria2/tuic.
-  4. Убирает дубликаты по реальному адресу сервера (а не по тексту ссылки).
-  5. Отсеивает мёртвые узлы TCP-проверкой, затем прогоняет выживших через
-     sing-box и оставляет только те, через которые реально идёт трафик.
-  6. Определяет страну каждого узла и подписывает её флагом в названии.
-  7. Складывает результат в output/: sub.txt (основная, короткая) и
-     sub-full.txt (полная), плюс файлы по протоколам и по странам.
-
-Зависимостей нет — только стандартная библиотека Python 3.9+.
-Для настоящей проверки нужен бинарник sing-box; без него используется
-TCP-проверка.
-"""
+"""Сбор бесплатных VPN-подписок: источники из sources.txt, результат в output/."""
 
 from __future__ import annotations
 
@@ -40,118 +23,74 @@ from pathlib import Path
 import geo
 import probe
 
-# ----------------------------------------------------------------------------
-# Настройки
-# ----------------------------------------------------------------------------
-
 ROOT = Path(__file__).resolve().parent
 SOURCES_FILE = ROOT / "sources.txt"
 OUTPUT_DIR = ROOT / "output"
 
 PROTOCOLS = ("vless", "vmess", "trojan", "ss", "hysteria2", "hy2", "tuic")
 
-# Регулярка для вылавливания ссылок из произвольного текста.
 LINK_RE = re.compile(
     r"\b(?:" + "|".join(PROTOCOLS) + r")://[^\s\"'<>\\]+",
     re.IGNORECASE,
 )
 
-FETCH_TIMEOUT = 25          # сек на скачивание одного источника
-FETCH_RETRIES = 3           # попыток на источник
-FETCH_WORKERS = 12          # параллельных загрузок
+FETCH_TIMEOUT = 25
+FETCH_RETRIES = 3
+FETCH_WORKERS = 12
 
-CHECK_TIMEOUT = 3.0         # сек на TCP-коннект к узлу
-CHECK_WORKERS = 300         # параллельных проверок
-CHECK_LIMIT = 20000         # максимум узлов, отправляемых на TCP-проверку
+CHECK_TIMEOUT = 3.0
+CHECK_WORKERS = 300
+CHECK_LIMIT = 20000
 
-# Подписка выходит в двух размерах.
-#
-# MAX_OUTPUT — основная (sub.txt): короткий отобранный список, по нему
-# клиент быстро прогоняет тест задержки и не тормозит. MAX_FULL —
-# полная (sub-full.txt): всё, что прошло проверку, без отбора.
+# sub.txt короткая и быстрая, sub-full.txt это всё, что прошло проверку
 MAX_OUTPUT = 200
 MAX_FULL = 5000
 
-# Сколько кандидатов прогонять через sing-box. Доля реально работающих —
-# обычно 5-15%, поэтому берём пул с большим запасом. Проверка идёт
-# параллельными процессами (VERIFY_PARALLEL в probe.py), поэтому потолок
-# можно держать высоким: почти все живые по TCP узлы успевают провериться,
-# а сколько именно — ограничивает VERIFY_BUDGET в probe.py.
+# с запасом: рабочих узлов обычно 5-15%
 VERIFY_CANDIDATES = 12000
 
-# Протоколы поверх QUIC/UDP. TCP-коннектом их проверить нельзя — порт
-# на TCP закрыт даже у полностью рабочего сервера, поэтому они идут сразу
-# в sing-box, минуя TCP-фильтр.
+# работают поверх UDP, TCP-коннект их не проверяет
 UDP_PROTOCOLS = frozenset({"hysteria2", "tuic"})
 
-# Сколько узлов на одну страну максимум в основной подписке, чтобы
-# список не заполнился десятком серверов из одного датацентра. Это не
-# жёсткий отсев: если при таком потолке не набирается MAX_OUTPUT,
-# pick_diverse его поднимает.
 MAX_PER_COUNTRY = 12
 
-# --- История узлов ----------------------------------------------------------
-#
-# Каждый прогон в отдельности не помнит, что было раньше, поэтому узел,
-# живущий сутки, и узел, оживший минуту назад, выглядят одинаково.
-# Между прогонами сохраняем, кто сколько держится: отсюда берётся
-# подписка только из проверенных временем узлов и отметка «живёт N ч».
+# между прогонами копим стаж узлов
 HISTORY_FILE = OUTPUT_DIR / "history.json"
-RUNS_PER_HOUR = 2           # расписание workflow: два прогона в час
-STABLE_RUNS = 6             # 6 прогонов подряд это 3 часа
-HISTORY_KEEP_HOURS = 48     # сколько помним узлы, выпавшие из свежей сборки
-# Если между прогонами прошло больше этого времени, непрерывный стаж
-# обнуляется: расписание могло сломаться, и «живёт непрерывно» стало бы
-# неправдой.
-HISTORY_GAP_HOURS = 1.5
+RUNS_PER_HOUR = 2           # два прогона в час по расписанию workflow
+STABLE_RUNS = 6             # 6 прогонов это 3 часа
+HISTORY_KEEP_HOURS = 48     # сколько помним выпавшие из сборки узлы
+HISTORY_GAP_HOURS = 1.5     # пауза больше этого обнуляет стаж
 
-# --- Защита от плохой сборки ------------------------------------------------
-#
-# Если рабочих узлов стало заметно меньше, чем в прошлый раз, публиковать
-# это нельзя: скорее всего отвалился источник или чудит сеть раннера.
-# Оставляем прошлую подписку как есть и падаем с ошибкой.
-#
-# Порог двойной: блокируем только если подписка и просела относительно
-# прошлого раза, и стала маленькой сама по себе. У прогонов бывает
-# заметный разброс (в один час проверку проходит больше узлов, в другой
-# меньше), и здоровые 800 узлов после 1400 блокировать незачем.
+# блокируем публикацию, только если узлов и стало меньше прошлого раза, и вообще мало
 MIN_KEEP_RATIO = 0.6
 MIN_KEEP_ABS = 400
 
 USER_AGENT = "Mozilla/5.0 (compatible; free-vpn-sub/1.0; +https://github.com)"
 
-# Зеркала для raw.githubusercontent.com: в части сетей он заблокирован,
-# и без обхода локальный запуск скрипта невозможен.
+# зеркала для заблокированного raw.githubusercontent.com
 RAW_HOST = "raw.githubusercontent.com"
 MIRROR_TEMPLATES = (
     "https://gh-proxy.com/https://{raw}",
     "https://raw.gitcode.host/{path}",
 )
 
-# Порты, которых в валидном конфиге быть не может.
 VALID_PORT_RANGE = range(1, 65536)
 
 
-# ----------------------------------------------------------------------------
-# Модель узла
-# ----------------------------------------------------------------------------
-
 @dataclass
 class Node:
-    """Один VPN-узел."""
-
-    raw: str                       # исходная ссылка
-    proto: str                     # нормализованный протокол
-    host: str                      # домен или IP
+    raw: str
+    proto: str
+    host: str
     port: int
     ident: str                     # ключ дедупликации
-    latency_ms: int | None = None  # заполняется после проверки
-    country: str = ""              # код страны, ISO 3166-1 alpha-2
-    verified: bool = False         # прошёл ли проверку через sing-box
-    tls_ok: bool = True            # прошёл ли HTTPS с проверкой сертификата
-    speed_mbps: float | None = None  # замер скорости, Мбит/с
-    streak: int = 0                # сколько прогонов подряд узел живой
-    uptime_hours: float = 0.0      # непрерывный срок жизни в часах
+    latency_ms: int | None = None
+    country: str = ""
+    verified: bool = False
+    tls_ok: bool = True            # HTTPS с проверкой сертификата
+    speed_mbps: float | None = None
+    streak: int = 0
+    uptime_hours: float = 0.0
 
     @property
     def key(self) -> str:
@@ -159,14 +98,11 @@ class Node:
 
     @property
     def addr(self) -> str:
-        """Адрес сервера: по нему узел опознаётся между прогонами."""
         return f"{self.host}:{self.port}"
 
 
 @dataclass
 class Stats:
-    """Счётчики для отчёта."""
-
     sources_total: int = 0
     sources_ok: int = 0
     sources_failed: list[str] = field(default_factory=list)
@@ -184,19 +120,12 @@ class Stats:
     by_country: dict[str, int] = field(default_factory=dict)
 
 
-# ----------------------------------------------------------------------------
-# Утилиты
-# ----------------------------------------------------------------------------
-
 def log(msg: str) -> None:
     print(msg, flush=True)
 
 
 def b64_decode_loose(data: str) -> str | None:
-    """
-    Декодирует base64, прощая отсутствие padding и url-safe алфавит.
-    Возвращает None, если это не base64.
-    """
+    """base64 без padding и url-safe; None, если это не base64."""
     cleaned = re.sub(r"\s+", "", data)
     if not cleaned or len(cleaned) < 16:
         return None
@@ -216,7 +145,7 @@ def b64_decode_loose(data: str) -> str | None:
 
 
 def normalize_host(host: str) -> str:
-    """Приводит хост к каноническому виду: нижний регистр, без скобок IPv6."""
+    """Нижний регистр, без скобок IPv6."""
     host = host.strip().lower().rstrip(".")
     if host.startswith("[") and host.endswith("]"):
         host = host[1:-1]
@@ -230,7 +159,6 @@ def is_routable(host: str) -> bool:
     try:
         ip = ipaddress.ip_address(host)
     except ValueError:
-        # Домен: проверяем, что он вообще похож на домен.
         return bool(re.fullmatch(r"[a-z0-9._-]+\.[a-z]{2,}", host))
     return not (
         ip.is_private
@@ -242,10 +170,6 @@ def is_routable(host: str) -> bool:
     )
 
 
-# ----------------------------------------------------------------------------
-# Скачивание источников
-# ----------------------------------------------------------------------------
-
 def read_sources() -> list[str]:
     if not SOURCES_FILE.exists():
         log(f"[!] Нет файла {SOURCES_FILE.name}")
@@ -255,16 +179,11 @@ def read_sources() -> list[str]:
         line = line.strip()
         if line and not line.startswith("#"):
             urls.append(line)
-    # Убираем дубли, сохраняя порядок.
     return list(dict.fromkeys(urls))
 
 
 def mirror_urls(url: str) -> list[str]:
-    """
-    Для ссылок на raw.githubusercontent.com добавляет зеркала.
-    В CI прямой доступ есть и зеркала не понадобятся, но при локальном
-    запуске из сети с блокировками они спасают прогон.
-    """
+    """Для raw.githubusercontent.com добавляет зеркала."""
     if RAW_HOST not in url:
         return [url]
     raw = url.split("://", 1)[-1]
@@ -276,9 +195,7 @@ def mirror_urls(url: str) -> list[str]:
 
 
 def fetch(url: str) -> str | None:
-    """
-    Скачивает URL с retry. Если основной адрес недоступен, пробует зеркала.
-    """
+    """Скачивает URL; если не вышло, пробует зеркала."""
     last_error: str = ""
     for candidate in mirror_urls(url):
         req = urllib.request.Request(
@@ -303,10 +220,7 @@ def fetch(url: str) -> str | None:
 
 
 def extract_links(payload: str) -> list[str]:
-    """
-    Достаёт ссылки из текста. Если прямых ссылок нет — пробует
-    декодировать всё содержимое как base64 и повторить.
-    """
+    """Ссылки из текста, при неудаче из base64."""
     links = LINK_RE.findall(payload)
     if links:
         return links
@@ -315,10 +229,6 @@ def extract_links(payload: str) -> list[str]:
         return LINK_RE.findall(decoded)
     return []
 
-
-# ----------------------------------------------------------------------------
-# Парсинг ссылок
-# ----------------------------------------------------------------------------
 
 def parse_vmess(link: str) -> Node | None:
     """vmess:// + base64(JSON)."""
@@ -355,14 +265,10 @@ def parse_vmess(link: str) -> Node | None:
 
 
 def parse_ss(link: str) -> Node | None:
-    """
-    ss:// в двух вариантах:
-      ss://base64(method:pass)@host:port
-      ss://base64(method:pass@host:port)
-    """
+    """ss:// в двух вариантах: userinfo в base64 или вся ссылка целиком."""
     body = link[len("ss://"):]
-    body = body.split("#", 1)[0]          # убираем remark
-    body = body.split("?", 1)[0]          # убираем plugin-параметры
+    body = body.split("#", 1)[0]
+    body = body.split("?", 1)[0]
 
     if "@" not in body:
         decoded = b64_decode_loose(body)
@@ -388,7 +294,7 @@ def parse_ss(link: str) -> Node | None:
 
 
 def split_host_port(endpoint: str) -> tuple[str | None, int | None]:
-    """Разбирает 'host:port' и '[ipv6]:port'."""
+    """Разбирает host:port и [ipv6]:port."""
     endpoint = endpoint.strip().strip("/")
     if not endpoint:
         return None, None
@@ -419,10 +325,7 @@ def split_host_port(endpoint: str) -> tuple[str | None, int | None]:
 
 
 def parse_uri_style(link: str, proto: str) -> Node | None:
-    """
-    Общий разбор для vless / trojan / hysteria2 / tuic:
-      proto://userinfo@host:port?params#remark
-    """
+    """Разбор vless/trojan/hysteria2/tuic: proto://user@host:port?params#remark."""
     try:
         parsed = urllib.parse.urlsplit(link)
     except ValueError:
@@ -431,7 +334,6 @@ def parse_uri_style(link: str, proto: str) -> Node | None:
     host = normalize_host(parsed.hostname or "")
     port = parsed.port
     if port is None:
-        # У hysteria2/tuic порт иногда опускают — тогда узел бесполезен.
         return None
     if not host or port not in VALID_PORT_RANGE or not is_routable(host):
         return None
@@ -440,7 +342,7 @@ def parse_uri_style(link: str, proto: str) -> Node | None:
     if proto in ("vless", "trojan") and not user:
         return None
 
-    # sni/host влияют на то, разный это узел или нет.
+    # sni входит в ident
     qs = urllib.parse.parse_qs(parsed.query)
     sni = (qs.get("sni") or qs.get("host") or [""])[0].lower()
 
@@ -454,7 +356,7 @@ def parse_uri_style(link: str, proto: str) -> Node | None:
 
 
 def parse_link(link: str) -> Node | None:
-    """Единая точка входа парсинга. Никогда не бросает исключений."""
+    """Ссылка -> узел, или None. Исключений не бросает."""
     link = link.strip().rstrip(",;")
     scheme = link.split("://", 1)[0].lower() if "://" in link else ""
 
@@ -469,17 +371,11 @@ def parse_link(link: str) -> Node | None:
         if scheme in ("vless", "trojan", "tuic"):
             return parse_uri_style(link, scheme)
     except Exception:
-        # Битые ссылки в публичных подписках — норма. Молча пропускаем.
         return None
     return None
 
 
-# ----------------------------------------------------------------------------
-# Проверка живости
-# ----------------------------------------------------------------------------
-
 def tcp_ping(node: Node) -> tuple[Node, int | None]:
-    """TCP-коннект к узлу. Возвращает задержку в мс или None."""
     start = time.perf_counter()
     try:
         with socket.create_connection((node.host, node.port), timeout=CHECK_TIMEOUT):
@@ -490,10 +386,7 @@ def tcp_ping(node: Node) -> tuple[Node, int | None]:
 
 
 def dns_ok(node: Node) -> tuple[Node, bool]:
-    """
-    Для UDP-протоколов (hysteria2/tuic) TCP-коннект бессмыслен.
-    Проверяем хотя бы то, что хост разрешается в адрес.
-    """
+    """Для UDP-узлов проверяем хотя бы DNS."""
     try:
         socket.getaddrinfo(node.host, node.port, proto=socket.IPPROTO_UDP)
         return node, True
@@ -502,7 +395,6 @@ def dns_ok(node: Node) -> tuple[Node, bool]:
 
 
 def check_udp(nodes: list[Node]) -> list[Node]:
-    """DNS-проверка UDP-узлов. Задержку не измеряем — её не с чего измерить."""
     ok: list[Node] = []
     if not nodes:
         return ok
@@ -519,7 +411,6 @@ def check_udp(nodes: list[Node]) -> list[Node]:
 
 
 def check_alive(nodes: list[Node]) -> list[Node]:
-    """Параллельно проверяет узлы, возвращает живые, отсортированные по latency."""
     alive: list[Node] = []
     done = 0
     total = len(nodes)
@@ -542,12 +433,7 @@ def check_alive(nodes: list[Node]) -> list[Node]:
     return alive
 
 
-# ----------------------------------------------------------------------------
-# История узлов
-# ----------------------------------------------------------------------------
-
 def parse_stamp(value: str) -> datetime | None:
-    """Разбирает отметку времени из истории. Битые значения игнорирует."""
     try:
         return datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ").replace(
             tzinfo=timezone.utc)
@@ -556,7 +442,6 @@ def parse_stamp(value: str) -> datetime | None:
 
 
 def load_history() -> dict:
-    """Читает историю узлов. Любая проблема с файлом это пустая история."""
     try:
         data = json.loads(HISTORY_FILE.read_text(encoding="utf-8"))
     except (OSError, ValueError):
@@ -567,13 +452,7 @@ def load_history() -> dict:
 
 
 def apply_history(history: dict, nodes: list[Node], now: datetime) -> None:
-    """
-    Считает непрерывный стаж узлов и обновляет историю.
-
-    Узел, который был жив в прошлом прогоне, увеличивает стаж. Пропал из
-    сборки или между прогонами прошло слишком много времени — стаж
-    обнуляется. По стажу потом отбирается стабильная подписка.
-    """
+    """Считает стаж узлов и обновляет историю."""
     stored: dict = history.setdefault("nodes", {})
     stamp = now.strftime("%Y-%m-%dT%H:%M:%SZ")
     tolerance = timedelta(hours=HISTORY_GAP_HOURS)
@@ -598,8 +477,7 @@ def apply_history(history: dict, nodes: list[Node], now: datetime) -> None:
             "runs": int(prev.get("runs", 0)) + 1,
         }
 
-    # Узлы, которых нет в этой сборке, теряют непрерывный стаж, но запись
-    # живёт ещё HISTORY_KEEP_HOURS: узел может вернуться в следующем прогоне.
+    # выпавшие узлы теряют стаж, но запись живёт ещё HISTORY_KEEP_HOURS
     cutoff = now - timedelta(hours=HISTORY_KEEP_HOURS)
     for key in list(stored):
         if key in alive:
@@ -625,12 +503,10 @@ def save_history(history: dict) -> None:
 
 
 def pick_stable(nodes: list[Node]) -> list[Node]:
-    """Узлы, которые держатся уже STABLE_RUNS прогонов подряд."""
     return [n for n in nodes if n.streak >= STABLE_RUNS]
 
 
 def previous_report() -> dict | None:
-    """Прошлый stats.json. Нужен, чтобы заметить провал по числу узлов."""
     try:
         data = json.loads((OUTPUT_DIR / "stats.json").read_text(encoding="utf-8"))
     except (OSError, ValueError):
@@ -639,14 +515,7 @@ def previous_report() -> dict | None:
 
 
 def shrink_guard_blocks(prev_full, count: int, allow: bool = False) -> bool:
-    """
-    Стоит ли отказаться от публикации этой сборки.
-
-    Да, если узлов стало меньше MIN_KEEP_RATIO от прошлого раза И их
-    вообще мало (меньше MIN_KEEP_ABS). Второе условие важно: разброс
-    между прогонами бывает большим, и здоровые 800 узлов после 1400
-    публиковать можно, а 30 узлов после 1000 — нельзя.
-    """
+    """Не публиковать ли сборку: резкий провал по числу узлов."""
     if allow:
         return False
     if not isinstance(prev_full, int) or prev_full <= 100:
@@ -654,16 +523,8 @@ def shrink_guard_blocks(prev_full, count: int, allow: bool = False) -> bool:
     return count < prev_full * MIN_KEEP_RATIO and count < MIN_KEEP_ABS
 
 
-# ----------------------------------------------------------------------------
-# Запись результатов
-# ----------------------------------------------------------------------------
-
 def retag(node: Node, index: int) -> str:
-    """
-    Переписывает название узла так, чтобы в клиенте сразу было видно
-    страну, протокол, задержку и срок жизни:
-      🇳🇱 Нидерланды · vless · 84ms · 12ч
-    """
+    """Название узла: страна, протокол, задержка, стаж."""
     parts: list[str] = []
     if node.country:
         parts.append(f"{geo.flag(node.country)} {geo.country_name(node.country)}")
@@ -675,9 +536,7 @@ def retag(node: Node, index: int) -> str:
     if node.uptime_hours >= 1:
         parts.append(f"{node.uptime_hours:.0f}ч")
     if not node.tls_ok:
-        # HTTPS с проверкой сертификата не прошёл: узел может подменять TLS.
-        # В основную подписку такие не отбираются, но в полной честнее
-        # пометить их предупреждающим знаком.
+        # сертификат не проверился, узел может подменять TLS
         parts.append("⚠")
 
     label = f"{index:02d}. " + " · ".join(parts)
@@ -688,32 +547,20 @@ def retag(node: Node, index: int) -> str:
 
 def write_outputs(nodes: list[Node], full: list[Node], stats: Stats,
                   stable: list[Node] | None = None) -> dict:
-    """
-    Пишет подписки.
-
-    nodes  — основная (sub.txt): короткий отобранный список.
-    full   — полная (sub-full.txt): всё, что прошло проверку.
-    stable — стабильная (sub-stable.txt): узлы, живущие несколько часов.
-
-    Разбивки по протоколам и странам делаются от полного списка: там
-    смысл именно в максимальном числе узлов на конкретный протокол или
-    страну.
-    """
+    """Пишет sub.txt, sub-full.txt, sub-stable.txt и разбивки в output/."""
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     updated = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
 
     tagged = [retag(n, i + 1) for i, n in enumerate(nodes)]
     plain = "\n".join(tagged)
 
-    # Главная подписка — base64 (её понимают все клиенты).
+    # в sub.txt base64, в all.txt тот же список текстом
     (OUTPUT_DIR / "sub.txt").write_text(
         base64.b64encode(plain.encode("utf-8")).decode("ascii"),
         encoding="utf-8",
     )
-    # Тот же список в открытом виде — удобно смотреть глазами.
     (OUTPUT_DIR / "all.txt").write_text(plain + "\n", encoding="utf-8")
 
-    # Полная подписка — те же два формата.
     full_tagged = [retag(n, i + 1) for i, n in enumerate(full)]
     full_plain = "\n".join(full_tagged)
     (OUTPUT_DIR / "sub-full.txt").write_text(
@@ -722,9 +569,7 @@ def write_outputs(nodes: list[Node], full: list[Node], stats: Stats,
     )
     (OUTPUT_DIR / "all-full.txt").write_text(full_plain + "\n", encoding="utf-8")
 
-    # Стабильная подписка. Файлы пишем всегда, даже пустыми: иначе клиент
-    # получит 404 на сохранённую ссылку и покажет ошибку вместо пустого
-    # списка.
+    # пишем всегда, даже пустыми: иначе клиент получит 404
     stable = stable or []
     stable_tagged = [retag(n, i + 1) for i, n in enumerate(stable)]
     stable_plain = "\n".join(stable_tagged)
@@ -736,8 +581,6 @@ def write_outputs(nodes: list[Node], full: list[Node], stats: Stats,
         stable_plain + "\n", encoding="utf-8"
     )
 
-    # Структурированные данные для сайта: разбирать названия в браузере
-    # можно, но отдельный JSON надёжнее и несёт больше полей.
     nodes_json = [
         {
             "i": index + 1,
@@ -749,8 +592,6 @@ def write_outputs(nodes: list[Node], full: list[Node], stats: Stats,
             "up": n.uptime_hours,
             "tls": bool(n.tls_ok),
             "addr": n.addr,
-            # Сама ссылка нужна сайту: из выбранных узлов он собирает
-            # персональную подписку прямо в браузере.
             "url": retag(n, index + 1),
         }
         for index, n in enumerate(nodes)
@@ -760,9 +601,7 @@ def write_outputs(nodes: list[Node], full: list[Node], stats: Stats,
         encoding="utf-8",
     )
 
-    # Разбивка по протоколам. Старые файлы удаляем: если в этот раз,
-    # например, не нашлось ни одного tuic, файл с прошлого прогона
-    # не должен вводить в заблуждение.
+    # старые файлы удаляем, чтобы не остались от прошлого прогона
     known_protos = {"vless", "vmess", "trojan", "ss", "hysteria2", "tuic"}
     for proto in known_protos:
         stale = OUTPUT_DIR / f"{proto}.txt"
@@ -778,7 +617,6 @@ def write_outputs(nodes: list[Node], full: list[Node], stats: Stats,
         )
     stats.by_proto = {p: len(v) for p, v in sorted(by_proto.items())}
 
-    # Разбивка по странам — отдельной папкой, чтобы не мешалась в корне.
     country_dir = OUTPUT_DIR / "by-country"
     country_dir.mkdir(exist_ok=True)
     for stale in country_dir.glob("*.txt"):
@@ -834,17 +672,8 @@ def write_outputs(nodes: list[Node], full: list[Node], stats: Stats,
     return report
 
 
-# ----------------------------------------------------------------------------
-# Clash / Mihomo
-# ----------------------------------------------------------------------------
-
 def write_clash(nodes: list[Node]) -> int:
-    """
-    Пишет output/clash.yaml для Clash/Mihomo.
-
-    Файл производный: если конвертер споткнулся, сборка продолжается без
-    него, а в лог идёт причина. Ронять из-за него всю подписку нельзя.
-    """
+    """Пишет output/clash.yaml; если конвертер упал, сборка идёт дальше."""
     try:
         import clashout
     except ImportError:
@@ -866,10 +695,7 @@ def write_clash(nodes: list[Node]) -> int:
 
 
 def interleave(*groups: list[Node]) -> list[Node]:
-    """
-    Смешивает несколько списков по кругу. Нужно, чтобы в кандидаты на
-    проверку попали все протоколы, а не только самый многочисленный.
-    """
+    """Смешивает списки по кругу, чтобы попали все протоколы."""
     buckets: dict[str, list[Node]] = {}
     for group in groups:
         for node in group:
@@ -891,14 +717,7 @@ def interleave(*groups: list[Node]) -> list[Node]:
 
 
 def dedupe_servers(nodes: list[Node]) -> list[Node]:
-    """
-    Оставляет по одному узлу на каждый адрес сервера (host:port).
-
-    Один и тот же сервер часто лежит в источниках десятком копий с
-    разными uuid, sni и названиями. Для клиента это дубли: подписка
-    пухнет, а выбора не прибавляется. Оставляем самый быстрый вариант
-    на адрес.
-    """
+    """По одному узлу на адрес сервера, остаётся самый быстрый."""
     best: dict[tuple[str, int], Node] = {}
     for node in nodes:
         key = (node.host, node.port)
@@ -914,14 +733,7 @@ def dedupe_servers(nodes: list[Node]) -> list[Node]:
 
 
 def pick_diverse(nodes: list[Node], limit: int, per_country: int) -> list[Node]:
-    """
-    Отбирает узлы по кругу между странами: сначала по лучшему узлу от каждой
-    страны, потом по второму и так далее. Так в списке не окажется двадцати
-    серверов из одного датацентра, даже если они самые быстрые.
-
-    per_country — жёсткий потолок на страну. Если из-за него не набирается
-    limit, потолок поднимается, пока список не заполнится.
-    """
+    """По одному узлу от каждой страны по кругу, с потолком на страну."""
     if limit <= 0 or not nodes:
         return []
 
@@ -929,7 +741,6 @@ def pick_diverse(nodes: list[Node], limit: int, per_country: int) -> list[Node]:
     for node in nodes:
         buckets.setdefault(node.country or "XX", []).append(node)
 
-    # Страны с самым быстрым узлом идут первыми.
     order = sorted(
         buckets,
         key=lambda code: buckets[code][0].latency_ms
@@ -952,17 +763,11 @@ def pick_diverse(nodes: list[Node], limit: int, per_country: int) -> list[Node]:
                 taken[code] = index + 1
                 added = True
         if not added:
-            # Все страны исчерпали квоту. Либо узлы кончились, либо
-            # нужно ослабить потолок.
             if all(taken[c] >= len(buckets[c]) for c in buckets):
                 break
             quota += max(1, per_country)
     return chosen
 
-
-# ----------------------------------------------------------------------------
-# main
-# ----------------------------------------------------------------------------
 
 def main() -> int:
     started = time.time()
@@ -977,7 +782,6 @@ def main() -> int:
         return 1
     log(f"[1/6] Источников в списке: {len(sources)}")
 
-    # --- Скачивание ---
     payloads: list[str] = []
     with ThreadPoolExecutor(max_workers=FETCH_WORKERS) as pool:
         futures = {pool.submit(fetch, url): url for url in sources}
@@ -1000,7 +804,6 @@ def main() -> int:
             "рабочую подписку пустышкой.")
         return 1
 
-    # --- Парсинг и дедупликация ---
     seen: set[str] = set()
     unique: list[Node] = []
     for payload in payloads:
@@ -1023,9 +826,6 @@ def main() -> int:
         log("[!] Не удалось извлечь ни одного узла. Подписка не обновлена.")
         return 1
 
-    # --- Быстрый фильтр: TCP-коннект ---
-    # QUIC-протоколы TCP-проверку не проходят по своей природе, поэтому
-    # отправляем их в sing-box напрямую.
     udp_nodes = [n for n in unique if n.proto in UDP_PROTOCOLS]
     tcp_nodes = [n for n in unique if n.proto not in UDP_PROTOCOLS]
 
@@ -1046,8 +846,6 @@ def main() -> int:
             "старая версия осталась на месте.")
         return 1
 
-    # --- Настоящая проверка: трафик через sing-box ---
-    # Перемешиваем протоколы, чтобы в кандидаты попали не только vless.
     candidates = interleave(tcp_alive, alive_udp)[:VERIFY_CANDIDATES]
     log(f"[5/6] Проверяю реальный доступ в интернет через {len(candidates)} "
         f"узлов...")
@@ -1063,15 +861,11 @@ def main() -> int:
         log(f"      Реально работают: {len(working)}")
         selected_pool = working
     else:
-        # sing-box недоступен или не собрал ни одного узла — работаем
-        # по результатам TCP-проверки, но честно помечаем это в отчёте.
         log("      Настоящая проверка недоступна, откат на TCP-результаты.")
         selected_pool = tcp_alive + alive_udp
 
     stats.alive = len(selected_pool)
 
-    # Один сервер попадает в источники десятком копий с разными uuid и
-    # sni. В подписке это дубли: остаётся по одному узлу на адрес.
     servers = dedupe_servers(selected_pool)
     stats.servers = len(servers)
     if len(servers) < len(selected_pool):
@@ -1084,14 +878,12 @@ def main() -> int:
             f"только в полную подписку")
     selected_pool = servers
 
-    # --- История: кто сколько держится ---
     now = datetime.now(timezone.utc)
     history = load_history()
     apply_history(history, selected_pool, now)
     veterans = sum(1 for n in selected_pool if n.streak >= STABLE_RUNS)
     log(f"      Держатся {STABLE_RUNS}+ прогонов подряд: {veterans}")
 
-    # --- Страны ---
     log("[6/6] Определяю страны...")
     codes = geo.annotate([n.host for n in selected_pool[:VERIFY_CANDIDATES]])
     for node in selected_pool:
@@ -1099,14 +891,8 @@ def main() -> int:
     known = sum(1 for n in selected_pool if n.country)
     log(f"      Страна определена у {known}/{len(selected_pool)} узлов")
 
-    # --- Отбор в подписки ---
     def rank(node: Node) -> tuple:
-        """
-        Порядок в подписке: сначала узлы с проверенным сертификатом,
-        внутри группы сначала те, чья скорость измерена, потом по скорости,
-        затем по задержке. Узел с неизвестной скоростью не должен
-        обгонять узел, у которого замер есть.
-        """
+        """Порядок в подписке: сертификат, скорость, задержка."""
         return (
             0 if node.tls_ok else 1,
             0 if node.speed_mbps is not None else 1,
@@ -1115,24 +901,19 @@ def main() -> int:
         )
 
     selected_pool.sort(key=rank)
-    # Полная: всё проверенное, только с потолком на всякий случай.
     full = selected_pool[:MAX_FULL]
-    # Основная: короткий список с перемешиванием по странам.
+    # короткий список с разбросом по странам
     published = pick_diverse(full, MAX_OUTPUT, MAX_PER_COUNTRY)
 
-    # --- Замер скорости ---
-    # Меряем ровно тех, кто попал в основную подписку: тогда скорость
-    # видна у каждого узла списка на сайте. Отбор идёт по сертификату и
-    # задержке, а замер уточняет порядок уже выбранных.
+    # меряем тех, кто попал в основную подписку
     if published:
         stats.speed_measured = probe.measure_speed(published)
         published.sort(key=rank)
 
-    # Стабильная: только те, кто держится уже несколько часов.
+    # стабильные: держатся уже несколько часов
     stable = pick_diverse(pick_stable(full), MAX_OUTPUT, MAX_PER_COUNTRY)
     stats.stable = len(stable)
 
-    # --- Защита от плохой сборки ---
     prev_full = (previous_report() or {}).get("published_full")
     if shrink_guard_blocks(prev_full, len(full),
                            allow=bool(os.environ.get("ALLOW_SHRINK"))):
@@ -1143,7 +924,6 @@ def main() -> int:
             "Если уменьшение ожидаемое, запусти с ALLOW_SHRINK=1.")
         return 1
 
-    # --- Запись ---
     report = write_outputs(published, full, stats, stable)
     save_history(history)
     clash_count = write_clash(published)
@@ -1183,7 +963,7 @@ if __name__ == "__main__":
         log("\nПрервано пользователем.")
         code = 130
     if code != 0:
-        # О неудачном прогоне стоит узнать сразу: подписка не обновилась.
+        # о падении сообщаем сразу
         try:
             import notify
             if not notify.send_failure(f"Сборка подписки упала, код {code}"):

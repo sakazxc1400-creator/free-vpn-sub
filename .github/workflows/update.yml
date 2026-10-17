@@ -2,14 +2,7 @@ name: Update VPN subscription
 
 on:
   schedule:
-    # Дважды в час, на "тихих" минутах.
-    #
-    # Почему не ":00" и не ":07": в начале часа очередь Actions перегружена,
-    # и запуски по расписанию GitHub задерживает или пропускает совсем.
-    # Некруглые минуты попадают в куда меньшую очередь.
-    #
-    # Почему дважды: даже если один запуск потеряется, обновление всё равно
-    # выйдет примерно раз в час.
+    # дважды в час, на некруглых минутах: очередь Actions короче
     - cron: "23 * * * *"
     - cron: "53 * * * *"
   workflow_dispatch: {}
@@ -25,7 +18,7 @@ on:
       - "sources.txt"
       - ".github/workflows/update.yml"
 
-# Не даём двум прогонам писать в репозиторий одновременно.
+# два прогона не должны писать в репозиторий одновременно
 concurrency:
   group: update-subscription
   cancel-in-progress: false
@@ -69,8 +62,7 @@ jobs:
 
       - name: Run Clash converter tests
         run: |
-          # PyYAML нужен только этому тесту: он проверяет, что собранный
-          # YAML действительно разбирается. Без него тест тоже проходит.
+          # PyYAML нужен только этому тесту, без него он тоже проходит
           python -m pip install --quiet pyyaml || true
           python testclash.py
 
@@ -80,9 +72,7 @@ jobs:
       - name: Run end-to-end test
         run: python e2etest.py
 
-      # История узлов, прошлый stats.json и кэш гео живут в ветке data:
-      # она плоская (один коммит) и поэтому не растёт. Без этого шага
-      # прогон считал бы стаж с нуля и заново опрашивал гео-сервис.
+      # история, прошлый stats.json и гео-кэш лежат в ветке data
       - name: Подтягиваю историю из ветки data
         run: |
           set -u
@@ -103,15 +93,11 @@ jobs:
           take output/stats.json
           take geo_cache.json
 
-      # ulimit должен стоять в том же шаге, что и сбор: каждый шаг run
-      # выполняется в отдельной оболочке, лимит из соседнего шага не
-      # наследуется. На раннере по умолчанию nofile = 1024, а у sing-box
-      # по инбаунду на каждый узел батча.
+      # ulimit должен стоять в этом же шаге: каждый run в своей оболочке
       - name: Collect configs
         id: collect
         env:
-          # Уведомления в Telegram о результате прогона. Пока секреты не
-          # заведены, шаг просто ничего не отправляет.
+          # без секретов просто ничего не отправляет
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
@@ -127,14 +113,7 @@ jobs:
             echo "stats.json отсутствует"
           fi
 
-      # Данные публикуются в ветку data одним коммитом поверх (force-push).
-      # Причина: history.json, nodes.json и остальные артефакты меняются
-      # каждый прогон, и если хранить их в истории main, репозиторий растёт
-      # примерно на 1.5 МБ за прогон. Плоская ветка хранит только свежий
-      # снимок, поэтому размер репозитория стоит на месте.
-      #
-      # Гонка двух прогонов не страшна: каждый пушит свой полный снимок,
-      # и последний push побеждает.
+      # ветка data перезаписывается целиком: плоская история, репозиторий не растёт
       - name: Опубликовать данные в ветку data
         if: steps.collect.outcome == 'success'
         run: |
@@ -145,7 +124,6 @@ jobs:
           MAIN=$(python -c "import json;print(json.load(open('output/stats.json'))['published'])")
           FULL=$(python -c "import json;d=json.load(open('output/stats.json'));print(d.get('published_full', d['published']))")
 
-          # Дерево без истории: только свежие данные.
           git rm -r --quiet --cached .
           git add --force output geo_cache.json
           TREE=$(git write-tree)

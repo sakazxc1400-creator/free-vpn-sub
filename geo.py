@@ -1,17 +1,5 @@
 #!/usr/bin/env python3
-"""
-Определение страны узла по IP.
-
-Три источника, по порядку:
-  1. Локальная база GeoLite2-Country.mmdb, если положить рядом и поставить
-     maxminddb.
-  2. Публичный batch-API ip-api.com — быстрый, но с лимитами.
-  3. CSV-база ip-location-db (скачивается один раз за прогон) — работает
-     там, где API недоступен.
-
-Результаты кэшируются в geo_cache.json, поэтому со временем сеть почти
-не требуется.
-"""
+"""Определение страны по IP через mmdb, ip-api.com и CSV-базу."""
 
 from __future__ import annotations
 
@@ -32,7 +20,7 @@ ROOT = Path(__file__).resolve().parent
 CACHE_FILE = ROOT / "geo_cache.json"
 MMDB_FILE = ROOT / "GeoLite2-Country.mmdb"
 
-# ip-api.com: 100 IP за запрос, лимит 15 batch-запросов в минуту.
+# ip-api: 100 IP за запрос, 15 запросов в минуту
 BATCH_URL = "http://ip-api.com/batch?fields=status,countryCode,query"
 BATCH_SIZE = 100
 BATCH_PAUSE = 4.5
@@ -40,7 +28,7 @@ HTTP_TIMEOUT = 25
 DNS_WORKERS = 60
 CACHE_TTL_DAYS = 30
 
-# CSV-база: диапазон_начало,диапазон_конец,код_страны. Около 10 МБ.
+# CSV-база: начало,конец,код страны, около 10 МБ
 CSV_URLS = (
     "https://cdn.jsdelivr.net/gh/sapics/ip-location-db@main/"
     "dbip-country/dbip-country-ipv4.csv",
@@ -49,7 +37,6 @@ CSV_URLS = (
 )
 CSV_TIMEOUT = 120
 
-# Флаг из кода страны через regional indicator symbols.
 _FLAG_OFFSET = 0x1F1E6 - ord("A")
 
 COUNTRY_NAMES = {
@@ -78,7 +65,6 @@ COUNTRY_NAMES = {
 
 
 def flag(code: str) -> str:
-    """Эмодзи-флаг по двухбуквенному коду страны."""
     code = (code or "").strip().upper()
     if len(code) != 2 or not code.isalpha():
         return "🏴"
@@ -125,7 +111,7 @@ def save_cache(cache: dict[str, str]) -> None:
 
 
 def resolve(host: str) -> str | None:
-    """Домен -> IPv4. Если это уже IP, возвращает как есть."""
+    """Домен -> IPv4; готовый IP возвращает как есть."""
     try:
         infos = socket.getaddrinfo(host, None, family=socket.AF_INET)
         return infos[0][4][0]
@@ -134,7 +120,6 @@ def resolve(host: str) -> str | None:
 
 
 def resolve_many(hosts: list[str]) -> dict[str, str]:
-    """Параллельный DNS-резолв."""
     mapping: dict[str, str] = {}
     with ThreadPoolExecutor(max_workers=DNS_WORKERS) as pool:
         futures = {pool.submit(resolve, h): h for h in hosts}
@@ -150,7 +135,6 @@ def resolve_many(hosts: list[str]) -> dict[str, str]:
 
 
 def lookup_mmdb(ips: list[str]) -> dict[str, str]:
-    """Локальная база MaxMind, если доступна."""
     if not MMDB_FILE.exists():
         return {}
     try:
@@ -176,7 +160,6 @@ def lookup_mmdb(ips: list[str]) -> dict[str, str]:
 
 
 def lookup_api(ips: list[str]) -> dict[str, str]:
-    """Batch-запросы к ip-api.com."""
     result: dict[str, str] = {}
     for start in range(0, len(ips), BATCH_SIZE):
         chunk = ips[start:start + BATCH_SIZE]
@@ -209,13 +192,12 @@ def lookup_api(ips: list[str]) -> dict[str, str]:
     return result
 
 
-# Кэш CSV-таблицы на время одного прогона: (начала, концы, коды).
+# кэш таблицы на прогон: (начала, концы, коды)
 _csv_table: tuple[list[int], list[int], list[str]] | None = None
 _csv_tried = False
 
 
 def _load_csv_table() -> tuple[list[int], list[int], list[str]] | None:
-    """Скачивает и разбирает CSV-базу диапазонов. Один раз за прогон."""
     global _csv_table, _csv_tried
     if _csv_table is not None or _csv_tried:
         return _csv_table
@@ -270,7 +252,6 @@ def _load_csv_table() -> tuple[list[int], list[int], list[str]] | None:
 
 
 def lookup_csv(ips: list[str]) -> dict[str, str]:
-    """Поиск по CSV-базе диапазонов (бинарный поиск)."""
     table = _load_csv_table()
     if table is None:
         return {}
@@ -283,18 +264,14 @@ def lookup_csv(ips: list[str]) -> dict[str, str]:
         except (ipaddress.AddressValueError, ValueError):
             continue
         index = bisect.bisect_right(starts, value) - 1
-        # Диапазоны не покрывают всё адресное пространство, поэтому
-        # обязательно проверяем верхнюю границу найденного диапазона.
+        # проверяем верхнюю границу: между диапазонами бывают дыры
         if 0 <= index < len(codes) and value <= ends[index]:
             result[ip] = codes[index]
     return result
 
 
 def annotate(hosts: list[str]) -> dict[str, str]:
-    """
-    host -> код страны. Хосты без определённой страны в результат не попадают.
-    Кэш переиспользуется между прогонами.
-    """
+    """host -> код страны, кэш переиспользуется между прогонами."""
     unique = sorted({h.strip().lower() for h in hosts if h.strip()})
     if not unique:
         return {}
@@ -316,7 +293,6 @@ def annotate(hosts: list[str]) -> dict[str, str]:
     if missing:
         ip_to_code.update(lookup_api(missing))
 
-    # Всё, что не определилось через API, ищем в CSV-базе.
     missing = [ip for ip in ips if ip not in ip_to_code]
     if missing:
         ip_to_code.update(lookup_csv(missing))

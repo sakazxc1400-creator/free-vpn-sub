@@ -1,15 +1,5 @@
 #!/usr/bin/env python3
-"""
-Конвертер узлов в конфиг Clash / Mihomo.
-
-Clash не понимает ссылки вида vless://..., ему нужен YAML со словарями
-прокси. Разбор ссылок уже есть в outbound.py, причём с проверками тех
-параметров, на которых sing-box падает, поэтому здесь берётся готовый
-outbound и перекладывается в поля Clash Meta.
-
-PyYAML не нужен: структура простая, а строки в двойных кавычках это
-корректные YAML-скаляры. Внешних зависимостей нет.
-"""
+"""Узлы в конфиг Clash/Mihomo через outbound.py."""
 
 from __future__ import annotations
 
@@ -17,15 +7,14 @@ import json
 
 import outbound
 
-# Адрес, по которому Clash сам выбирает быстрейший узел в группе «Авто».
+# по этому адресу Clash ищет быстрейший узел в группе "Авто"
 DEFAULT_TEST_URL = "http://cp.cloudflare.com/generate_204"
 
-# Группа по стране появляется, если в ней есть смысл: с одной страной из
-# пары узлов список групп только мешает.
+# страна попадает в группы, только если узлов хватает
 MIN_COUNTRY_GROUP = 5
 MAX_COUNTRY_GROUPS = 10
 
-# VMess в Clash понимает не все значения, которые бывают в ссылках.
+# в Clash значения VMess другие, не как в ссылке
 VMESS_CIPHER = {
     "auto": "auto",
     "zero": "none",
@@ -35,12 +24,8 @@ VMESS_CIPHER = {
 }
 
 
-# ----------------------------------------------------------------------------
-# YAML
-# ----------------------------------------------------------------------------
-
 def _scalar(value: object) -> str:
-    """Скаляр в виде YAML. Строки всегда в кавычках, так надёжнее."""
+    """Скаляр в виде YAML, строки всегда в кавычках."""
     if isinstance(value, bool):
         return "true" if value else "false"
     if value is None:
@@ -92,16 +77,11 @@ def _yaml_lines(value: object, indent: int = 0) -> list[str]:
 
 
 def yaml_dump(value: object) -> str:
-    """Сериализует словари, списки и скаляры в простой YAML."""
     return "\n".join(_yaml_lines(value)) + "\n"
 
 
-# ----------------------------------------------------------------------------
-# sing-box outbound -> Clash proxy
-# ----------------------------------------------------------------------------
-
 def _tls(proxy: dict, out: dict, key: str = "servername") -> None:
-    """Переносит TLS-блок. key отличается: у trojan это sni, у vless servername."""
+    """TLS-блок; key: у trojan это sni, у vless servername."""
     tls = out.get("tls") or {}
     if not tls.get("enabled"):
         return
@@ -125,7 +105,6 @@ def _tls(proxy: dict, out: dict, key: str = "servername") -> None:
 
 
 def _transport(proxy: dict, out: dict) -> None:
-    """Переносит транспорт: ws, grpc, h2, httpupgrade или обычный tcp."""
     transport = out.get("transport") or {}
     kind = str(transport.get("type", "tcp"))
     path = transport.get("path")
@@ -160,7 +139,7 @@ def _transport(proxy: dict, out: dict) -> None:
         return
 
     if kind == "httpupgrade":
-        # В Clash это тот же ws, только поверх HTTP Upgrade.
+        # в Clash это ws поверх http-upgrade
         proxy["network"] = "ws"
         opts = {"v2ray-http-upgrade": True}
         if path:
@@ -250,7 +229,7 @@ def _from_hysteria2(out: dict) -> dict:
 
 
 def _from_tuic(out: dict) -> dict:
-    # Пустой пароль Clash не принимает: узел просто пропускаем.
+    # пустой пароль Clash не принимает
     if not out.get("password"):
         raise ValueError("пустой пароль")
     proxy: dict = {
@@ -284,12 +263,7 @@ CLASH_BUILDERS = {
 }
 
 
-# ----------------------------------------------------------------------------
-# Сборка конфига
-# ----------------------------------------------------------------------------
-
 def _fallback_name(node: object) -> str:
-    """Имя прокси, если вызывающая сторона не передала свои имена."""
     country = str(getattr(node, "country", "") or "??")
     proto = str(getattr(node, "proto", "") or "node")
     latency = getattr(node, "latency_ms", None)
@@ -299,7 +273,6 @@ def _fallback_name(node: object) -> str:
 
 
 def _unique(name: str, used: dict[str, int]) -> str:
-    """Имена прокси в Clash обязаны быть уникальными."""
     name = name.strip() or "node"
     if name not in used:
         used[name] = 1
@@ -309,7 +282,6 @@ def _unique(name: str, used: dict[str, int]) -> str:
 
 
 def clash_proxy(node: object) -> dict | None:
-    """Один узел -> словарь для секции proxies. None, если не получилось."""
     raw = getattr(node, "raw", None)
     if not raw:
         return None
@@ -333,7 +305,6 @@ def clash_proxy(node: object) -> dict | None:
 
 
 def _country_groups(names: list[str], countries: list[str]) -> list[dict]:
-    """Группы по странам: только там, где узлов достаточно."""
     counts: dict[str, int] = {}
     for code in countries:
         if code:
@@ -354,12 +325,7 @@ def build_clash(
     labels: list[str] | None = None,
     test_url: str = DEFAULT_TEST_URL,
 ) -> str:
-    """
-    Список узлов -> текст конфига Clash/Mihomo.
-
-    Узлы, которые не удалось преобразовать, пропускаются: остальные
-    важнее, чем полнота списка.
-    """
+    """Список узлов -> текст конфига Clash/Mihomo."""
     proxies: list[dict] = []
     countries: list[str] = []
     used: dict[str, int] = {}

@@ -1,13 +1,5 @@
 #!/usr/bin/env python3
-"""
-Преобразование share-ссылок (vless://, vmess://, ...) в outbound-конфиг sing-box.
-
-Нужно для настоящей проверки узлов: чтобы понять, работает сервер или нет,
-через него надо реально сходить в интернет, а не просто постучать в порт.
-
-Всё, что sing-box не умеет (kcp, quic-транспорт, xhttp, ss с плагинами),
-отбрасывается — такой узел мы просто не проверяем и не публикуем.
-"""
+"""Share-ссылки (vless://, vmess://, ...) в outbound-конфиг sing-box."""
 
 from __future__ import annotations
 
@@ -17,7 +9,6 @@ import json
 import re
 import urllib.parse
 
-# Шифры shadowsocks, которые понимает sing-box.
 SS_METHODS = {
     "aes-128-gcm", "aes-192-gcm", "aes-256-gcm",
     "chacha20-ietf-poly1305", "xchacha20-ietf-poly1305",
@@ -26,39 +17,31 @@ SS_METHODS = {
     "none",
 }
 
-# Методы shadowsocks-2022: пароль это base64-ключ строго заданной длины.
 SS2022_KEY_LEN = {
     "2022-blake3-aes-128-gcm": 16,
     "2022-blake3-aes-256-gcm": 32,
     "2022-blake3-chacha20-poly1305": 32,
 }
 
-# Отпечатки uTLS, которые принимает sing-box. В свободных подписках
-# часто пишут "unsafe", "golang", "chrome_133" и подобное — для sing-box
-# это фатальная ошибка, и один такой узел валит весь батч из 150 штук.
-# Неизвестное значение просто не передаём.
+# неизвестный отпечаток валит sing-box, такой не передаём
 UTLS_FINGERPRINTS = {
     "chrome", "firefox", "edge", "safari", "360", "qq",
     "ios", "android", "random", "randomized",
 }
 
-# Шифры VMess, которые принимает sing-box. В подписках встречаются
-# выдуманные значения, на которых sing-box падает на старте. "none"
-# намеренно не в списке: его, как и раньше, заменяем на "auto".
+# значения не из списка sing-box не принимает, "none" заменяем на "auto"
 VMESS_SECURITIES = {
     "auto", "zero", "aes-128-gcm", "chacha20-poly1305",
 }
 
-# Алгоритмы контроля перегрузки TUIC. Иное значение — фатальная ошибка.
 TUIC_CONGESTION = {"bbr", "cubic", "new_reno"}
 
-# Канонический UUID. Для TUIC он обязателен, иначе sing-box не стартует.
+# UUID вида 8-4-4-4-12
 UUID_RE = re.compile(
     r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}"
     r"-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
 )
 
-# Транспорты, которые мы умеем описать.
 NET_WS = {"ws", "websocket"}
 NET_GRPC = {"grpc", "gun"}
 NET_HTTP = {"h2", "http", "h2mux"}
@@ -67,7 +50,6 @@ NET_PLAIN = {"tcp", "raw", "", "none"}
 
 
 def _norm_fingerprint(value: str) -> str:
-    """Оставляет только отпечатки, известные sing-box."""
     fp = (value or "").strip().lower()
     return fp if fp in UTLS_FINGERPRINTS else ""
 
@@ -77,7 +59,7 @@ def _is_uuid(value: str) -> bool:
 
 
 def _b64_size(value: str) -> int:
-    """Длина base64-строки в байтах или -1, если это не base64."""
+    """Длина в байтах, -1 если это не base64."""
     cleaned = re.sub(r"\s+", "", value or "")
     if not cleaned:
         return -1
@@ -90,16 +72,15 @@ def _b64_size(value: str) -> int:
 
 
 def _reality_key_ok(value: str) -> bool:
-    """Reality-ключ — это ровно 32 байта в base64. Иначе sing-box падает."""
+    """Reality-ключ это ровно 32 байта в base64."""
     return _b64_size(value) == 32
 
 
 def _ss2022_key_ok(method: str, password: str) -> bool:
-    """У shadowsocks-2022 пароль обязан быть ключом нужной длины."""
     need = SS2022_KEY_LEN.get(method)
     if need is None:
         return True
-    # Мультиюзерный вариант: server_key:user_key, обе части — ключи.
+    # мультиюзер: server_key:user_key, обе части ключи
     parts = password.split(":") if password else []
     return bool(parts) and all(_b64_size(part) == need for part in parts)
 
@@ -158,20 +139,13 @@ def _tls_block(
         tls["reality"] = {"enabled": True, "public_key": public_key}
         if short_id:
             tls["reality"]["short_id"] = short_id
-        # Reality всегда требует uTLS.
+        # Reality всегда требует uTLS
         tls.setdefault("utls", {"enabled": True, "fingerprint": "chrome"})
     return tls
 
 
 def _safe_path(path: str) -> str:
-    """
-    Приводит путь к виду, который переварит sing-box.
-
-    В источниках попадаются ссылки вида ?path=/x%zz или с одиночным
-    процентом. sing-box падает на разборе такого пути ("invalid URL
-    escape") и уносит с собой весь батч из 30-40 узлов. Экранируем
-    только битые проценты, корректные последовательности не трогаем.
-    """
+    """Экранирует битые проценты: sing-box падает на invalid URL escape."""
     if not path:
         return path
     return re.sub(r"%(?![0-9A-Fa-f]{2})", "%25", path)
@@ -180,10 +154,7 @@ def _safe_path(path: str) -> str:
 def _transport_block(
     net: str, *, path: str, host: str, service_name: str, header_type: str
 ) -> dict | None | bool:
-    """
-    Возвращает transport-блок, None (транспорт не нужен)
-    или False (транспорт не поддерживается, узел пропускаем).
-    """
+    """transport-блок: dict, None если не нужен, False если не поддерживается."""
     net = (net or "tcp").strip().lower()
     path = _safe_path(path)
 
@@ -215,7 +186,7 @@ def _transport_block(
         return block
 
     if net in NET_PLAIN:
-        # tcp с http-обфускацией описывается как http-транспорт.
+        # http-обфускация описывается как http-транспорт
         if (header_type or "").lower() == "http":
             block = {"type": "http"}
             if host:
@@ -243,8 +214,7 @@ def _from_vless(link: str) -> dict | None:
     public_key = _first(params, "pbk", "publicKey")
     net = _first(params, "type", "net", default="tcp")
 
-    # Reality с битым или отсутствующим ключом всё равно не поднимется,
-    # а sing-box на таком конфиге падает целиком, унося с собой батч.
+    # битый или пустой reality-ключ всё равно не поднимется
     if public_key and not _reality_key_ok(public_key):
         return None
     if security == "reality" and not public_key:
@@ -396,7 +366,7 @@ def _from_ss(link: str) -> dict | None:
     if "?" in body:
         body, query = body.split("?", 1)
     if "plugin=" in query:
-        return None  # плагины (obfs, v2ray-plugin) не разбираем
+        return None  # плагины не разбираем
 
     if "@" in body:
         creds, _, endpoint = body.rpartition("@")
@@ -414,8 +384,7 @@ def _from_ss(link: str) -> dict | None:
     method = method.strip().lower()
     if method not in SS_METHODS:
         return None
-    # У 2022-методов пароль должен быть ключом нужной длины, иначе
-    # sing-box падает на старте и роняет весь батч.
+    # у 2022-методов пароль обязан быть ключом нужной длины
     if not _ss2022_key_ok(method, password):
         return None
 
@@ -482,8 +451,7 @@ def _from_tuic(link: str) -> dict | None:
     uuid = urllib.parse.unquote(parsed.username or "")
     if not host or not port or not uuid:
         return None
-    # TUIC отвергает всё, что не канонический UUID, и валит этим весь
-    # процесс sing-box вместе с остальными узлами батча.
+    # неканонический UUID валит процесс sing-box целиком
     if not _is_uuid(uuid):
         return None
 
@@ -523,7 +491,7 @@ _BUILDERS = {
 
 
 def build(link: str) -> dict | None:
-    """Ссылка -> outbound sing-box (без тега). None, если не поддерживается."""
+    """Ссылка -> outbound без тега, None если не поддерживается."""
     link = link.strip()
     scheme = link.split("://", 1)[0].lower() if "://" in link else ""
     builder = _BUILDERS.get(scheme)

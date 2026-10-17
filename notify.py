@@ -1,14 +1,5 @@
 #!/usr/bin/env python3
-"""
-Уведомления в Telegram о результате сборки.
-
-Пока не заданы переменные окружения TELEGRAM_BOT_TOKEN и TELEGRAM_CHAT_ID,
-ничего никуда не отправляется: функции просто возвращают False. Так модуль
-можно спокойно вызывать из сборки, где секреты не настроены.
-
-Проверка вручную:
-    TELEGRAM_BOT_TOKEN=... TELEGRAM_CHAT_ID=... python3 notify.py "привет"
-"""
+"""Уведомления в Telegram о результате сборки."""
 
 from __future__ import annotations
 
@@ -24,7 +15,7 @@ ACTIONS = "https://github.com/sakazxc1400-creator/free-vpn-sub/actions"
 
 
 def config() -> tuple[str, str] | None:
-    """Токен и чат из окружения. None, если уведомления не настроены."""
+    """Токен и чат из окружения, или None."""
     token = (os.environ.get("TELEGRAM_BOT_TOKEN") or "").strip()
     chat = (os.environ.get("TELEGRAM_CHAT_ID") or "").strip()
     if not token or not chat:
@@ -33,7 +24,7 @@ def config() -> tuple[str, str] | None:
 
 
 def send(text: str) -> bool:
-    """Отправляет сообщение. False, если не настроено или не получилось."""
+    """Отправляет сообщение, False если не вышло."""
     settings = config()
     if settings is None:
         return False
@@ -57,7 +48,6 @@ def send(text: str) -> bool:
 
 
 def summary(report: dict) -> str:
-    """Короткая сводка по прогону для сообщения."""
     lines = [
         f"Подписка обновлена: {report.get('updated', '?')}",
         f"Основная: {report.get('published')} узлов, "
@@ -81,12 +71,10 @@ def summary(report: dict) -> str:
 
 
 def send_report(report: dict) -> bool:
-    """Уведомление об удачном прогоне."""
     return send(summary(report))
 
 
 def send_failure(reason: str) -> bool:
-    """Уведомление о неудаче: подписка не обновилась."""
     return send(f"Сборка подписки не прошла.\n{reason}\n{ACTIONS}")
 
 
