@@ -323,13 +323,21 @@
     const dur = 900;
     const t0 = performance.now();
     let done = false;
+    // У небольших чисел вроде скорости 1.8 показываем десятые: иначе
+    // счёт выглядит как 0, 1, 2 и сбивает с толку.
+    const decimals = Math.abs(target) < 10 && !Number.isInteger(target) ? 1 : 0;
+    const fmt = (v) => v.toLocaleString(lang === "ru" ? "ru-RU" : "en-US", {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals,
+    }) + suffix;
     const finish = () => { if (!done) { done = true; el.textContent = final; } };
     const step = (now) => {
       if (done) return;
       const p = Math.min(1, (now - t0) / dur);
+      if (p >= 1) { done = true; el.textContent = final; return; }
       const eased = 1 - Math.pow(1 - p, 3);
-      el.textContent = Math.round(target * eased).toLocaleString(lang === "ru" ? "ru-RU" : "en-US") + suffix;
-      if (p < 1) requestAnimationFrame(step);
+      el.textContent = fmt(target * eased);
+      requestAnimationFrame(step);
     };
     requestAnimationFrame(step);
     setTimeout(finish, dur + 150);

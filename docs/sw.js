@@ -7,7 +7,7 @@
 // Имя кэша — это версия оболочки. Меняете index.html, styles.css или
 // app.js — поднимите номер, иначе у вернувшихся посетителей останется
 // старая копия страницы.
-const CACHE = "fvps-shell-v4";
+const CACHE = "fvps-shell-v5";
 
 const SHELL = [
   "./",
