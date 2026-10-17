@@ -1,1 +1,1 @@
-trojan://humanity@212.183.88.136:443?sni=www.calmlunch.com&type=ws&host=www.calmlunch.com&path=%2Fassignment#655.%20%F0%9F%87%A6%F0%9F%87%B9%20%D0%90%D0%B2%D1%81%D1%82%D1%80%D0%B8%D1%8F%20%C2%B7%20trojan%20%C2%B7%20791ms
+vless://3a0e4040-67cc-43e0-a9fb-98e15ddb0526@138.124.90.177:10443?&sni=138.124.90.177&type=tcp&headerType=none&path=%2F#652.%20%F0%9F%87%A6%F0%9F%87%B9%20%D0%90%D0%B2%D1%81%D1%82%D1%80%D0%B8%D1%8F%20%C2%B7%20vless%20%C2%B7%201379ms
