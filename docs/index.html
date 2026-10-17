@@ -1,302 +1,64 @@
 <!DOCTYPE html>
-<html lang="ru" data-theme="dark">
+<html lang="ru">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Free VPN Sub — свободные VPN-серверы, обновление каждый час</title>
-<meta name="description" content="Подписка на свободные VPN-серверы. Узлы собираются из открытых источников, проверяются через sing-box, HTTPS с проверкой сертификата и замер скорости. VLESS, Reality, VMess, Trojan, Shadowsocks, Hysteria2, TUIC.">
-<meta name="theme-color" content="#0a0e16" id="theme-color">
+<title>Free VPN Sub</title>
+<meta name="description" content="Бесплатные VPN-серверы одной ссылкой. Собираю из открытых источников, проверяю живым трафиком, отдаю в vless, vmess, trojan, shadowsocks, hysteria2 и tuic.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="assets/icon-192.png">
-<link rel="manifest" href="manifest.webmanifest">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="FreeVPNSub">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Free VPN Sub">
-<meta property="og:description" content="Свободные VPN-серверы одной ссылкой. Проверка каждый час, только рабочие узлы.">
-<meta property="og:image" content="favicon.svg">
-<script>
-  // Тему и язык ставим до отрисовки, иначе тёмная страница мигнёт светлым.
-  (function () {
-    try {
-      var theme = localStorage.getItem("fvps-theme");
-      if (theme !== "light" && theme !== "dark") {
-        theme = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
-      }
-      document.documentElement.dataset.theme = theme;
-      var lang = localStorage.getItem("fvps-lang");
-      if (lang !== "ru" && lang !== "en") {
-        lang = (navigator.language || "ru").toLowerCase().indexOf("ru") === 0 ? "ru" : "en";
-      }
-      document.documentElement.lang = lang;
-    } catch (e) {}
-  })();
-</script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=IBM+Plex+Sans:wght@300;400;500;600&amp;display=swap">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<canvas id="net" aria-hidden="true"></canvas>
+<main>
 
-<header class="topbar">
-  <a class="brand" href="#top">
-    <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#0f1624"/><path d="M17.6 5 8 18h6.2l-1.8 9L23 13h-6.4z" fill="#f4b942"/></svg>
-    <span class="brand-text">Free<em>VPN</em>Sub</span>
-  </a>
-  <nav class="topnav" aria-label="Разделы">
-    <a href="#nodes" data-i18n="nav_nodes">Узлы</a>
-    <a href="#stats" data-i18n="nav_stats">Статистика</a>
-    <a href="#connect" data-i18n="nav_connect">Подключение</a>
-    <a href="#links" data-i18n="nav_links">Ссылки</a>
-    <a href="#check" data-i18n="nav_check">Проверка</a>
-  </nav>
-  <div class="top-actions">
-    <button class="icon-btn" id="theme-btn" type="button" aria-label="Тема" title="Светлая или тёмная тема">
-      <svg class="i-sun" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M8 11.5A3.5 3.5 0 1 1 8 4.5a3.5 3.5 0 0 1 0 7Zm0-9.5a.8.8 0 0 1 .8.8v1a.8.8 0 0 1-1.6 0v-1A.8.8 0 0 1 8 2Zm0 10.4a.8.8 0 0 1 .8.8v1a.8.8 0 0 1-1.6 0v-1a.8.8 0 0 1 .8-.8ZM2 8a.8.8 0 0 1 .8-.8h1a.8.8 0 0 1 0 1.6h-1A.8.8 0 0 1 2 8Zm10.4 0a.8.8 0 0 1 .8-.8h1a.8.8 0 0 1 0 1.6h-1a.8.8 0 0 1-.8-.8ZM4.1 4.1a.8.8 0 0 1 1.1 0l.7.7a.8.8 0 1 1-1.1 1.1l-.7-.7a.8.8 0 0 1 0-1.1Zm6.7 6.7a.8.8 0 0 1 1.1 0l.7.7a.8.8 0 0 1-1.1 1.1l-.7-.7a.8.8 0 0 1 0-1.1Zm1.8-6.7a.8.8 0 0 1 0 1.1l-.7.7a.8.8 0 0 1-1.1-1.1l.7-.7a.8.8 0 0 1 1.1 0ZM5.2 10.8a.8.8 0 0 1 0 1.1l-.7.7a.8.8 0 0 1-1.1-1.1l.7-.7a.8.8 0 0 1 1.1 0Z"/></svg>
-      <svg class="i-moon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M6.2 2.2a6 6 0 1 0 7.6 7.6 5 5 0 0 1-7.6-7.6Z"/></svg>
-    </button>
-    <button class="icon-btn lang-btn" id="lang-btn" type="button" aria-label="Язык">RU</button>
-    <a class="ghost-btn gh-link" href="https://github.com/sakazxc1400-creator/free-vpn-sub" target="_blank" rel="noopener">
-      <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38v-1.3c-2.23.48-2.7-1.07-2.7-1.07-.36-.93-.89-1.18-.89-1.18-.73-.5.05-.49.05-.49.8.06 1.23.83 1.23.83.72 1.23 1.88.87 2.34.67.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.03 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.28.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48v2.2c0 .21.15.46.55.38A8 8 0 0 0 8 0Z"/></svg>
-      <span>GitHub</span>
-    </a>
-  </div>
-</header>
+<h1>Free VPN Sub</h1>
 
-<main id="top">
+<p>Собираю бесплатные впн-серверы из открытых источников и каждый прогон проверяю их живьём:
+сначала отвечает ли порт, потом идёт ли через сервер настоящий трафик, потом сертификат и скорость.
+Что не отвечает, в подписку не попадает.</p>
 
-  <section class="hero">
-    <div class="hero-copy">
-      <h1 data-i18n="hero_h1">Свободные <span class="nowrap">VPN-узлы</span>, живые прямо сейчас</h1>
-      <p class="lead" data-i18n="hero_lead">Каждый час собираю конфиги из открытых источников и прогоняю через sing-box. Оставляю только те серверы, через которые реально идёт трафик, проверяю сертификаты и меряю скорость.</p>
-      <div class="cta-row">
-        <button class="primary-btn" id="hero-copy" data-copy-el="url-main" data-i18n="copy_sub">Скопировать подписку</button>
-        <a class="ghost-btn" href="#connect" data-i18n="how_to_connect">Как подключиться</a>
-        <a class="ghost-btn" href="clash.yaml" target="_blank" rel="noopener" data-i18n="open_clash">Clash-конфиг</a>
-      </div>
-      <div class="deep-links" id="deep-links" role="group" aria-label="Открыть подписку в клиенте"></div>
-      <p class="micro" id="copy-note" role="status" aria-live="polite"></p>
-    </div>
+<p class="state" id="state">смотрю, когда обновлялось…</p>
 
-    <aside class="live" id="live-panel" aria-label="Состояние подписки">
-      <div class="live-head">
-        <span class="pulse" aria-hidden="true"></span>
-        <span id="live-status" data-i18n="loading">Загружаю состояние…</span>
-      </div>
-      <dl class="live-grid">
-        <div><dt data-i18n="stat_servers">серверов</dt><dd data-num="published">—</dd></div>
-        <div><dt data-i18n="stat_stable">стабильных</dt><dd data-num="stable">—</dd></div>
-        <div><dt data-i18n="stat_countries">стран</dt><dd data-num="countries">—</dd></div>
-        <div><dt data-i18n="stat_best_ms">лучшая задержка</dt><dd><span data-num="best_latency_ms">—</span><small>ms</small></dd></div>
-      </dl>
-      <p class="live-foot"><span id="live-updated">—</span></p>
-    </aside>
-  </section>
+<h2>Подписки</h2>
+<ul class="subs" id="subs"></ul>
+<p class="note">Открыть сразу в клиенте: <span id="deep"></span>. Работает, если клиент уже стоит.</p>
 
-  <section class="band" id="nodes">
-    <div class="band-head">
-      <h2 data-i18n="nodes_h2">Проверенные узлы</h2>
-      <p data-i18n="nodes_p">Каждый узел прошёл проверку живым трафиком. «Живёт» — сколько часов подряд сервер отвечает в наших прогонах.</p>
-    </div>
-    <div class="board">
-      <div class="board-tools">
-        <div class="chips" id="proto-chips" role="group" aria-label="Фильтр по протоколу">
-          <button class="chip is-active" data-proto="" data-i18n="all_chip">Все</button>
-        </div>
-        <div class="tool-right">
-          <label class="toggle">
-            <input type="checkbox" id="only-stable">
-            <span data-i18n="only_stable">Только стабильные</span>
-          </label>
-          <label class="sort">
-            <span class="sr-only" data-i18n="sort_by">Сортировка</span>
-            <select id="sort-by">
-              <option value="rank" data-i18n="sort_rank">По качеству</option>
-              <option value="speed" data-i18n="sort_speed">По скорости</option>
-              <option value="latency" data-i18n="sort_latency">По задержке</option>
-              <option value="uptime" data-i18n="sort_uptime">По сроку жизни</option>
-            </select>
-          </label>
-          <label class="search">
-            <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M11.7 10.3a6 6 0 1 0-1.4 1.4l3 3a1 1 0 0 0 1.4-1.4l-3-3ZM10 6.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"/></svg>
-            <input type="search" id="node-search" placeholder="Страна или адрес" aria-label="Поиск по стране или адресу" data-i18n-placeholder="search_ph">
-          </label>
-        </div>
-      </div>
-      <div class="board-head" aria-hidden="true">
-        <span></span><span>#</span><span data-i18n="col_server">Сервер</span><span data-i18n="col_proto">Протокол</span><span data-i18n="col_speed">Скорость</span><span data-i18n="col_latency">Задержка</span><span data-i18n="col_uptime">Живёт</span><span data-i18n="col_addr">Адрес</span>
-      </div>
-      <ol class="board-rows" id="board-rows" aria-live="polite"></ol>
-      <noscript><p class="micro" style="padding:0 1.1rem">Список узлов и статистика подгружаются скриптом. Без JavaScript они не появятся, но ссылку на подписку можно скопировать выше или взять в <a href="https://github.com/sakazxc1400-creator/free-vpn-sub">репозитории</a>.</p></noscript>
-      <div class="board-more">
-        <button class="ghost-btn" id="more-btn" hidden data-i18n="more">Показать ещё</button>
-        <p class="micro" id="board-note" data-i18n="board_loading">Загружаю список…</p>
-      </div>
-      <div class="sweep" aria-hidden="true"></div>
-    </div>
+<h2>Зеркала</h2>
+<p>Если raw.githubusercontent.com у тебя не открывается, те же файлы лежат вот здесь:</p>
+<ul class="mirrors" id="mirrors"></ul>
 
-    <div class="builder" id="builder">
-      <div class="builder-head">
-        <h3 data-i18n="builder_h2">Своя подписка</h3>
-        <span class="tag-live" id="builder-count" data-i18n="builder_none">ничего не выбрано</span>
-      </div>
-      <p class="micro" data-i18n="builder_hint">Отметь галочками узлы в списке выше и забери только их. Файл собирается в браузере, никуда не отправляется.</p>
-      <div class="link-actions">
-        <button class="primary-btn small" id="builder-download" data-i18n="builder_download">Скачать файл</button>
-        <button class="ghost-btn small" id="builder-copy" data-i18n="builder_copy">Скопировать base64</button>
-        <button class="ghost-btn small" id="builder-copy-plain" data-i18n="builder_copy_plain">Скопировать ссылки</button>
-        <button class="ghost-btn small" id="builder-best" data-i18n="builder_best">Выбрать 10 лучших</button>
-        <button class="ghost-btn small" id="builder-clear" data-i18n="builder_clear">Сбросить выбор</button>
-      </div>
-    </div>
-  </section>
+<h2>Как подключиться</h2>
+<ol class="steps">
+  <li>Поставь клиент: <a href="https://github.com/hiddify/hiddify-app/releases" target="_blank" rel="noopener">Hiddify</a> (Windows, Android, iPhone, Linux), <a href="https://github.com/2dust/v2rayNG/releases" target="_blank" rel="noopener">v2rayNG</a> (Android) или <a href="https://github.com/SagerNet/sing-box/releases" target="_blank" rel="noopener">sing-box</a> (iPhone).</li>
+  <li>В клиенте нажми «+» и выбери «добавить из ссылки», вставь ссылку на основную подписку.</li>
+  <li>Обнови профиль и подключайся. Если сервер не открывается, переключись на другой, в списке их много.</li>
+</ol>
+<p class="note">Clash-конфиг подойдёт для Clash Verge, FlClash и других клиентов на Mihomo.</p>
 
-  <section class="band" id="stats">
-    <div class="band-head">
-      <h2 data-i18n="stats_h2">Что внутри</h2>
-      <p data-i18n="stats_p">Числа последнего прогона и раскладка по протоколам и странам.</p>
-    </div>
-    <div class="stat-cards">
-      <div class="stat-card"><span class="stat-num" data-num="unique">—</span><span class="stat-cap" data-i18n="card_unique">уникальных кандидатов</span></div>
-      <div class="stat-card"><span class="stat-num" data-num="tcp_alive">—</span><span class="stat-cap" data-i18n="card_tcp">прошли TCP-проверку</span></div>
-      <div class="stat-card"><span class="stat-num" data-num="verified">—</span><span class="stat-cap" data-i18n="card_verified">реально работают</span></div>
-      <div class="stat-card"><span class="stat-num" data-num="servers">—</span><span class="stat-cap" data-i18n="card_servers">уникальных адресов</span></div>
-      <div class="stat-card"><span class="stat-num" data-num="tls_ok">—</span><span class="stat-cap" data-i18n="card_tls">с проверенным сертификатом</span></div>
-      <div class="stat-card"><span class="stat-num" data-num="stable">—</span><span class="stat-cap" data-i18n="card_stable">живут несколько часов</span></div>
-      <div class="stat-card"><span class="stat-num" data-num="best_speed_mbps">—</span><span class="stat-cap" data-i18n="card_speed">лучшая скорость, Мбит/с</span></div>
-      <div class="stat-card"><span class="stat-num" data-num="median_speed_mbps">—</span><span class="stat-cap" data-i18n="card_speed_med">медиана скорости, Мбит/с</span></div>
-    </div>
-    <div class="split">
-      <div class="panel">
-        <h3 data-i18n="panel_proto">Протоколы</h3>
-        <ul class="bars" id="proto-bars"></ul>
-      </div>
-      <div class="panel">
-        <h3 data-i18n="panel_country">Страны</h3>
-        <ul class="bars" id="country-bars"></ul>
-      </div>
-    </div>
-  </section>
+<h2>Что внутри</h2>
+<ul class="nums" id="nums"></ul>
 
-  <section class="band" id="connect">
-    <div class="band-head">
-      <h2 data-i18n="connect_h2">Как подключиться</h2>
-      <p data-i18n="connect_p">Выбери систему, вставь ссылку в клиент и обнови подписку.</p>
-    </div>
-    <div class="tabs" role="tablist" aria-label="Система">
-      <button class="tab is-active" role="tab" aria-selected="true" data-tab="windows">Windows</button>
-      <button class="tab" role="tab" aria-selected="false" data-tab="android">Android</button>
-      <button class="tab" role="tab" aria-selected="false" data-tab="ios">iPhone</button>
-      <button class="tab" role="tab" aria-selected="false" data-tab="macos">macOS</button>
-      <button class="tab" role="tab" aria-selected="false" data-tab="linux">Linux</button>
-    </div>
-    <div class="tab-body" id="tab-body"></div>
-  </section>
+<h2>Про безопасность</h2>
+<p>Серверы чужие. Их владельцы могут видеть твой трафик, поэтому для банков, госуслуг и важных
+аккаунтов такие впн не подходят.</p>
+<p>Не передавай через них пароли и документы. Для обычных сайтов и обхода блокировок сойдёт,
+а для приватности лучше поднять свой сервер на VPS.</p>
+<p>Каждый узел проверяется HTTPS-запросом с полной проверкой сертификата. Тот, кто подменяет
+сертификаты и читает трафик, в основную подписку не попадает.</p>
 
-  <section class="band" id="links">
-    <div class="band-head">
-      <h2 data-i18n="links_h2">Ссылки на подписку</h2>
-      <p data-i18n="links_p">Основная грузится быстрее, стабильная держится часами, полная выручает, если в основной ничего не подключается.</p>
-    </div>
-    <div class="link-grid">
-      <div class="link-card">
-        <div class="link-card-head"><h3 data-i18n="card_main">Основная</h3><span class="tag-live" data-i18n="tag_main">отобраны по скорости</span></div>
-        <code class="url" id="url-main"></code>
-        <div class="link-actions">
-          <button class="primary-btn small" data-copy-el="url-main" data-i18n="copy">Скопировать</button>
-          <button class="ghost-btn small" data-qr-el="url-main" data-i18n="qr">QR-код</button>
-          <a class="ghost-btn small" id="dl-main" href="#" target="_blank" rel="noopener" data-i18n="open_txt">Открыть txt</a>
-        </div>
-        <div class="qr" hidden></div>
-      </div>
-      <div class="link-card">
-        <div class="link-card-head"><h3 data-i18n="card_stable_sub">Стабильная</h3><span class="tag-live" data-i18n="tag_stable">живут часами</span></div>
-        <code class="url" id="url-stable"></code>
-        <div class="link-actions">
-          <button class="primary-btn small" data-copy-el="url-stable" data-i18n="copy">Скопировать</button>
-          <button class="ghost-btn small" data-qr-el="url-stable" data-i18n="qr">QR-код</button>
-          <a class="ghost-btn small" id="dl-stable" href="#" target="_blank" rel="noopener" data-i18n="open_txt">Открыть txt</a>
-        </div>
-        <div class="qr" hidden></div>
-      </div>
-      <div class="link-card">
-        <div class="link-card-head"><h3 data-i18n="card_full">Полная</h3><span class="tag-live" data-i18n="tag_full">все рабочие</span></div>
-        <code class="url" id="url-full"></code>
-        <div class="link-actions">
-          <button class="primary-btn small" data-copy-el="url-full" data-i18n="copy">Скопировать</button>
-          <button class="ghost-btn small" data-qr-el="url-full" data-i18n="qr">QR-код</button>
-          <a class="ghost-btn small" id="dl-full" href="#" target="_blank" rel="noopener" data-i18n="open_txt">Открыть txt</a>
-        </div>
-        <div class="qr" hidden></div>
-      </div>
-      <div class="link-card">
-        <div class="link-card-head"><h3>Clash / Mihomo</h3><span class="tag-live" data-i18n="tag_clash">формат yaml</span></div>
-        <code class="url" id="url-clash"></code>
-        <div class="link-actions">
-          <button class="primary-btn small" data-copy-el="url-clash" data-i18n="copy">Скопировать</button>
-          <button class="ghost-btn small" data-qr-el="url-clash" data-i18n="qr">QR-код</button>
-          <a class="ghost-btn small" id="dl-clash" href="#" target="_blank" rel="noopener">Открыть yaml</a>
-        </div>
-        <div class="qr" hidden></div>
-      </div>
-    </div>
-    <div class="mirrors">
-      <p data-i18n="mirrors_p">Если raw.githubusercontent.com не открывается, есть зеркала. Содержимое то же.</p>
-      <div class="mirror-list" id="mirror-list"></div>
-    </div>
-  </section>
+<h2>Если пригодилось</h2>
+<p>Можно поставить звезду <a href="https://github.com/sakazxc1400-creator/free-vpn-sub" target="_blank" rel="noopener">репозиторию</a>
+или скинуть донат на <a href="https://www.donationalerts.com/r/saka1232131" target="_blank" rel="noopener">donationalerts</a>.</p>
+<p>TON: <code id="ton">UQDj7y9AG8P_4oZ4KAnpRDfCulC-FsgnqSI_8xABobHvc1F3</code>
+<button class="copy" type="button" data-copy="ton">копировать</button></p>
+<p><img class="tonqr" src="assets/ton-qr.png" alt="QR-код для перевода в TON" width="150" height="150"></p>
 
-  <section class="band" id="check">
-    <div class="band-head">
-      <h2 data-i18n="check_h2">Проверка подписки</h2>
-      <p data-i18n="check_p">Проверяет доступность ссылок и свежесть списка из браузера. Отдельные серверы так проверить нельзя: для этого в клиенте есть тест задержки.</p>
-    </div>
-    <div class="check-panel">
-      <button class="primary-btn" id="check-btn" data-i18n="check_btn">Проверить сейчас</button>
-      <ul class="check-out" id="check-out">
-        <li class="muted" data-i18n="check_idle">Ещё не запускалось.</li>
-      </ul>
-    </div>
-  </section>
-
-  <section class="band warn" id="safety">
-    <div class="band-head">
-      <h2 data-i18n="safety_h2">Про безопасность</h2>
-      <p data-i18n="safety_lead">Прочитай перед использованием.</p>
-    </div>
-    <div id="safety-body"></div>
-  </section>
-
-  <section class="band" id="support">
-    <div class="band-head">
-      <h2 data-i18n="support_h2">Поддержать проект</h2>
-      <p data-i18n="support_p">Подписка была и остаётся бесплатной. Если пригодилась, можно помочь.</p>
-    </div>
-    <div class="split">
-      <div class="panel support">
-        <a class="primary-btn" href="https://www.donationalerts.com/r/saka1232131" target="_blank" rel="noopener" data-i18n="donate">Донат</a>
-        <p class="micro" data-i18n="star_hint">Самый простой способ помочь без денег: поставить звезду репозиторию.</p>
-        <a class="ghost-btn" href="https://github.com/sakazxc1400-creator/free-vpn-sub" target="_blank" rel="noopener" data-i18n="open_github">Открыть на GitHub</a>
-      </div>
-      <div class="panel ton">
-        <h3>TON</h3>
-        <img src="assets/ton-qr.png" alt="QR-код для перевода в TON" width="180" height="180">
-        <code class="url" id="ton-addr">UQDj7y9AG8P_4oZ4KAnpRDfCulC-FsgnqSI_8xABobHvc1F3</code>
-        <button class="ghost-btn small" data-copy-el="ton-addr" data-i18n="copy_addr">Скопировать адрес</button>
-      </div>
-    </div>
-  </section>
-
-</main>
-
-<footer class="foot">
-  <p data-i18n="foot_note">Free VPN Sub · MIT · репозиторий собирает публичные конфиги в один список и не предоставляет VPN-услуги. Серверы принадлежат третьим лицам.</p>
-  <p><a href="https://github.com/sakazxc1400-creator/free-vpn-sub" target="_blank" rel="noopener">github.com/sakazxc1400-creator/free-vpn-sub</a></p>
+<footer>
+<p>Собираю публичные конфиги в один список, VPN-услуг не оказываю. Серверы принадлежат их владельцам, код под MIT.</p>
+<p><a href="https://github.com/sakazxc1400-creator/free-vpn-sub">github.com/sakazxc1400-creator/free-vpn-sub</a></p>
 </footer>
 
-<script src="vendor/qrcode.min.js" defer></script>
-<script src="app.js" defer></script>
+</main>
+<script src="app.js"></script>
 </body>
 </html>
