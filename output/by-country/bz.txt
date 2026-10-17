@@ -1,3 +1,1 @@
-vless://6202b230-417c-4d8e-b624-0f71afa9c75d@45.131.210.30:8880?security=none&type=ws&path=/&host=vms.lifetime05.workers.dev&packetEncoding=xudp&sni=vms.lifetime05.workers.dev#180.%20%F0%9F%87%A7%F0%9F%87%BF%20BZ%20%C2%B7%20vless%20%C2%B7%20271ms
-vless://6202b230-417c-4d8e-b624-0f71afa9c75d@45.131.211.30:8880?security=none&type=ws&path=/?ed=2560&host=vms.lifetime06.workers.dev&packetEncoding=xudp&encryption=none#218.%20%F0%9F%87%A7%F0%9F%87%BF%20BZ%20%C2%B7%20vless%20%C2%B7%20295ms
-vless://6202b230-417c-4d8e-b624-0f71afa9c75d@45.131.209.30:8880?security=none&type=ws&path=/&host=vms.lifetime04.workers.dev&packetEncoding=xudp&encryption=none#238.%20%F0%9F%87%A7%F0%9F%87%BF%20BZ%20%C2%B7%20vless%20%C2%B7%20311ms
+vless://6202b230-417c-4d8e-b624-0f71afa9c75d@45.131.209.30:8880?security=none&type=ws&path=/&host=vms.lifetime04.workers.dev&packetEncoding=xudp&encryption=none#33.%20%F0%9F%87%A7%F0%9F%87%BF%20BZ%20%C2%B7%20vless%20%C2%B7%20475ms

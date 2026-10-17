@@ -16,14 +16,15 @@ A free VPN subscription with servers that are checked and refreshed every hour.
 
 The script collects configs from public GitHub sources, tests them, and keeps only the servers that actually work. Each server name includes its country, protocol, and latency.
 
-There are two subscription sizes:
+There are three subscription sizes:
 
 * the main list, with around 200 of the fastest servers;
+* the stable list, only servers that answered several runs in a row, usually 30 to 100;
 * the full list, with every server that passed verification, usually more than 1,000.
 
-The main list is quicker to load and is best for everyday use. The full list is useful when nothing in the main list connects or when you want to pick a server yourself.
+The main list is quicker to load and is best for everyday use. The stable list updates more slowly but its servers do not vanish after an hour. The full list is useful when nothing in the main list connects or when you want to pick a server yourself.
 
-Supported protocols include VLESS, including Reality, VMess, Trojan, Shadowsocks, Hysteria2, and TUIC.
+Supported protocols include VLESS, including Reality, VMess, Trojan, Shadowsocks, Hysteria2, and TUIC. A ready-made Clash and Mihomo config is available too.
 
 ## Subscription link
 
@@ -33,10 +34,22 @@ Main subscription:
 https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/main/output/sub.txt
 ```
 
+Stable subscription:
+
+```
+https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/main/output/sub-stable.txt
+```
+
 Full subscription:
 
 ```
 https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/main/output/sub-full.txt
+```
+
+Clash or Mihomo config:
+
+```
+https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/main/output/clash.yaml
 ```
 
 If `raw.githubusercontent.com` is blocked on your network, try one of the mirrors below. The content is the same.
@@ -49,7 +62,7 @@ https://cdn.jsdelivr.net/gh/sakazxc1400-creator/free-vpn-sub@main/output/sub.txt
 https://gh-proxy.com/https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/main/output/sub.txt
 ```
 
-For the full subscription, replace `sub.txt` with `sub-full.txt` in the link.
+For the full subscription, replace `sub.txt` with `sub-full.txt` in the link. For the stable one, use `sub-stable.txt`.
 
 jsdelivr may cache a version for a few hours. gh-proxy usually shows updates faster.
 
@@ -58,14 +71,20 @@ jsdelivr may cache a version for a few hours. gh-proxy usually shows updates fas
 Servers are sorted from fastest to slowest. For example:
 
 ```
-01. 🇨🇦 Canada · vless · 25ms
+01. 🇨🇦 Canada · vless · 25ms · 12h
 02. 🇺🇸 USA · vless · 123ms
-03. 🇬🇧 UK · ss · 398ms
+03. 🇬🇧 UK · ss · 398ms · 8h
 04. 🇫🇷 France · ss · 405ms
-05. 🇳🇱 Netherlands · ss · 408ms
+05. 🇳🇱 Netherlands · ss · 408ms · 26h
 ```
 
+A number like `12h` at the end shows how many hours in a row the server has been answering in our runs. New nodes do not have this mark yet.
+
+The `⚠` sign means the node passes traffic but failed the HTTPS certificate check: it may intercept certificates and read connection contents. Such nodes only appear in the full subscription.
+
 The main subscription includes no more than 12 servers from one country. This keeps the list from being filled almost entirely by a single datacenter. The full subscription has no country limit.
+
+Inside the main list servers are ranked by quality: certificate-checked nodes with a measured speed first, then by latency. Speed is measured for the best 150 nodes and stored in `output/nodes.json`.
 
 ## How to connect
 
@@ -122,11 +141,18 @@ Use [Nekoray](https://github.com/MatsuriDayo/nekoray/releases) or [Hiddify](http
 |------|----------|
 | `output/sub.txt` | Main subscription in base64 |
 | `output/all.txt` | Main subscription as plain text |
+| `output/sub-stable.txt` | Stable subscription in base64 |
+| `output/all-stable.txt` | Stable subscription as plain text |
 | `output/sub-full.txt` | Full subscription in base64 |
 | `output/all-full.txt` | Full subscription as plain text |
+| `output/clash.yaml` | Clash and Mihomo config with “Auto”, “Manual” and per-country groups |
+| `output/nodes.json` | Website data: country, protocol, latency, speed, uptime |
+| `output/history.json` | Node history: how many runs in a row each server answers |
 | `output/vless.txt` and others | Servers using one protocol |
 | `output/by-country/us.txt` and others | Servers from one country |
 | `output/stats.json` | Statistics from the latest update |
+
+The website can build a personal subscription: tick the nodes you want and download the file. Your selection is processed in the browser and never sent anywhere.
 
 ## How it works
 
@@ -134,8 +160,11 @@ Use [Nekoray](https://github.com/MatsuriDayo/nekoray/releases) or [Hiddify](http
 sources.txt     list of sources
 collect.py      download, parse, check, and save configs
 outbound.py     convert links into a sing-box config
-probe.py        check whether traffic passes through a server
+probe.py        check traffic, the certificate, and the speed
+clashout.py     build a Clash or Mihomo config from checked nodes
+notify.py       send run summaries to Telegram
 geo.py          look up the country by IP
+mirror/         subscription mirror on Cloudflare Workers
 output/         generated lists
 docs/           website for GitHub Pages
 ```
@@ -156,21 +185,48 @@ Before verification, the script drops configs that make sing-box fail to start a
 
 After verification, the script looks up each server's country, measures latency, and sorts the results. The full list gets every working server. The main subscription takes the best ones while limiting the number from each country.
 
+Next, every live node goes through an HTTPS check: the script connects through it to sites with known certificates and validates the certificate fully. If a node serves its own certificate, it reads the contents of your connections. Such a node stays only in the full subscription and is marked with `⚠`.
+
+The best 150 nodes by latency get a speed measurement: a file is downloaded through the node and the result in megabits per second lands in `output/nodes.json`. The subscription itself does not carry the speed, so the list stays small.
+
+Runs are linked to each other through `output/history.json`. The script counts how many runs in a row a node keeps answering and remembers that number. Nodes alive for many hours go into the separate stable subscription: usually these are the most reliable servers in the list.
+
+If a build turns out noticeably worse than the previous one, under 60% of the previous server count, the script does not overwrite the subscriptions and exits with an error. That way a failure on the source side will not leave you with an empty list. Set `ALLOW_SHRINK=1` to bypass the guard when the drop is real.
+
 Servers with the same address and port are merged into one, keeping the fastest. The same node often appears in the sources as a dozen copies with different UUIDs, and without this the subscription would fill up with duplicates.
 
 If the sources are unavailable or no server passes verification, the old files are kept. A working subscription with old data is better than an empty list.
+
+### Telegram notifications
+
+A run can send a summary to Telegram: how many servers were found, which countries are in the list, what changed. The feature stays off until the secrets are set.
+
+1. Create a bot with [@BotFather](https://t.me/BotFather) and copy the token.
+2. Send your bot any message and get your id from [@userinfobot](https://t.me/userinfobot).
+3. In the repository, open `Settings` → `Secrets and variables` → `Actions` and add `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID`.
+
+You can test it by hand:
+
+```bash
+TELEGRAM_BOT_TOKEN=... TELEGRAM_CHAT_ID=... python notify.py "test message"
+```
+
+### Subscription mirror
+
+If GitHub is blocked on your network, run a mirror on Cloudflare Workers: the files are the same while the Cloudflare domain is usually reachable. The code and step-by-step instructions are in [`mirror/`](mirror/README.md). The free tier is more than enough, and everything is done in the browser.
 
 ### Running locally
 
 ```bash
 python selftest.py     # check the parsers
 python testconv.py     # check link conversion and country lookup
+python testclash.py    # check Clash config generation
 python testsingbox.py  # check configs, sing-box required
 python e2etest.py      # run the full test scenario
 python collect.py      # build the subscription
 ```
 
-Python 3.9 or newer is required. No extra libraries are needed. For full server verification, place the [sing-box](https://github.com/SagerNet/sing-box/releases) binary next to the scripts. Without it, the script only performs TCP checks and says so in the log.
+Python 3.9 or newer is required. No extra libraries are needed; `testclash.py` likes `pyyaml` but works without it. For full server verification, place the [sing-box](https://github.com/SagerNet/sing-box/releases) binary next to the scripts. Without it, the script only performs TCP checks and says so in the log.
 
 ### Adding a source
 
@@ -181,6 +237,8 @@ Add a link to `sources.txt`, one per line. Lines starting with `#` are comments.
 Please read this before using the subscription.
 
 The server owner may be able to see your traffic. These servers are run by unknown people, and we do not know how they handle the traffic that passes through them. The operator may see which sites you visit. If they replace a certificate, they may also intercept the contents of your connections.
+
+That is why every node additionally passes an HTTPS request with full certificate validation. A node that intercepts certificates to read connection contents never gets into the main subscription: in the full list it is marked with `⚠`. This lowers the risk but does not remove it: the server owner still sees which sites you connect to.
 
 Do not use these servers for banking, government services, work email, or other important accounts. Do not send passwords, documents, or payment details through them. This subscription is for bypassing blocks, not for complete privacy or anonymity.
 

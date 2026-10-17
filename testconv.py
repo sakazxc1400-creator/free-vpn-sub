@@ -107,6 +107,21 @@ print("== outbound: неподдерживаемый транспорт ==")
 check("kcp -> None", outbound.build("vless://u@1.1.1.1:443?type=kcp#k") is None)
 check("xhttp -> None", outbound.build("vless://u@1.1.1.1:443?type=xhttp#x") is None)
 
+print("== outbound: битый процент в пути ==")
+# sing-box падает на разборе "/x%zz" и уносит с собой весь батч,
+# поэтому одиночные проценты экранируются.
+o = outbound.build("vless://u@1.1.1.1:443?type=ws&path=/x%zz#bad")
+check("узел не потерян", o is not None)
+check("битый процент экранирован",
+      o and o["transport"]["path"] == "/x%25zz",
+      o and o["transport"].get("path"))
+o = outbound.build("vless://u@1.1.1.1:443?type=ws&path=/ok%20path#good")
+check("корректный процент не тронут",
+      o and o["transport"]["path"] == "/ok path",
+      o and o["transport"].get("path"))
+check("100% в пути -> 100%25",
+      outbound._safe_path("/100%") == "/100%25")
+
 print("== outbound: vmess ==")
 cfg = {"add": "3.3.3.3", "port": "8443", "id": "vm-uuid", "aid": "2",
        "net": "ws", "path": "/p", "host": "h.com", "tls": "tls", "scy": "auto"}

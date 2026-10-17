@@ -8,6 +8,13 @@
 одним процессом sing-box, дальше через каждый прокси делается запрос
 к generate_204. Ответ 204 = узел рабочий.
 
+Дополнительно каждый рабочий узел проверяется по HTTPS с полной проверкой
+сертификата. Это ловит узлы, которые подменяют сертификаты и читают трафик:
+свой сертификат такую проверку не проходит. Результат пишется в node.tls_ok.
+
+Ещё есть отдельный замер скорости: через узел качается небольшой файл и
+считается пропускная способность. Результат пишется в node.speed_mbps.
+
 Если бинарника sing-box нет, verify() возвращает пустой список, и вызывающая
 сторона откатывается на TCP-проверку.
 """
@@ -18,6 +25,7 @@ import json
 import os
 import shutil
 import socket
+import ssl
 import subprocess
 import sys
 import tempfile
@@ -34,6 +42,27 @@ PROBE_URLS = (
     "http://connectivitycheck.gstatic.com/generate_204",
     "http://cp.cloudflare.com/generate_204",
 )
+
+# Те же адреса, но по HTTPS. Здесь важна именно проверка сертификата:
+# узел, который читает трафик и подменяет сертификаты, её не пройдёт.
+TLS_PROBE_URLS = (
+    "https://cp.cloudflare.com/generate_204",
+    "https://connectivitycheck.gstatic.com/generate_204",
+)
+
+# Замер скорости: качаем небольшой файл через узел. Пробуем несколько
+# адресов по очереди: часть узлов и сетей не пускает на конкретный хост
+# (Cloudflare, например, отвечает 403 на многие серверные адреса).
+# Первый удачный замер идёт в результат.
+SPEED_TARGETS = (
+    "https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/main/output/all-full.txt",
+    "https://cdn.jsdelivr.net/gh/sakazxc1400-creator/free-vpn-sub@main/output/all-full.txt",
+    "https://proof.ovh.net/files/1Mb.dat",
+)
+SPEED_BYTES = 200000
+SPEED_TIMEOUT = 10.0
+# Меньше этого объёма считать нечего: замер получится случайным.
+MIN_SPEED_BYTES = 32768
 
 BATCH_SIZE = 150         # узлов на один процесс sing-box
 PROBE_TIMEOUT = 8.0      # сек на запрос через узел
@@ -61,6 +90,17 @@ MIN_BATCH = 20
 # ограничен временем job'а в CI, поэтому по истечении бюджета
 # останавливаемся и отдаём то, что уже нашли.
 VERIFY_BUDGET = 25 * 60
+
+# Замер скорости идёт уже после проверки, когда рабочие узлы известны.
+# Это дорого: через каждый узел качается файл, поэтому берём только
+# лучших по задержке и ограничиваем время.
+MAX_SPEED_NODES = 150
+SPEED_BUDGET = 5 * 60
+SPEED_WORKERS = 30
+
+# Замер скорости берёт свой отрезок портов, чтобы не зависеть от того,
+# успели ли освободиться порты фазы проверки.
+SPEED_PORT_BASE = 48000
 
 
 def log(msg: str) -> None:
@@ -190,8 +230,11 @@ def stop_singbox(proc, error_tail: bool = False) -> str:
     return err
 
 
-def probe_one(port: int) -> int | None:
-    """Запрос через локальный прокси. Возвращает задержку в мс или None."""
+def probe_one(port: int) -> tuple[int | None, bool]:
+    """
+    Запрос через локальный прокси. Возвращает пару
+    (задержка в мс или None, прошёл ли HTTPS с проверкой сертификата).
+    """
     opener = urllib.request.build_opener(
         urllib.request.ProxyHandler({
             "http": f"http://127.0.0.1:{port}",
@@ -199,6 +242,7 @@ def probe_one(port: int) -> int | None:
         }),
         urllib.request.HTTPSHandler(),
     )
+    latency: int | None = None
     for url in PROBE_URLS:
         start = time.perf_counter()
         try:
@@ -209,11 +253,99 @@ def probe_one(port: int) -> int | None:
                     # это подстановка провайдера или заглушка, узел не годится.
                     if resp.status == 204 and body:
                         continue
-                    return int((time.perf_counter() - start) * 1000)
+                    latency = int((time.perf_counter() - start) * 1000)
+                    break
         except (urllib.error.URLError, urllib.error.HTTPError, OSError,
                 ValueError, TimeoutError):
             continue
+
+    if latency is None:
+        return None, False
+    return latency, probe_tls(port)
+
+
+def probe_tls(port: int) -> bool:
+    """
+    HTTPS-запрос через узел с полной проверкой сертификата.
+
+    Узел, который вклинивается в TLS и подменяет сертификаты, предъявит
+    свой сертификат, и проверка не пройдёт. Такой узел сможет читать
+    трафик пользователя, поэтому в основную подписку он не попадает.
+    """
+    opener = urllib.request.build_opener(
+        urllib.request.ProxyHandler({
+            "http": f"http://127.0.0.1:{port}",
+            "https": f"http://127.0.0.1:{port}",
+        }),
+        urllib.request.HTTPSHandler(context=ssl.create_default_context()),
+    )
+    for url in TLS_PROBE_URLS:
+        try:
+            with opener.open(url, timeout=PROBE_TIMEOUT) as resp:
+                if resp.status not in (200, 204):
+                    continue
+                body = resp.read(64)
+                if resp.status == 204 and body:
+                    continue
+                return True
+        except (urllib.error.URLError, urllib.error.HTTPError, OSError,
+                ValueError, TimeoutError, ssl.SSLError):
+            continue
+    return False
+
+
+def probe_speed(port: int, nbytes: int = SPEED_BYTES) -> float | None:
+    """
+    Качает небольшой файл через узел и считает скорость в Мбит/с.
+    None означает, что замер не удался или узел слишком медленный.
+    """
+    opener = urllib.request.build_opener(
+        urllib.request.ProxyHandler({
+            "http": f"http://127.0.0.1:{port}",
+            "https": f"http://127.0.0.1:{port}",
+        }),
+        urllib.request.HTTPSHandler(context=ssl.create_default_context()),
+    )
+    for url in SPEED_TARGETS:
+        start = time.perf_counter()
+        try:
+            with opener.open(url, timeout=SPEED_TIMEOUT) as resp:
+                data = resp.read(nbytes)
+        except (urllib.error.URLError, urllib.error.HTTPError, OSError,
+                ValueError, TimeoutError, ssl.SSLError):
+            continue
+
+        elapsed = time.perf_counter() - start
+        if elapsed <= 0 or len(data) < MIN_SPEED_BYTES:
+            continue
+        return round(len(data) * 8 / elapsed / 1e6, 1)
     return None
+
+
+def default_probe(port: int, node: object) -> int | None:
+    """Обычная проверка узла: доступ в интернет плюс проверка сертификата."""
+    latency, tls_ok = probe_one(port)
+    if latency is not None:
+        node.tls_ok = tls_ok
+    return latency
+
+
+def speed_probe(port: int, node: object) -> float | None:
+    """Замер скорости узла."""
+    mbps = probe_speed(port)
+    if mbps is not None:
+        node.speed_mbps = mbps
+    return mbps
+
+
+def prepare_nodes(nodes: list) -> list[tuple[object, dict]]:
+    """Собирает outbound-конфиги для узлов. Негодные ссылки пропускает."""
+    prepared: list[tuple[object, dict]] = []
+    for node in nodes:
+        built = outbound.build(node.raw)
+        if built is not None:
+            prepared.append((node, built))
+    return prepared
 
 
 def verify_batch(nodes: list, singbox: str,
@@ -223,18 +355,17 @@ def verify_batch(nodes: list, singbox: str,
     port_base — начало отрезка портов для этого батча. Параллельные
     батчи получают разные отрезки и не мешают друг другу.
     """
-    prepared: list[tuple[object, dict]] = []
-    for node in nodes:
-        built = outbound.build(node.raw)
-        if built is not None:
-            prepared.append((node, built))
+    prepared = prepare_nodes(nodes)
     if not prepared:
         return []
     return _verify_prepared(prepared, singbox, port_base)
 
 
 def _verify_prepared(prepared: list[tuple[object, dict]], singbox: str,
-                     port_base: int = PORT_BASE) -> list:
+                     port_base: int = PORT_BASE, probe=None,
+                     workers: int = PROBE_WORKERS) -> list:
+    """probe(port, node) -> значение или None. По умолчанию проверка доступа."""
+    probe = probe or default_probe
     ports = free_ports(len(prepared), port_base)
     if len(ports) < len(prepared):
         prepared = prepared[: len(ports)]
@@ -266,17 +397,18 @@ def _verify_prepared(prepared: list[tuple[object, dict]], singbox: str,
                     mid = len(prepared) // 2
                     # Второй половине даём порты после первой, чтобы
                     # хвост закрывающегося процесса не столкнулся с ним.
-                    return (_verify_prepared(prepared[:mid], singbox, port_base)
+                    return (_verify_prepared(prepared[:mid], singbox, port_base,
+                                            probe, workers)
                             + _verify_prepared(prepared[mid:], singbox,
-                                               port_base + mid))
+                                               port_base + mid, probe, workers))
                 log(f"    батч из {len(prepared)} узлов пропущен: "
                     f"{err or 'sing-box не поднялся'}")
                 return []
 
             results: list[tuple[object, int]] = []
-            with ThreadPoolExecutor(max_workers=PROBE_WORKERS) as pool:
+            with ThreadPoolExecutor(max_workers=workers) as pool:
                 futures = {
-                    pool.submit(probe_one, ports[i]): prepared[i][0]
+                    pool.submit(probe, ports[i], prepared[i][0]): prepared[i][0]
                     for i in range(len(prepared))
                 }
                 for fut in as_completed(futures):
@@ -361,6 +493,45 @@ def verify(nodes: list, need: int) -> list[tuple[object, int]]:
 
     good.sort(key=lambda pair: pair[1])
     return good
+
+
+def measure_speed(nodes: list, singbox: str | None = None) -> int:
+    """
+    Замеряет скорость узлов: через каждый качается небольшой файл.
+    Результат пишется в node.speed_mbps. Возвращает число удачных замеров.
+
+    Замер идёт после проверки и только для отобранных узлов: он дорогой
+    по трафику, поэтому список ограничен MAX_SPEED_NODES и SPEED_BUDGET.
+    """
+    singbox = singbox or find_singbox()
+    if not singbox:
+        log("    sing-box не найден — замер скорости пропущен")
+        return 0
+
+    prepared = prepare_nodes(nodes[:MAX_SPEED_NODES])
+    if not prepared:
+        return 0
+
+    log(f"    замер скорости: {len(prepared)} узлов по "
+        f"{SPEED_BYTES // 1024} КБ, параллельно {SPEED_WORKERS}")
+    deadline = time.time() + SPEED_BUDGET
+    measured = 0
+    for index in range(0, len(prepared), SPEED_WORKERS):
+        if time.time() >= deadline:
+            log(f"    бюджет замера ({SPEED_BUDGET}s) исчерпан")
+            break
+        chunk = prepared[index:index + SPEED_WORKERS]
+        # Отрезок портов отдельный от проверки: так замер не зависит от того,
+        # успели ли освободиться порты предыдущей фазы.
+        results = _verify_prepared(
+            chunk, singbox,
+            SPEED_PORT_BASE + (index % 64) * PORT_SEGMENT,
+            probe=speed_probe, workers=SPEED_WORKERS,
+        )
+        measured += len(results)
+        log(f"    замерено {min(index + len(chunk), len(prepared))}"
+            f"/{len(prepared)}, с результатом {measured}")
+    return measured
 
 
 if __name__ == "__main__":

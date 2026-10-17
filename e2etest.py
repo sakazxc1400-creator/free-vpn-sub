@@ -12,6 +12,7 @@ End-to-end проверка пайплайна без внешней сети.
 import base64
 import http.server
 import json
+import os
 import shutil
 import socket
 import socketserver
@@ -117,6 +118,12 @@ if (ROOT / "geo_cache.json").exists():
     shutil.copy2(ROOT / "geo_cache.json", GEO_BACKUP)
 
 try:
+    # История от настоящих прогонов сделала бы проверки неповторяемыми:
+    # тест обязан начинаться с пустой истории.
+    history_file = ROOT / "output" / "history.json"
+    if history_file.exists():
+        history_file.unlink()
+
     # Подменяем источники.
     (ROOT / "sources.txt").write_text("\n".join([
         "# e2e",
@@ -130,8 +137,15 @@ try:
     # Разрешаем loopback только на время теста.
     collect.is_routable = lambda host: True
     collect.CHECK_TIMEOUT = 1.0
+    # Защита от плохой сборки рассчитана на настоящие прогоны: в тесте
+    # узлов заведомо меньше, чем в прошлой подписке, и она бы сработала.
+    os.environ["ALLOW_SHRINK"] = "1"
+    # Для проверки стабильной подписки хватит двух прогонов подряд.
+    collect.STABLE_RUNS = 2
     # sing-box в тесте не запускаем: проверяем именно откат на TCP-режим.
     collect.probe.verify = lambda nodes, need: []
+    # Замер скорости тоже: он ходит в сеть через узлы.
+    collect.probe.measure_speed = lambda nodes, singbox=None: 0
     # Сеть для гео не трогаем, подставляем фиксированные страны.
     collect.geo.annotate = lambda hosts: {h: "NL" for h in hosts}
 
@@ -141,7 +155,8 @@ try:
 
     out = ROOT / "output"
     for fname in ("sub.txt", "all.txt", "sub-full.txt", "all-full.txt",
-                  "stats.json"):
+                  "sub-stable.txt", "all-stable.txt", "nodes.json",
+                  "history.json", "clash.yaml", "stats.json"):
         check(f"{fname} создан", (out / fname).exists())
 
     stats = json.loads((out / "stats.json").read_text(encoding="utf-8"))
@@ -202,6 +217,47 @@ try:
     check("в all-full.txt 3 строки",
           len([l for l in full_plain.splitlines() if l.strip()]) == 3)
 
+    # --- Новые файлы: структура узлов, история, Clash ---
+    print("== nodes.json, история, Clash ==")
+    nodes_json = json.loads((out / "nodes.json").read_text(encoding="utf-8"))
+    check("nodes.json совпадает с основной подпиской",
+          len(nodes_json) == stats["published"],
+          f"{len(nodes_json)} != {stats['published']}")
+    check("в nodes.json есть адрес, страна и задержка",
+          all(n.get("addr") and n.get("name") and n.get("ms") is not None
+              and n.get("cc") for n in nodes_json), str(nodes_json[:2]))
+    check("в nodes.json есть срок жизни", all("up" in n for n in nodes_json))
+    check("в nodes.json есть ссылки для своей подписки",
+          all(str(n.get("url", "")).startswith(("vless://", "vmess://", "trojan://",
+                                               "ss://", "hysteria2://", "tuic://"))
+              for n in nodes_json), str(nodes_json[:1])[:200])
+
+    history = json.loads((out / "history.json").read_text(encoding="utf-8"))
+    check("история знает все узлы", history.get("count") == 3,
+          str(history.get("count")))
+    check("первый прогон: стаж 1",
+          all(v.get("streak") == 1 for v in history["nodes"].values()),
+          str(history["nodes"]))
+    check("стабильная подписка пока пуста",
+          (out / "all-stable.txt").read_text(encoding="utf-8").strip() == "")
+    check("в stats есть stable и tls_ok",
+          stats["stable"] == 0 and stats["tls_ok"] == 3, str(stats))
+
+    clash = (out / "clash.yaml").read_text(encoding="utf-8")
+    check("clash.yaml содержит прокси и правило",
+          "proxies:" in clash and "MATCH," in clash)
+    check("в clash.yaml есть группа Авто", '"Авто"' in clash)
+    try:
+        import yaml
+    except ImportError:
+        print("     PyYAML нет: разбор clash.yaml пропущен")
+    else:
+        parsed_clash = yaml.safe_load(clash)
+        check("clash.yaml разбирается как YAML",
+              isinstance(parsed_clash, dict)
+              and len(parsed_clash.get("proxies") or []) == stats["published"],
+              str(type(parsed_clash)))
+
     # --- Сценарий: все источники мертвы -> подписка не должна затираться ---
     print("== сценарий: все источники недоступны ==")
     before = (out / "sub.txt").read_text(encoding="utf-8")
@@ -226,8 +282,14 @@ try:
     ]) + "\n", encoding="utf-8")
 
     def fake_verify(nodes, need):
-        # Первые два узла "работают", остальные нет.
-        return [(n, 40 + i * 10) for i, n in enumerate(nodes[:2])]
+        # Первые два узла "работают". У второго сертификат не проверился:
+        # он обязан оказаться ниже первого и получить пометку.
+        result = []
+        for i, node in enumerate(nodes[:2]):
+            node.tls_ok = i == 0
+            node.speed_mbps = 5.0 if i == 0 else None
+            result.append((node, 40 + i * 10))
+        return result
 
     collect.probe.verify = fake_verify
     rc4 = collect.main()
@@ -239,6 +301,39 @@ try:
     check("в подписке только проверенные",
           len([l for l in plain4.splitlines() if l.strip()]) == 2)
     check("задержка из проверки", "40ms" in urllib.parse.unquote(plain4), plain4[:200])
+
+    lines4 = [l for l in urllib.parse.unquote(plain4).splitlines() if l.strip()]
+    check("узел с проверенным сертификатом стоит первым", "⚠" not in lines4[0])
+    check("узел с непроверенным сертификатом помечен", "⚠" in lines4[1],
+          lines4[1][:120])
+    check("посчитаны узлы с проверенным сертификатом", stats4["tls_ok"] == 1,
+          str(stats4["tls_ok"]))
+
+    # Второй прогон: те же адреса живы второй раз подряд. Значит, они
+    # стабильные и должны попасть в отдельную подписку.
+    rc5 = collect.main()
+    stats5 = json.loads((out / "stats.json").read_text(encoding="utf-8"))
+    check("второй прогон прошёл", rc5 == 0, f"rc={rc5}")
+    check("стабильная подписка наполнилась", stats5["stable"] >= 1,
+          str(stats5["stable"]))
+    stable_plain = (out / "all-stable.txt").read_text(encoding="utf-8")
+    check("в стабильной подписке есть узлы", stable_plain.strip() != "")
+    check("в названии узла виден срок жизни",
+          "ч" in urllib.parse.unquote(stable_plain),
+          urllib.parse.unquote(stable_plain)[:200])
+
+    # --- Сценарий: резкое падение числа узлов -> публиковать нельзя ---
+    print("== сценарий: защита от плохой сборки ==")
+    os.environ.pop("ALLOW_SHRINK", None)
+    spoiled = dict(stats5)
+    spoiled["published_full"] = 1000
+    (out / "stats.json").write_text(json.dumps(spoiled), encoding="utf-8")
+    before_guard = (out / "all.txt").read_text(encoding="utf-8")
+    rc6 = collect.main()
+    check("прогон остановлен", rc6 == 1, f"rc={rc6}")
+    check("подписка не перезаписана",
+          (out / "all.txt").read_text(encoding="utf-8") == before_guard)
+    os.environ["ALLOW_SHRINK"] = "1"
 
 finally:
     httpd.shutdown()

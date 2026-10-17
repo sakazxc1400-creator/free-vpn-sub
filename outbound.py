@@ -163,6 +163,20 @@ def _tls_block(
     return tls
 
 
+def _safe_path(path: str) -> str:
+    """
+    Приводит путь к виду, который переварит sing-box.
+
+    В источниках попадаются ссылки вида ?path=/x%zz или с одиночным
+    процентом. sing-box падает на разборе такого пути ("invalid URL
+    escape") и уносит с собой весь батч из 30-40 узлов. Экранируем
+    только битые проценты, корректные последовательности не трогаем.
+    """
+    if not path:
+        return path
+    return re.sub(r"%(?![0-9A-Fa-f]{2})", "%25", path)
+
+
 def _transport_block(
     net: str, *, path: str, host: str, service_name: str, header_type: str
 ) -> dict | None | bool:
@@ -171,6 +185,7 @@ def _transport_block(
     или False (транспорт не поддерживается, узел пропускаем).
     """
     net = (net or "tcp").strip().lower()
+    path = _safe_path(path)
 
     if net in NET_WS:
         block: dict = {"type": "ws"}

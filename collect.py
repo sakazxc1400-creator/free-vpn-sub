@@ -24,6 +24,7 @@ import base64
 import binascii
 import ipaddress
 import json
+import os
 import re
 import socket
 import sys
@@ -33,7 +34,7 @@ import urllib.parse
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import geo
@@ -89,6 +90,28 @@ UDP_PROTOCOLS = frozenset({"hysteria2", "tuic"})
 # pick_diverse его поднимает.
 MAX_PER_COUNTRY = 12
 
+# --- История узлов ----------------------------------------------------------
+#
+# Каждый прогон в отдельности не помнит, что было раньше, поэтому узел,
+# живущий сутки, и узел, оживший минуту назад, выглядят одинаково.
+# Между прогонами сохраняем, кто сколько держится: отсюда берётся
+# подписка только из проверенных временем узлов и отметка «живёт N ч».
+HISTORY_FILE = OUTPUT_DIR / "history.json"
+RUNS_PER_HOUR = 2           # расписание workflow: два прогона в час
+STABLE_RUNS = 6             # 6 прогонов подряд это 3 часа
+HISTORY_KEEP_HOURS = 48     # сколько помним узлы, выпавшие из свежей сборки
+# Если между прогонами прошло больше этого времени, непрерывный стаж
+# обнуляется: расписание могло сломаться, и «живёт непрерывно» стало бы
+# неправдой.
+HISTORY_GAP_HOURS = 1.5
+
+# --- Защита от плохой сборки ------------------------------------------------
+#
+# Если рабочих узлов стало заметно меньше, чем в прошлый раз, публиковать
+# это нельзя: скорее всего отвалился источник или чудит сеть раннера.
+# Оставляем прошлую подписку как есть и падаем с ошибкой.
+MIN_KEEP_RATIO = 0.6
+
 USER_AGENT = "Mozilla/5.0 (compatible; free-vpn-sub/1.0; +https://github.com)"
 
 # Зеркала для raw.githubusercontent.com: в части сетей он заблокирован,
@@ -119,10 +142,19 @@ class Node:
     latency_ms: int | None = None  # заполняется после проверки
     country: str = ""              # код страны, ISO 3166-1 alpha-2
     verified: bool = False         # прошёл ли проверку через sing-box
+    tls_ok: bool = True            # прошёл ли HTTPS с проверкой сертификата
+    speed_mbps: float | None = None  # замер скорости, Мбит/с
+    streak: int = 0                # сколько прогонов подряд узел живой
+    uptime_hours: float = 0.0      # непрерывный срок жизни в часах
 
     @property
     def key(self) -> str:
         return self.ident
+
+    @property
+    def addr(self) -> str:
+        """Адрес сервера: по нему узел опознаётся между прогонами."""
+        return f"{self.host}:{self.port}"
 
 
 @dataclass
@@ -139,6 +171,9 @@ class Stats:
     verified: int = 0
     alive: int = 0
     servers: int = 0
+    tls_ok: int = 0
+    stable: int = 0
+    speed_measured: int = 0
     by_proto: dict[str, int] = field(default_factory=dict)
     by_country: dict[str, int] = field(default_factory=dict)
 
@@ -502,13 +537,110 @@ def check_alive(nodes: list[Node]) -> list[Node]:
 
 
 # ----------------------------------------------------------------------------
+# История узлов
+# ----------------------------------------------------------------------------
+
+def parse_stamp(value: str) -> datetime | None:
+    """Разбирает отметку времени из истории. Битые значения игнорирует."""
+    try:
+        return datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ").replace(
+            tzinfo=timezone.utc)
+    except (ValueError, TypeError):
+        return None
+
+
+def load_history() -> dict:
+    """Читает историю узлов. Любая проблема с файлом это пустая история."""
+    try:
+        data = json.loads(HISTORY_FILE.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {"nodes": {}}
+    if not isinstance(data, dict) or not isinstance(data.get("nodes"), dict):
+        return {"nodes": {}}
+    return data
+
+
+def apply_history(history: dict, nodes: list[Node], now: datetime) -> None:
+    """
+    Считает непрерывный стаж узлов и обновляет историю.
+
+    Узел, который был жив в прошлом прогоне, увеличивает стаж. Пропал из
+    сборки или между прогонами прошло слишком много времени — стаж
+    обнуляется. По стажу потом отбирается стабильная подписка.
+    """
+    stored: dict = history.setdefault("nodes", {})
+    stamp = now.strftime("%Y-%m-%dT%H:%M:%SZ")
+    tolerance = timedelta(hours=HISTORY_GAP_HOURS)
+    alive: set[str] = set()
+
+    for node in nodes:
+        key = node.addr
+        alive.add(key)
+        prev = stored.get(key) or {}
+        prev_stamp = parse_stamp(str(prev.get("last", "")))
+        if prev_stamp is not None and now - prev_stamp <= tolerance:
+            streak = int(prev.get("streak", 0)) + 1
+        else:
+            streak = 1
+
+        node.streak = streak
+        node.uptime_hours = round(streak / RUNS_PER_HOUR, 1)
+        stored[key] = {
+            "streak": streak,
+            "first": prev.get("first") or stamp,
+            "last": stamp,
+            "runs": int(prev.get("runs", 0)) + 1,
+        }
+
+    # Узлы, которых нет в этой сборке, теряют непрерывный стаж, но запись
+    # живёт ещё HISTORY_KEEP_HOURS: узел может вернуться в следующем прогоне.
+    cutoff = now - timedelta(hours=HISTORY_KEEP_HOURS)
+    for key in list(stored):
+        if key in alive:
+            continue
+        entry = stored.get(key) or {}
+        last = parse_stamp(str(entry.get("last", "")))
+        if last is None or last < cutoff:
+            del stored[key]
+            continue
+        if entry.get("streak"):
+            entry["streak"] = 0
+
+    history["updated"] = stamp
+    history["count"] = len(stored)
+
+
+def save_history(history: dict) -> None:
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    HISTORY_FILE.write_text(
+        json.dumps(history, ensure_ascii=False, separators=(",", ":")) + "\n",
+        encoding="utf-8",
+    )
+
+
+def pick_stable(nodes: list[Node]) -> list[Node]:
+    """Узлы, которые держатся уже STABLE_RUNS прогонов подряд."""
+    return [n for n in nodes if n.streak >= STABLE_RUNS]
+
+
+def previous_report() -> dict | None:
+    """Прошлый stats.json. Нужен, чтобы заметить провал по числу узлов."""
+    try:
+        data = json.loads((OUTPUT_DIR / "stats.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    return data if isinstance(data, dict) else None
+
+
+# ----------------------------------------------------------------------------
 # Запись результатов
 # ----------------------------------------------------------------------------
 
 def retag(node: Node, index: int) -> str:
     """
     Переписывает название узла так, чтобы в клиенте сразу было видно
-    страну, протокол и задержку:  🇳🇱 Нидерланды · vless · 84ms
+    страну, протокол, задержку и срок жизни:
+      🇳🇱 Нидерланды · vless · 84ms · 12ч
     """
     parts: list[str] = []
     if node.country:
@@ -518,6 +650,13 @@ def retag(node: Node, index: int) -> str:
     parts.append(node.proto)
     if node.latency_ms is not None:
         parts.append(f"{node.latency_ms}ms")
+    if node.uptime_hours >= 1:
+        parts.append(f"{node.uptime_hours:.0f}ч")
+    if not node.tls_ok:
+        # HTTPS с проверкой сертификата не прошёл: узел может подменять TLS.
+        # В основную подписку такие не отбираются, но в полной честнее
+        # пометить их предупреждающим знаком.
+        parts.append("⚠")
 
     label = f"{index:02d}. " + " · ".join(parts)
     tag = urllib.parse.quote(label, safe="")
@@ -525,12 +664,14 @@ def retag(node: Node, index: int) -> str:
     return f"{base}#{tag}"
 
 
-def write_outputs(nodes: list[Node], full: list[Node], stats: Stats) -> dict:
+def write_outputs(nodes: list[Node], full: list[Node], stats: Stats,
+                  stable: list[Node] | None = None) -> dict:
     """
-    Пишет обе подписки.
+    Пишет подписки.
 
-    nodes — основная (sub.txt): короткий отобранный список.
-    full  — полная (sub-full.txt): всё, что прошло проверку.
+    nodes  — основная (sub.txt): короткий отобранный список.
+    full   — полная (sub-full.txt): всё, что прошло проверку.
+    stable — стабильная (sub-stable.txt): узлы, живущие несколько часов.
 
     Разбивки по протоколам и странам делаются от полного списка: там
     смысл именно в максимальном числе узлов на конкретный протокол или
@@ -558,6 +699,44 @@ def write_outputs(nodes: list[Node], full: list[Node], stats: Stats) -> dict:
         encoding="utf-8",
     )
     (OUTPUT_DIR / "all-full.txt").write_text(full_plain + "\n", encoding="utf-8")
+
+    # Стабильная подписка. Файлы пишем всегда, даже пустыми: иначе клиент
+    # получит 404 на сохранённую ссылку и покажет ошибку вместо пустого
+    # списка.
+    stable = stable or []
+    stable_tagged = [retag(n, i + 1) for i, n in enumerate(stable)]
+    stable_plain = "\n".join(stable_tagged)
+    (OUTPUT_DIR / "sub-stable.txt").write_text(
+        base64.b64encode(stable_plain.encode("utf-8")).decode("ascii"),
+        encoding="utf-8",
+    )
+    (OUTPUT_DIR / "all-stable.txt").write_text(
+        stable_plain + "\n", encoding="utf-8"
+    )
+
+    # Структурированные данные для сайта: разбирать названия в браузере
+    # можно, но отдельный JSON надёжнее и несёт больше полей.
+    nodes_json = [
+        {
+            "i": index + 1,
+            "cc": n.country,
+            "name": geo.country_name(n.country) if n.country else "?",
+            "proto": n.proto,
+            "ms": n.latency_ms,
+            "mbps": n.speed_mbps,
+            "up": n.uptime_hours,
+            "tls": bool(n.tls_ok),
+            "addr": n.addr,
+            # Сама ссылка нужна сайту: из выбранных узлов он собирает
+            # персональную подписку прямо в браузере.
+            "url": retag(n, index + 1),
+        }
+        for index, n in enumerate(nodes)
+    ]
+    (OUTPUT_DIR / "nodes.json").write_text(
+        json.dumps(nodes_json, ensure_ascii=False, separators=(",", ":")) + "\n",
+        encoding="utf-8",
+    )
 
     # Разбивка по протоколам. Старые файлы удаляем: если в этот раз,
     # например, не нашлось ни одного tuic, файл с прошлого прогона
@@ -598,6 +777,7 @@ def write_outputs(nodes: list[Node], full: list[Node], stats: Stats) -> dict:
     }
 
     latencies = [n.latency_ms for n in full if n.latency_ms is not None]
+    speeds = sorted(n.speed_mbps for n in full if n.speed_mbps is not None)
 
     report = {
         "updated": updated,
@@ -610,6 +790,10 @@ def write_outputs(nodes: list[Node], full: list[Node], stats: Stats) -> dict:
         "tcp_alive": stats.tcp_alive,
         "verified": stats.verified,
         "servers": stats.servers,
+        "tls_ok": stats.tls_ok,
+        "speed_measured": stats.speed_measured,
+        "stable": len(stable),
+        "stable_runs": STABLE_RUNS,
         "published": len(nodes),
         "published_full": len(full),
         "countries": len([c for c in by_country if c != "XX"]),
@@ -619,11 +803,44 @@ def write_outputs(nodes: list[Node], full: list[Node], stats: Stats) -> dict:
         "median_latency_ms": (
             sorted(latencies)[len(latencies) // 2] if latencies else None
         ),
+        "best_speed_mbps": speeds[-1] if speeds else None,
+        "median_speed_mbps": speeds[len(speeds) // 2] if speeds else None,
     }
     (OUTPUT_DIR / "stats.json").write_text(
         json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
     return report
+
+
+# ----------------------------------------------------------------------------
+# Clash / Mihomo
+# ----------------------------------------------------------------------------
+
+def write_clash(nodes: list[Node]) -> int:
+    """
+    Пишет output/clash.yaml для Clash/Mihomo.
+
+    Файл производный: если конвертер споткнулся, сборка продолжается без
+    него, а в лог идёт причина. Ронять из-за него всю подписку нельзя.
+    """
+    try:
+        import clashout
+    except ImportError:
+        log("      clashout.py не найден: Clash-подписка пропущена")
+        return 0
+
+    labels = [
+        urllib.parse.unquote(retag(n, i + 1).split("#", 1)[1])
+        for i, n in enumerate(nodes)
+    ]
+    try:
+        text = clashout.build_clash(nodes, labels=labels)
+    except Exception as exc:
+        log(f"      Clash-подписка не собралась: {type(exc).__name__}: {exc}")
+        return 0
+
+    (OUTPUT_DIR / "clash.yaml").write_text(text, encoding="utf-8")
+    return len(nodes)
 
 
 def interleave(*groups: list[Node]) -> list[Node]:
@@ -838,7 +1055,30 @@ def main() -> int:
     if len(servers) < len(selected_pool):
         log(f"      Уникальных адресов: {len(servers)} "
             f"(из {len(selected_pool)} рабочих конфигов)")
+    stats.tls_ok = sum(1 for n in servers if n.tls_ok)
+    if stats.tls_ok < len(servers):
+        log(f"      HTTPS с проверкой сертификата прошли {stats.tls_ok} "
+            f"из {len(servers)}: остальные могут подменять TLS и попадут "
+            f"только в полную подписку")
     selected_pool = servers
+
+    # --- История: кто сколько держится ---
+    now = datetime.now(timezone.utc)
+    history = load_history()
+    apply_history(history, selected_pool, now)
+    veterans = sum(1 for n in selected_pool if n.streak >= STABLE_RUNS)
+    log(f"      Держатся {STABLE_RUNS}+ прогонов подряд: {veterans}")
+
+    # --- Замер скорости ---
+    # Дорого по трафику, поэтому только для лучших по задержке: они и так
+    # идут в основную подписку.
+    if selected_pool:
+        by_latency = sorted(
+            selected_pool,
+            key=lambda n: (n.latency_ms if n.latency_ms is not None else 99999),
+        )
+        stats.speed_measured = probe.measure_speed(
+            by_latency[:probe.MAX_SPEED_NODES])
 
     # --- Страны ---
     log("[6/6] Определяю страны...")
@@ -849,30 +1089,84 @@ def main() -> int:
     log(f"      Страна определена у {known}/{len(selected_pool)} узлов")
 
     # --- Отбор в подписки ---
-    selected_pool.sort(
-        key=lambda n: (n.latency_ms if n.latency_ms is not None else 99999)
-    )
+    def rank(node: Node) -> tuple:
+        """
+        Порядок в подписке: сначала узлы с проверенным сертификатом,
+        внутри группы сначала те, чья скорость измерена, потом по скорости,
+        затем по задержке. Узел с неизвестной скоростью не должен
+        обгонять узел, у которого замер есть.
+        """
+        return (
+            0 if node.tls_ok else 1,
+            0 if node.speed_mbps is not None else 1,
+            -(node.speed_mbps or 0.0),
+            node.latency_ms if node.latency_ms is not None else 99999,
+        )
+
+    selected_pool.sort(key=rank)
     # Полная: всё проверенное, только с потолком на всякий случай.
     full = selected_pool[:MAX_FULL]
     # Основная: короткий список с перемешиванием по странам.
     published = pick_diverse(full, MAX_OUTPUT, MAX_PER_COUNTRY)
+    # Стабильная: только те, кто держится уже несколько часов.
+    stable = pick_diverse(pick_stable(full), MAX_OUTPUT, MAX_PER_COUNTRY)
+    stats.stable = len(stable)
+
+    # --- Защита от плохой сборки ---
+    prev_full = (previous_report() or {}).get("published_full")
+    if (
+        isinstance(prev_full, int)
+        and prev_full > 100
+        and len(full) < prev_full * MIN_KEEP_RATIO
+        and not os.environ.get("ALLOW_SHRINK")
+    ):
+        log(f"[!] Рабочих узлов {len(full)}, а в прошлый раз было {prev_full}. "
+            f"Это меньше {int(MIN_KEEP_RATIO * 100)}% от прошлого прогона.")
+        log("[!] Публиковать это не буду, прошлая подписка остаётся на месте. "
+            "Если уменьшение ожидаемое, запусти с ALLOW_SHRINK=1.")
+        return 1
 
     # --- Запись ---
-    report = write_outputs(published, full, stats)
+    report = write_outputs(published, full, stats, stable)
+    save_history(history)
+    clash_count = write_clash(published)
+    if clash_count:
+        log(f"      Clash-подписка: {clash_count} узлов")
+
     log(f"Итог: в основной подписке {len(published)} узлов, "
-        f"в полной {len(full)} из {report['countries']} стран")
+        f"в полной {len(full)} из {report['countries']} стран, "
+        f"в стабильной {len(stable)}")
     log(f"      По протоколам: {report['by_protocol']}")
     log(f"      Задержка: лучшая {report['best_latency_ms']} ms, "
         f"медиана {report['median_latency_ms']} ms")
+    if report.get("best_speed_mbps"):
+        log(f"      Скорость: лучшая {report['best_speed_mbps']} Мбит/с, "
+            f"медиана {report['median_speed_mbps']} Мбит/с")
     log(f"      Проверено через sing-box: "
         f"{'да' if stats.verified else 'нет (TCP-режим)'}")
     log(f"Готово за {time.time() - started:.1f}s")
+
+    try:
+        import notify
+        notify.send_report(report)
+    except Exception as exc:
+        log(f"      Уведомление не отправлено: {type(exc).__name__}")
+
     return 0
 
 
 if __name__ == "__main__":
+    code = 0
     try:
-        sys.exit(main())
+        code = main()
     except KeyboardInterrupt:
         log("\nПрервано пользователем.")
-        sys.exit(130)
+        code = 130
+    if code != 0:
+        # О неудачном прогоне стоит узнать сразу: подписка не обновилась.
+        try:
+            import notify
+            notify.send_failure(f"Сборка подписки упала, код {code}")
+        except Exception:
+            pass
+    sys.exit(code)
