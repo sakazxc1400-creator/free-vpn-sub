@@ -62,9 +62,17 @@ https://cdn.jsdelivr.net/gh/sakazxc1400-creator/free-vpn-sub@data/output/sub.txt
 https://gh-proxy.com/https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/data/output/sub.txt
 ```
 
+```
+https://ghproxy.net/https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/data/output/sub.txt
+```
+
+```
+https://raw.githack.com/sakazxc1400-creator/free-vpn-sub/data/output/sub.txt
+```
+
 For the full subscription, replace `sub.txt` with `sub-full.txt` in the link. For the stable one, use `sub-stable.txt`.
 
-jsdelivr may cache a version for a few hours. gh-proxy usually shows updates faster.
+jsdelivr may cache a version for a few hours. gh-proxy based mirrors (`gh-proxy.com`, `ghproxy.net`) and `raw.githack.com` show updates right away.
 
 ## What is in the list
 

@@ -1,7 +1,8 @@
 /* Free VPN Sub — логика сайта.
    Данные берутся из ветки data: сначала raw.githubusercontent, если он
-   недоступен, переключаемся на зеркало jsdelivr. Ветка плоская: в ней
-   лежит только свежий снимок подписок, поэтому она не растёт.
+   недоступен, переходим по зеркалам (jsdelivr, gh-proxy, ghproxy.net,
+   githack). Ветка плоская: в ней лежит только свежий снимок подписок,
+   поэтому она не растёт.
 
    Всё считается в браузере: ни выбранные узлы, ни своя подписка никуда
    не отправляются. */
@@ -13,6 +14,9 @@
   const BRANCH = "data";
   const RAW = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/output/`;
   const CDN = `https://cdn.jsdelivr.net/gh/${REPO}@${BRANCH}/output/`;
+  const GHPROXY = "https://gh-proxy.com/";
+  const GHPROXY_NET = "https://ghproxy.net/";
+  const GITHACK = `https://raw.githack.com/${REPO}/${BRANCH}/output/`;
   const GITHUB = `https://github.com/${REPO}`;
 
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -395,9 +399,19 @@
 
   const state = { source: "raw" };
 
+  // Порядок обхода: сначала самый свежий источник, потом зеркала.
+  // Название источника показывается в строке «источник ...».
+  const SOURCES = [
+    ["raw", RAW],
+    ["jsdelivr", CDN],
+    ["gh-proxy", GHPROXY + RAW],
+    ["ghproxy.net", GHPROXY_NET + RAW],
+    ["githack", GITHACK],
+  ];
+
   async function fetchText(name, timeout = 9000) {
     const started = performance.now();
-    for (const base of [RAW, CDN]) {
+    for (const [label, base] of SOURCES) {
       const ctrl = new AbortController();
       const timer = setTimeout(() => ctrl.abort(), timeout);
       try {
@@ -405,8 +419,8 @@
         clearTimeout(timer);
         if (resp.ok) {
           const text = await resp.text();
-          state.source = base === RAW ? "raw" : "jsdelivr";
-          return { text, ms: Math.round(performance.now() - started), source: state.source };
+          state.source = label;
+          return { text, ms: Math.round(performance.now() - started), source: label };
         }
       } catch (err) {
         clearTimeout(timer);
@@ -984,14 +998,18 @@
 
     const mirrors = [
       ["jsdelivr · основная", CDN + "sub.txt"],
-      ["gh-proxy · основная", "https://gh-proxy.com/" + SUBS.main],
+      ["gh-proxy · основная", GHPROXY + SUBS.main],
+      ["ghproxy.net · основная", GHPROXY_NET + SUBS.main],
+      ["githack · основная", GITHACK + "sub.txt"],
       ["raw · основная", SUBS.main],
       ["jsdelivr · стабильная", CDN + "sub-stable.txt"],
       ["raw · стабильная", SUBS.stable],
       ["jsdelivr · полная", CDN + "sub-full.txt"],
-      ["gh-proxy · полная", "https://gh-proxy.com/" + SUBS.full],
+      ["gh-proxy · полная", GHPROXY + SUBS.full],
+      ["ghproxy.net · полная", GHPROXY_NET + SUBS.full],
       ["raw · полная", SUBS.full],
       ["jsdelivr · Clash", CDN + "clash.yaml"],
+      ["gh-proxy · Clash", GHPROXY + SUBS.clash],
       ["raw · Clash", SUBS.clash],
       ...EXTRA_MIRRORS,
     ];
