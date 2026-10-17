@@ -1,0 +1,2639 @@
+# Подписка free-vpn-sub: https://github.com/sakazxc1400-creator/free-vpn-sub
+# Формат Clash / Mihomo, узлы проверены на живой трафик.
+mixed-port: 7890
+allow-lan: false
+mode: "rule"
+log-level: "info"
+proxies:
+  - name: "01. 🇺🇸 США · ss · 69ms · 1ч"
+    type: "ss"
+    server: "156.146.38.170"
+    port: 443
+    cipher: "aes-128-gcm"
+    password: "shadowsocks"
+    udp: true
+  - name: "02. 🇺🇸 США · hysteria2 · 93ms · 1ч"
+    type: "hysteria2"
+    server: "129.213.91.185"
+    port: 35013
+    password: "4291c983-c520-46ac-82cc-48f14bef573f"
+    sni: "www.bing.com"
+    skip-cert-verify: true
+    alpn:
+      - "h3"
+  - name: "03. 🇺🇸 США · ss · 65ms · 1ч"
+    type: "ss"
+    server: "156.146.38.169"
+    port: 443
+    cipher: "aes-128-gcm"
+    password: "shadowsocks"
+    udp: true
+  - name: "04. 🇺🇸 США · ss · 95ms · 1ч"
+    type: "ss"
+    server: "37.19.198.236"
+    port: 443
+    cipher: "aes-128-gcm"
+    password: "shadowsocks"
+    udp: true
+  - name: "05. 🇺🇸 США · ss · 74ms · 1ч"
+    type: "ss"
+    server: "37.19.198.160"
+    port: 443
+    cipher: "aes-128-gcm"
+    password: "shadowsocks"
+    udp: true
+  - name: "06. 🇺🇸 США · ss · 99ms · 1ч"
+    type: "ss"
+    server: "37.19.198.243"
+    port: 443
+    cipher: "aes-128-gcm"
+    password: "shadowsocks"
+    udp: true
+  - name: "07. 🇺🇸 США · ss · 77ms · 1ч"
+    type: "ss"
+    server: "37.19.198.244"
+    port: 443
+    cipher: "aes-128-gcm"
+    password: "shadowsocks"
+    udp: true
+  - name: "08. 🇨🇦 Канада · vmess · 95ms · 1ч"
+    type: "vmess"
+    server: "134.195.196.211"
+    port: 18000
+    uuid: "f8c8dc3d-0d37-46b0-8b34-a7232882fcfe"
+    alterId: 0
+    cipher: "auto"
+    udp: true
+    network: "tcp"
+  - name: "09. 🇨🇦 Канада · ss · 114ms · 1ч"
+    type: "ss"
+    server: "64.74.163.69"
+    port: 18766
+    cipher: "aes-128-gcm"
+    password: "4efe1af272e7292139b889f6a63ee071"
+    udp: true
+  - name: "10. 🇨🇦 Канада · ss · 78ms · 1ч"
+    type: "ss"
+    server: "64.74.163.67"
+    port: 18764
+    cipher: "aes-128-gcm"
+    password: "4efe1af272e7292139b889f6a63ee071"
+    udp: true
+  - name: "11. 🇲🇽 Мексика · ss · 135ms"
+    type: "ss"
+    server: "64.177.90.30"
+    port: 8388
+    cipher: "aes-256-gcm"
+    password: "BWyPPTusFKhGgzKh"
+    udp: true
+  - name: "12. 🇫🇷 Франция · hysteria2 · 371ms · 1ч"
+    type: "hysteria2"
+    server: "62.210.124.146"
+    port: 22000
+    password: "dongtaiwang.com"
+    sni: "www.microsoft.com"
+    skip-cert-verify: true
+    alpn:
+      - "h3"
+  - name: "13. 🇫🇷 Франция · vless · 418ms · 1ч"
+    type: "vless"
+    server: "152.228.139.33"
+    port: 35108
+    uuid: "81dc0b61-f9fe-4ad6-8b4e-b8c067b73712"
+    udp: true
+    tls: true
+    servername: "www.nvidia.com"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "X_lOw5Zz4SJBa1cRHV4dAq5msYE-ClY5-WNcBmBWRxg"
+      short-id: "52add08b86a5ccea"
+    network: "grpc"
+    grpc-opts:
+      grpc-service-name: "grpc-common3"
+  - name: "14. 🇮🇪 Ирландия · vmess · 238ms · 1ч"
+    type: "vmess"
+    server: "54.229.151.97"
+    port: 59236
+    uuid: "2387bfbc-10a6-4bd7-dc55-7cba954ce6e8"
+    alterId: 0
+    cipher: "auto"
+    udp: true
+    network: "h2"
+    h2-opts:
+      host:
+        - "tms.dingtalk.com"
+      path: "/"
+  - name: "15. 🇮🇪 Ирландия · vless · 300ms · 1ч"
+    type: "vless"
+    server: "34.253.212.171"
+    port: 443
+    uuid: "7060231d-b9ba-495f-a218-bf427940cf3e"
+    udp: true
+    network: "h2"
+  - name: "16. 🇱🇻 Латвия · hysteria2 · 555ms · 1ч"
+    type: "hysteria2"
+    server: "104.165.205.42"
+    port: 8443
+    password: "990c8eb6-4c4e-4277-8602-79af8402cdd0"
+    sni: "speedtestmark.com"
+    alpn:
+      - "h3"
+  - name: "17. 🇳🇱 Нидерланды · ss · 230ms · 1ч"
+    type: "ss"
+    server: "158.173.20.171"
+    port: 443
+    cipher: "aes-128-gcm"
+    password: "shadowsocks"
+    udp: true
+  - name: "18. 🇬🇧 Британия · ss · 234ms · 1ч"
+    type: "ss"
+    server: "149.102.132.184"
+    port: 80
+    cipher: "aes-256-gcm"
+    password: "g5h5jleTRSyO3Rk4"
+    udp: true
+  - name: "19. 🇫🇷 Франция · hysteria2 · 416ms · 1ч"
+    type: "hysteria2"
+    server: "51.44.167.227"
+    port: 443
+    password: "H7mP2xY9kJ4nQ8wR5tF6vB3z"
+    sni: "vpn-fr-001.fastervpn.world"
+    skip-cert-verify: true
+    alpn:
+      - "h3"
+  - name: "20. 🇰🇷 Корея · hysteria2 · 530ms · 1ч"
+    type: "hysteria2"
+    server: "152.70.237.123"
+    port: 2053
+    password: "maintell"
+    sni: "152.70.237.123"
+    skip-cert-verify: true
+    alpn:
+      - "h3"
+  - name: "21. 🇰🇿 Казахстан · hysteria2 · 571ms · 1ч"
+    type: "hysteria2"
+    server: "fi1server.rabstvo.shop"
+    port: 443
+    password: "9yOIR2_QAChKs26rYaiX_aoNnOALd0aU"
+    sni: "fi1server.rabstvo.shop"
+    alpn:
+      - "h3"
+  - name: "22. 🇹🇷 Турция · vless · 687ms"
+    type: "vless"
+    server: "62.60.233.157"
+    port: 8444
+    uuid: "f55e9aba-7b14-4f6f-b59a-d5b3d45c9309"
+    udp: true
+    tls: true
+    servername: "github.com"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "FWitre1jinQR7qz5HQ0q2Q4Gg9xA9B0SyizCziN7Ch0"
+    network: "grpc"
+    grpc-opts:
+      grpc-service-name: "GunService"
+  - name: "23. 🇬🇧 Британия · ss · 250ms · 1ч"
+    type: "ss"
+    server: "149.102.132.184"
+    port: 443
+    cipher: "aes-256-gcm"
+    password: "g5h5jleTRSyO3Rk4"
+    udp: true
+  - name: "24. 🇳🇱 Нидерланды · ss · 251ms · 1ч"
+    type: "ss"
+    server: "82.38.31.62"
+    port: 8080
+    cipher: "chacha20-ietf-poly1305"
+    password: "oZIoA69Q8yhcQV8ka3Pa3A"
+    udp: true
+  - name: "25. 🇳🇱 Нидерланды · ss · 256ms · 1ч"
+    type: "ss"
+    server: "193.29.139.225"
+    port: 8080
+    cipher: "chacha20-ietf-poly1305"
+    password: "oZIoA69Q8yhcQV8ka3Pa3A"
+    udp: true
+  - name: "26. 🇳🇱 Нидерланды · ss · 259ms · 1ч"
+    type: "ss"
+    server: "193.29.139.179"
+    port: 8080
+    cipher: "chacha20-ietf-poly1305"
+    password: "oZIoA69Q8yhcQV8ka3Pa3A"
+    udp: true
+  - name: "27. 🇰🇷 Корея · hysteria2 · 604ms · 1ч"
+    type: "hysteria2"
+    server: "132.226.226.189"
+    port: 50160
+    password: "1671a252e2a97dc2bda4e515475931da"
+    skip-cert-verify: true
+    alpn:
+      - "h3"
+  - name: "28. 🇵🇱 Польша · hysteria2 · 624ms · 1ч"
+    type: "hysteria2"
+    server: "78.17.128.153"
+    port: 35076
+    password: "b4c8ee9caa74b7ba0a61"
+    sni: "scrap.halyvanedorogo.ru"
+    skip-cert-verify: true
+    alpn:
+      - "h3"
+  - name: "29. 🇷🇴 Румыния · hysteria2 · 2682ms · 1ч"
+    type: "hysteria2"
+    server: "185.156.44.99"
+    port: 443
+    password: "gf1:gfhysteria2024"
+    sni: "css.rbxcdn.com"
+    skip-cert-verify: true
+    alpn:
+      - "h3"
+  - name: "30. 🇨🇦 Канада · vless · 88ms · 1ч"
+    type: "vless"
+    server: "104.18.0.181"
+    port: 8080
+    uuid: "e5cc16a6-ea42-46b2-82ae-ad2157e1641b"
+    udp: true
+    network: "ws"
+    ws-opts:
+      path: "/"
+      headers:
+        Host: "hhlfy.twiladaphne.ndjp.net"
+  - name: "31. 🇳🇱 Нидерланды · ss · 250ms · 1ч"
+    type: "ss"
+    server: "82.38.31.205"
+    port: 8080
+    cipher: "chacha20-ietf-poly1305"
+    password: "k1dBOmOB4oqi7Ump37a1bQ"
+    udp: true
+  - name: "32. 🇫🇮 Финляндия · vless · 408ms"
+    type: "vless"
+    server: "152.233.71.81"
+    port: 443
+    uuid: "741809be-e44e-000b-b411-bf66f0ae3860"
+    udp: true
+    flow: "xtls-rprx-vision"
+    tls: true
+    servername: "brointelengence.com"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "6VMgXXhZdJCiOG05EyK_zTHh00kpFGrZJeZIEPgqhjY"
+      short-id: "1c3e8241a8743df9"
+    network: "tcp"
+  - name: "33. 🇨🇭 Швейцария · hysteria2 · 522ms · 1ч"
+    type: "hysteria2"
+    server: "152.67.75.161"
+    port: 443
+    password: "3a702d4d1de4949005d8431220e040fb"
+    sni: "www.bing.com"
+    skip-cert-verify: true
+    alpn:
+      - "h3"
+    obfs: "salamander"
+    obfs-password: "c13f29db6a638ad2b211b9ce2669ef27"
+  - name: "34. 🇰🇷 Корея · hysteria2 · 582ms · 1ч"
+    type: "hysteria2"
+    server: "152.67.200.82"
+    port: 50160
+    password: "3d7634af8cb2c6cb4bac1c0efad8b43d"
+    sni: "google.com"
+    skip-cert-verify: true
+    alpn:
+      - "h3"
+  - name: "35. 🇮🇹 Италия · ss · 4396ms · 1ч"
+    type: "ss"
+    server: "57.131.48.45"
+    port: 8388
+    cipher: "aes-256-gcm"
+    password: "itzvpn@321"
+    udp: true
+  - name: "36. 🇨🇦 Канада · vless · 95ms · 1ч"
+    type: "vless"
+    server: "104.21.70.21"
+    port: 8080
+    uuid: "e5cc16a6-ea42-46b2-82ae-ad2157e1641b"
+    udp: true
+    network: "ws"
+    ws-opts:
+      path: "/fp"
+      headers:
+        Host: "hhlfy.twiladaphne.ndjp.net"
+  - name: "37. 🇩🇪 Германия · vmess · 259ms · 1ч"
+    type: "vmess"
+    server: "31.76.11.83"
+    port: 22366
+    uuid: "632cfa69-ae00-49d1-81e0-554979d1e9fa"
+    alterId: 0
+    cipher: "auto"
+    udp: true
+    network: "tcp"
+  - name: "38. 🇬🇧 Британия · ss · 310ms · 1ч"
+    type: "ss"
+    server: "82.110.60.9"
+    port: 19999
+    cipher: "aes-256-gcm"
+    password: "ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4="
+    udp: true
+  - name: "39. 🇯🇵 Япония · ss · 318ms · 1ч"
+    type: "ss"
+    server: "149.22.87.204"
+    port: 443
+    cipher: "aes-128-gcm"
+    password: "shadowsocks"
+    udp: true
+  - name: "40. 🇯🇵 Япония · ss · 327ms · 1ч"
+    type: "ss"
+    server: "149.22.87.240"
+    port: 443
+    cipher: "aes-128-gcm"
+    password: "shadowsocks"
+    udp: true
+  - name: "41. 🇯🇵 Япония · ss · 329ms · 1ч"
+    type: "ss"
+    server: "149.22.87.241"
+    port: 443
+    cipher: "aes-128-gcm"
+    password: "shadowsocks"
+    udp: true
+  - name: "42. 🇫🇷 Франция · vless · 372ms · 1ч"
+    type: "vless"
+    server: "62.210.91.2"
+    port: 23576
+    uuid: "48ff2b70-e180-582f-8866-d9a2edeed5f5"
+    udp: true
+    flow: "xtls-rprx-vision"
+    tls: true
+    servername: "fuck.rkn"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "1y5h2FGWKXTJ9xLPCqPo6Mw7RxoZzh6fGkEQKNxpZ3s"
+      short-id: "01"
+    network: "tcp"
+  - name: "43. 🇬🇧 Британия · vless · 377ms · 1ч"
+    type: "vless"
+    server: "57.129.132.223"
+    port: 80
+    uuid: "9e20b04d-5a81-4e16-b421-01e502f0aac6"
+    udp: true
+    network: "ws"
+    ws-opts:
+      path: "/vless/"
+      headers:
+        Host: "google.com"
+  - name: "44. 🇩🇪 Германия · vmess · 401ms · 1ч"
+    type: "vmess"
+    server: "de-d21e56c13c.shamanapp.online"
+    port: 33744
+    uuid: "b3a11068-1a7e-4643-85de-7c82cce46943"
+    alterId: 0
+    cipher: "auto"
+    udp: true
+    network: "ws"
+    ws-opts:
+      path: "/ShamanVMESS2026"
+      headers:
+        Host: "de-d21e56c13c.shamanapp.online:33744"
+  - name: "45. 🇨🇭 Швейцария · hysteria2 · 411ms · 1ч"
+    type: "hysteria2"
+    server: "140.238.213.114"
+    port: 50160
+    password: "84a506ca5aca505696a454d828420b3f"
+    sni: "140.238.213.114"
+    skip-cert-verify: true
+    alpn:
+      - "h3"
+  - name: "46. 🇦🇪 ОАЭ · vless · 425ms · 1ч"
+    type: "vless"
+    server: "185.253.116.33"
+    port: 14430
+    uuid: "aee7ae19-672f-49d8-8a92-aa7cdfc89f89"
+    udp: true
+    network: "ws"
+    ws-opts:
+      path: "/vless"
+      headers:
+        Host: "185.253.116.33"
+  - name: "47. 🇭🇺 Венгрия · vless · 869ms · 1ч"
+    type: "vless"
+    server: "85.155.242.37"
+    port: 443
+    uuid: "6338c01a-310e-42c3-bf4f-2a20e161054b"
+    udp: true
+    flow: "xtls-rprx-vision"
+    tls: true
+    servername: "hu1.aiage.work"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "mPzNFHO4pZMzFviRkIhRd7xDUz4dMHyI-flZLOrgDVg"
+      short-id: "f8379ce795f2e5ed"
+    network: "tcp"
+  - name: "48. 🇪🇪 Эстония · hysteria2 · 1997ms · 1ч"
+    type: "hysteria2"
+    server: "ees92.shhflow.xyz"
+    port: 5443
+    password: "43212c32-01f2-4356-b216-67dc1c178262"
+    sni: "ees92.shhflow.xyz"
+    alpn:
+      - "h3"
+  - name: "49. 🇩🇪 Германия · ss · 268ms · 1ч"
+    type: "ss"
+    server: "8.209.74.72"
+    port: 20001
+    cipher: "chacha20-ietf-poly1305"
+    password: "PWpjPo3tqhPN4yRZ"
+    udp: true
+  - name: "50. 🇬🇧 Британия · ss · 300ms · 1ч"
+    type: "ss"
+    server: "185.164.175.81"
+    port: 19999
+    cipher: "aes-256-gcm"
+    password: "ZRpgaBeGxtENIXgvhpkZBKz9GnWRS2dYcx9O+a2iwN4="
+    udp: true
+  - name: "51. 🇩🇪 Германия · ss · 327ms · 1ч"
+    type: "ss"
+    server: "209.46.102.22"
+    port: 8388
+    cipher: "chacha20-ietf-poly1305"
+    password: "1hhrqrokj3ag"
+    udp: true
+  - name: "52. 🇵🇱 Польша · ss · 337ms · 1ч"
+    type: "ss"
+    server: "54.36.174.140"
+    port: 443
+    cipher: "chacha20-ietf-poly1305"
+    password: "e5c65ph"
+    udp: true
+  - name: "53. 🇫🇮 Финляндия · vmess · 381ms · 1ч"
+    type: "vmess"
+    server: "185.212.149.7"
+    port: 2053
+    uuid: "aeb3c019-ae83-4677-af97-846baa787ad5"
+    alterId: 0
+    cipher: "auto"
+    udp: true
+    network: "h2"
+    h2-opts:
+      host:
+        - "down-cdn.dingtalk.com"
+      path: "/3x"
+  - name: "54. 🇯🇵 Япония · vless · 412ms · 1ч"
+    type: "vless"
+    server: "154.31.114.248"
+    port: 50159
+    uuid: "d56624b2-35bb-468c-9b2a-e0b0df7230c1"
+    udp: true
+    flow: "xtls-rprx-vision"
+    tls: true
+    servername: "www.cloudflare.com"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "j4QXngGuJkUGwRj4XIrfHRohYYuEfnJlX4cvCE-WklA"
+      short-id: "091e1c5db8451757"
+    network: "tcp"
+  - name: "55. 🇯🇵 Япония · ss · 419ms"
+    type: "ss"
+    server: "84.247.155.196"
+    port: 80
+    cipher: "aes-256-gcm"
+    password: "3eOFeNssde7PYYMv"
+    udp: true
+  - name: "56. 🇫🇮 Финляндия · vless · 446ms"
+    type: "vless"
+    server: "mci.amir12.ir"
+    port: 2112
+    uuid: "36c3dcc2-17b6-4478-b8a7-3978e6d5afe9"
+    udp: true
+    tls: true
+    servername: "play.google.com"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "p8pUe3hwND5rhAti-yRQ5qMaIkNdhxOV1K1jpbtJlEQ"
+      short-id: "125ba3"
+    network: "tcp"
+  - name: "57. 🇷🇺 Россия · vless · 485ms"
+    type: "vless"
+    server: "api.mediapolyana.cc"
+    port: 443
+    uuid: "082f5694-9019-4110-b67b-8125dbb9bab8"
+    udp: true
+    flow: "xtls-rprx-vision"
+    tls: true
+    servername: "api.mediapolyana.cc"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "r5WB5FnSCt4eeBC1FJMfkWHbzsMuabo0Rc6wuAhlZUs"
+      short-id: "a8"
+    network: "tcp"
+  - name: "58. 🇦🇺 Австралия · hysteria2 · 622ms"
+    type: "hysteria2"
+    server: "152.67.115.203"
+    port: 443
+    password: "633bc3be486b646190661ac2387c150a"
+    sni: "www.bing.com"
+    skip-cert-verify: true
+    alpn:
+      - "h3"
+    obfs: "salamander"
+    obfs-password: "850a3fb1cd33a28f12d837578ae1a2e7"
+  - name: "59. 🇪🇸 Испания · vless · 1027ms"
+    type: "vless"
+    server: "212.227.235.66"
+    port: 2053
+    uuid: "ead0dd61-d398-40ad-80d6-a0e1e516d7d3"
+    udp: true
+    tls: true
+    servername: "www.apple.com"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "7Y6Xb5Ql_03K25x8yKUSOKI2JTOMyv2nyCcFza90uxk"
+      short-id: "29e8dcd2b37aaa7f"
+    network: "tcp"
+  - name: "60. 🇳🇱 Нидерланды · ss · 249ms · 1ч"
+    type: "ss"
+    server: "82.38.31.198"
+    port: 8080
+    cipher: "chacha20-ietf-poly1305"
+    password: "k1dBOmOB4oqi7Ump37a1bQ"
+    udp: true
+  - name: "61. 🇫🇮 Финляндия · vmess · 308ms · 1ч"
+    type: "vmess"
+    server: "185.212.149.7"
+    port: 52080
+    uuid: "ec3c8b97-f308-4fee-aa16-95e2c7595acd"
+    alterId: 0
+    cipher: "auto"
+    udp: true
+    network: "h2"
+    h2-opts:
+      host:
+        - "down-cdn.dingtalk.com"
+      path: "/3x"
+  - name: "62. 🇬🇧 Британия · ss · 312ms · 1ч"
+    type: "ss"
+    server: "94.156.250.148"
+    port: 7001
+    cipher: "aes-256-gcm"
+    password: "RexnBgU7EV5ADxG"
+    udp: true
+  - name: "63. 🇯🇵 Япония · ss · 399ms"
+    type: "ss"
+    server: "84.247.155.196"
+    port: 443
+    cipher: "aes-256-gcm"
+    password: "3eOFeNssde7PYYMv"
+    udp: true
+  - name: "64. 🇵🇱 Польша · vless · 411ms · 1ч"
+    type: "vless"
+    server: "54.37.136.194"
+    port: 2053
+    uuid: "e8a432c8-5d84-49a5-b822-67ed761a58f9"
+    udp: true
+    tls: true
+    servername: "www.cloudflare.com"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "Vemd9Jjk5xKO8qSC3g8VVagwcb4J1BcTvp86CswQC0A"
+      short-id: "50ba05992b05c1c3"
+    network: "tcp"
+  - name: "65. 🇫🇮 Финляндия · vless · 428ms"
+    type: "vless"
+    server: "95.216.27.15"
+    port: 2053
+    uuid: "1c81f6d3-5771-4c5d-9fdd-1655eff50634"
+    udp: true
+    tls: true
+    servername: "www.google.com"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "4nfogj5mHqNowtSn_2sXS3xTX8vcH75rFEU2BWvyekM"
+      short-id: "d368b94e275ab080"
+    network: "tcp"
+  - name: "66. 🇱🇹 Литва · vless · 488ms · 1ч"
+    type: "vless"
+    server: "84.32.109.20"
+    port: 443
+    uuid: "ee18d188-14cc-417e-beb1-70e4add6d023"
+    udp: true
+    flow: "xtls-rprx-vision"
+    tls: true
+    servername: "litv.nztvpn.com"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "3jySGemfaqPZ2vM66Qtzo5SotO3eoRn1FeGaKp6KBQ4"
+      short-id: "0da7e14db353e7d0"
+    network: "tcp"
+  - name: "67. 🇮🇹 Италия · vless · 488ms · 1ч"
+    type: "vless"
+    server: "82.118.16.189"
+    port: 443
+    uuid: "d5e5f5a1-0f23-4c49-af9f-4be445bf9d8e"
+    udp: true
+    flow: "xtls-rprx-vision"
+    tls: true
+    servername: "www.cloudflare.com"
+    skip-cert-verify: true
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "SjGkzJQ9I6ZZjC3V73atcPMczhMm0oiTrB8mUQXz1HY"
+      short-id: "37fbf155c7a9f3ff"
+    network: "tcp"
+  - name: "68. 🇧🇷 Бразилия · vless · 492ms · 1ч"
+    type: "vless"
+    server: "platform117.golnamakcert.top"
+    port: 80
+    uuid: "e13cf851-b4fd-413b-8d49-146e6eb8e5d4"
+    udp: true
+    network: "ws"
+    ws-opts:
+      path: "/platform117"
+      headers:
+        Host: "platform117.halalkhor.info"
+  - name: "69. 🇨🇿 Чехия · vless · 520ms"
+    type: "vless"
+    server: "31.77.126.2"
+    port: 443
+    uuid: "d342d11e-d224-4463-b982-532309285094"
+    udp: true
+    tls: true
+    servername: "ccc.010304.xyz"
+    network: "ws"
+    ws-opts:
+      path: "/"
+      headers:
+        Host: "ccc.010304.xyz"
+  - name: "70. 🇰🇷 Корея · hysteria2 · 641ms · 1ч"
+    type: "hysteria2"
+    server: "hg.zhujue.us"
+    port: 20501
+    password: "0e46345c-f33b-4f9b-b8ec-90e7c986af7e"
+    sni: "hg.zhujue.us"
+    skip-cert-verify: true
+    alpn:
+      - "h3"
+  - name: "71. 🇧🇷 Бразилия · vless · 642ms · 1ч"
+    type: "vless"
+    server: "platform118.golnamakcert.top"
+    port: 80
+    uuid: "e13cf851-b4fd-413b-8d49-146e6eb8e5d4"
+    udp: true
+    network: "ws"
+    ws-opts:
+      path: "/platform118"
+      headers:
+        Host: "platform118.halalkhor.info"
+  - name: "72. 🇲🇪 ME · vless · 730ms · 1ч"
+    type: "vless"
+    server: "31.57.190.50"
+    port: 443
+    uuid: "d342d11e-d224-4463-b982-532309285094"
+    udp: true
+    tls: true
+    servername: "ccc.010304.xyz"
+    client-fingerprint: "chrome"
+    network: "ws"
+    ws-opts:
+      path: "/"
+      headers:
+        Host: "ccc.010304.xyz"
+  - name: "73. 🇩🇪 Германия · vless · 353ms · 1ч"
+    type: "vless"
+    server: "3.124.195.79"
+    port: 443
+    uuid: "7060231d-b9ba-495f-a218-bf427940cf3e"
+    udp: true
+    network: "h2"
+  - name: "74. 🇫🇷 Франция · vless · 370ms · 1ч"
+    type: "vless"
+    server: "152.228.162.19"
+    port: 80
+    uuid: "5ce84688-f535-46ad-a512-37b17becf6ea"
+    udp: true
+    network: "ws"
+    ws-opts:
+      path: "/vless/"
+      headers:
+        Host: "akamaized.net"
+  - name: "75. 🇪🇪 Эстония · trojan · 441ms · 1ч"
+    type: "trojan"
+    server: "109.206.241.10"
+    port: 449
+    password: "oiiaB38ywjEHCWRs_O_a_1113_Il_KeyyyHop_Bes1"
+    udp: true
+    tls: true
+    sni: "109.206.241.10"
+    skip-cert-verify: true
+    client-fingerprint: "chrome"
+    network: "tcp"
+  - name: "76. 🇲🇪 ME · vless · 511ms · 1ч"
+    type: "vless"
+    server: "31.57.190.89"
+    port: 443
+    uuid: "d342d11e-d224-4463-b982-532309285094"
+    udp: true
+    tls: true
+    servername: "ccc.010304.xyz"
+    client-fingerprint: "chrome"
+    network: "ws"
+    ws-opts:
+      path: "/fp=chrome"
+      headers:
+        Host: "ccc.010304.xyz"
+  - name: "77. 🇪🇸 Испания · vless · 602ms · 1ч"
+    type: "vless"
+    server: "46.28.71.247"
+    port: 443
+    uuid: "12c53e32-e589-47d6-b857-e4132294f767"
+    udp: true
+    flow: "xtls-rprx-vision"
+    tls: true
+    servername: "www.cloudflare.com"
+    client-fingerprint: "firefox"
+    reality-opts:
+      public-key: "v4MuZIvFrTPT5GHMSaPryUAbIZlLstmsUTzmC1E-JTE"
+      short-id: "0dfc23fe80778c00"
+    network: "tcp"
+  - name: "78. 🇷🇴 Румыния · vless · 690ms"
+    type: "vless"
+    server: "46.28.67.55"
+    port: 443
+    uuid: "d1a6a033-fdbd-46a6-a177-3370ba042b9f"
+    udp: true
+    flow: "xtls-rprx-vision"
+    tls: true
+    servername: "www.cloudflare.com"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "i2dJ1_XGDpp50qpEclh6SWSWkxt4B0t2hi2qOVQbeSU"
+      short-id: "d06d78e974491b6e"
+    network: "tcp"
+  - name: "79. 🇮🇹 Италия · vless · 1181ms · 1ч"
+    type: "vless"
+    server: "82.118.16.187"
+    port: 443
+    uuid: "dc2259c4-388e-4285-ba18-df619b6672b6"
+    udp: true
+    flow: "xtls-rprx-vision"
+    tls: true
+    servername: "www.cloudflare.com"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "R5ycsjJ-v024902dMSqTsSdqxUwCFEXMebdBEWFt9VU"
+      short-id: "cd6065902eea7a02"
+    network: "tcp"
+  - name: "80. 🇳🇴 Норвегия · ss · 275ms · 1ч"
+    type: "ss"
+    server: "185.213.23.63"
+    port: 990
+    cipher: "chacha20-ietf-poly1305"
+    password: "ARgvGZywA+gacgGV26Bvmu05+wZmRW/j+AdU+Z8Bt44="
+    udp: true
+  - name: "81. 🇸🇬 Сингапур · vmess · 391ms"
+    type: "vmess"
+    server: "dog-hk.kunlun01dns.com"
+    port: 21019
+    uuid: "9464ca40-dd75-3742-a628-d931a9f413b2"
+    alterId: 0
+    cipher: "auto"
+    udp: true
+    network: "tcp"
+  - name: "82. 🇫🇮 Финляндия · vless · 470ms"
+    type: "vless"
+    server: "157.228.128.59"
+    port: 443
+    uuid: "df53b6c2-8005-475c-9eb9-74e1be785dc8"
+    udp: true
+    flow: "xtls-rprx-vision"
+    tls: true
+    servername: "addons.mozilla.org"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "QnxkyscHouhaLDJHT47beyenVd4LHi62yfJIeRV01Ws"
+      short-id: "06e00e7c"
+    network: "tcp"
+  - name: "83. 🇰🇷 Корея · vmess · 482ms · 1ч"
+    type: "vmess"
+    server: "140.238.2.250"
+    port: 443
+    uuid: "41a7089a-040b-4538-8b8d-010902405bde"
+    alterId: 0
+    cipher: "auto"
+    udp: true
+    network: "tcp"
+  - name: "84. 🇫🇮 Финляндия · vless · 483ms · 1ч"
+    type: "vless"
+    server: "31.77.199.147"
+    port: 4443
+    uuid: "20dd9433-389e-4573-ba7b-689619cf13da"
+    udp: true
+    flow: "xtls-rprx-vision"
+    tls: true
+    servername: "images.unsplash.com"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "GvkQwcZWiXQBLzEhTVfQkyPpdgo6Opc3RtLsED9sA0A"
+      short-id: "7da2eae792187ab9"
+    network: "tcp"
+  - name: "85. 🇹🇼 Тайвань · hysteria2 · 512ms · 1ч"
+    type: "hysteria2"
+    server: "103.115.109.49"
+    port: 443
+    password: "H7mP2xY9kJ4nQ8wR5tF6vB3z"
+    skip-cert-verify: true
+    alpn:
+      - "h3"
+  - name: "86. 🇷🇺 Россия · vless · 531ms · 1ч"
+    type: "vless"
+    server: "m-vruvc.mvpstr.com"
+    port: 443
+    uuid: "7c86240f-ac0c-4cfe-87c8-fa0dd69b2d25"
+    udp: true
+    flow: "xtls-rprx-vision"
+    tls: true
+    servername: "m-vruvc.mvpstr.com"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "ZtAlhN1pU4MTmv4KaX9J_5_8KWnwy9IOnc-BLzIf234"
+      short-id: "11ac376e18d20343"
+    network: "tcp"
+  - name: "87. 🇹🇼 Тайвань · hysteria2 · 536ms · 1ч"
+    type: "hysteria2"
+    server: "160.187.100.109"
+    port: 443
+    password: "H7mP2xY9kJ4nQ8wR5tF6vB3z"
+    sni: "127.0.0.1"
+    skip-cert-verify: true
+    alpn:
+      - "h3"
+  - name: "88. 🇹🇼 Тайвань · hysteria2 · 537ms · 1ч"
+    type: "hysteria2"
+    server: "vpn-tw-002.fastervpn.world"
+    port: 443
+    password: "H7mP2xY9kJ4nQ8wR5tF6vB3z"
+    sni: "vpn-tw-002.fastervpn.world\\u0026insecure=1\\u0026allowinsecure=1"
+    skip-cert-verify: true
+    alpn:
+      - "h3"
+  - name: "89. 🇭🇰 Гонконг · hysteria2 · 569ms · 1ч"
+    type: "hysteria2"
+    server: "202.146.222.174"
+    port: 443
+    password: "H7mP2xY9kJ4nQ8wR5tF6vB3z"
+    sni: "202.146.222.174"
+    skip-cert-verify: true
+    alpn:
+      - "h3"
+  - name: "90. 🇭🇰 Гонконг · hysteria2 · 569ms · 1ч"
+    type: "hysteria2"
+    server: "202.146.222.29"
+    port: 443
+    password: "H7mP2xY9kJ4nQ8wR5tF6vB3z"
+    sni: "https://t.me/wangcai2ðð"
+    skip-cert-verify: true
+    alpn:
+      - "h3"
+  - name: "91. 🇷🇴 Румыния · vless · 698ms"
+    type: "vless"
+    server: "146.70.124.85"
+    port: 443
+    uuid: "40abbe13-f02e-4da2-9b19-966c2c3eb4ee"
+    udp: true
+    flow: "xtls-rprx-vision"
+    tls: true
+    servername: "www.datadoghq.com"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "byzvlw97wjAAAfHs5AZRV0P0H6_JKBEZ4yfLS0HNewE"
+      short-id: "fe24f8a0a560056e"
+    network: "tcp"
+  - name: "92. 🇷🇴 Румыния · ss · 5445ms"
+    type: "ss"
+    server: "bogging-eyeteeth-fly.freesocks.work"
+    port: 443
+    cipher: "chacha20-ietf-poly1305"
+    password: "QFWzCw2uX9B9i6qAYeFBIE"
+    udp: true
+  - name: "93. 🇳🇱 Нидерланды · ss · 255ms · 1ч"
+    type: "ss"
+    server: "82.38.31.48"
+    port: 8080
+    cipher: "chacha20-ietf-poly1305"
+    password: "oZIoA69Q8yhcQV8ka3Pa3A"
+    udp: true
+  - name: "94. 🇸🇬 Сингапур · vmess · 465ms · 1ч"
+    type: "vmess"
+    server: "149.88.23.202"
+    port: 18000
+    uuid: "f8c8dc3d-0d37-46b0-8b34-a7232882fcfe"
+    alterId: 0
+    cipher: "auto"
+    udp: true
+    network: "tcp"
+  - name: "95. 🇸🇪 Швеция · vless · 533ms · 1ч"
+    type: "vless"
+    server: "193.188.21.253"
+    port: 14430
+    uuid: "57f7772d-f5d6-4d8f-992d-5fa5e0d6da55"
+    udp: true
+    network: "ws"
+    ws-opts:
+      path: "/vless"
+      headers:
+        Host: "193.188.21.253"
+  - name: "96. 🇲🇩 Молдова · vless · 578ms · 1ч"
+    type: "vless"
+    server: "ro2.aiage.work"
+    port: 443
+    uuid: "6338c01a-310e-42c3-bf4f-2a20e161054b"
+    udp: true
+    flow: "xtls-rprx-vision"
+    tls: true
+    servername: "ro2.aiage.work"
+    client-fingerprint: "firefox"
+    reality-opts:
+      public-key: "pkKL2cqqPNxc1rqrvhJmexI7NOeZFaGUawAwqQpVY3c"
+      short-id: "1d2fecf1d2475168"
+    network: "tcp"
+  - name: "97. 🇲🇩 Молдова · vless · 578ms · 1ч"
+    type: "vless"
+    server: "md1.aiage.work"
+    port: 443
+    uuid: "6338c01a-310e-42c3-bf4f-2a20e161054b"
+    udp: true
+    flow: "xtls-rprx-vision"
+    tls: true
+    servername: "md1.aiage.work"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "0dtXhkhkh-_MBFoGwzdW4PdlJtVX9oswhJZHbUPGCmo"
+      short-id: "5d7a45ac0ad6adff"
+    network: "tcp"
+  - name: "98. 🇦🇺 Австралия · vless · 595ms · 1ч"
+    type: "vless"
+    server: "51.161.204.244"
+    port: 443
+    uuid: "36e89875-9c53-482b-bc41-d3890e9da176"
+    udp: true
+    flow: "xtls-rprx-vision"
+    tls: true
+    servername: "www.cloudflare.com"
+    client-fingerprint: "firefox"
+    reality-opts:
+      public-key: "gCAazs5uxNuMZIxfDdw8wPE0nwKY4QfBfBkQveKAkEk"
+      short-id: "0ad08b47f498efd2"
+    network: "tcp"
+  - name: "99. 🇷🇺 Россия · hysteria2 · 645ms · 1ч"
+    type: "hysteria2"
+    server: "194.87.118.184"
+    port: 2053
+    password: "7ab3c77e-8fcc-4848-918f-cae3d4eac794"
+    skip-cert-verify: true
+    alpn:
+      - "h3"
+  - name: "100. 🇭🇰 Гонконг · hysteria2 · 662ms · 1ч"
+    type: "hysteria2"
+    server: "xg.zhujue.us"
+    port: 20501
+    password: "0e46345c-f33b-4f9b-b8ec-90e7c986af7e"
+    sni: "xg.zhujue.us"
+    skip-cert-verify: true
+    alpn:
+      - "h3"
+  - name: "101. 🇸🇦 Саудовская Аравия · vless · 846ms · 1ч"
+    type: "vless"
+    server: "81.208.170.142"
+    port: 1500
+    uuid: "e332f028-d343-5b44-8016-b3130f39e133"
+    udp: true
+    tls: true
+    servername: "www.ebay.com"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "VQxVgczORkbSNdDrkNOYs6zMBINpViztTKDuWCeQsVE"
+      short-id: "775eb6408888248e"
+    network: "grpc"
+  - name: "102. 🇬🇧 Британия · ss · 328ms · 1ч"
+    type: "ss"
+    server: "141.98.101.181"
+    port: 443
+    cipher: "aes-128-gcm"
+    password: "shadowsocks"
+    udp: true
+  - name: "103. 🇫🇷 Франция · vless · 374ms · 1ч"
+    type: "vless"
+    server: "195.58.140.146"
+    port: 443
+    uuid: "d7790b85-9659-4558-a405-e0ab57d32984"
+    udp: true
+    flow: "xtls-rprx-vision"
+    tls: true
+    servername: "d1-fr.cloud-cdn.xyz"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "lRuJPDrUb0b32-47hl4BgDoQutqmkuW31N4qVxbDgmI"
+      short-id: "dc927a04e8572c61"
+    network: "tcp"
+  - name: "104. 🇱🇻 Латвия · vless · 592ms · 1ч"
+    type: "vless"
+    server: "138.124.180.137"
+    port: 443
+    uuid: "5234b2b7-5e07-422c-8159-d62a676c00c6"
+    udp: true
+    flow: "xtls-rprx-vision"
+    tls: true
+    servername: "www.apple.com"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "GBdkyDLfr0LIZo_94Xv8ycAKOmkjArYzwJAEMhuXX2c"
+      short-id: "33acba1b"
+    network: "tcp"
+  - name: "105. 🇹🇼 Тайвань · vless · 700ms · 1ч"
+    type: "vless"
+    server: "60.248.219.78"
+    port: 443
+    uuid: "c1c04450-bf71-4049-ad0c-9cf6d94d9f1f"
+    udp: true
+    tls: true
+    servername: "ty986gfazs.cainiaohub.xyz"
+    skip-cert-verify: true
+    network: "ws"
+    ws-opts:
+      path: "/81574b6b-c9d7-44a0-b83d-dad56e8cb530"
+      headers:
+        Host: "ty986gfazs.cainiaohub.xyz"
+  - name: "106. 🇹🇷 Турция · vless · 1107ms · 1ч"
+    type: "vless"
+    server: "155.103.71.142"
+    port: 443
+    uuid: "d342d11e-d224-4463-b982-532309285094"
+    udp: true
+    tls: true
+    servername: "ccc.010304.xyz"
+    client-fingerprint: "chrome"
+    network: "ws"
+    ws-opts:
+      path: "/fp=chrome"
+      headers:
+        Host: "ccc.010304.xyz"
+  - name: "107. 🇰🇭 Камбоджа · vless · 1810ms · 1ч"
+    type: "vless"
+    server: "93.152.215.176"
+    port: 8443
+    uuid: "05d7a479-a099-40cf-aecf-41aa934767b0"
+    udp: true
+    tls: true
+    servername: "nl5.hap-plus.ru"
+    client-fingerprint: "chrome"
+    network: "ws"
+    ws-opts:
+      path: "/api/v1/events"
+      headers:
+        Host: "nl5.hap-plus.ru"
+  - name: "108. 🇩🇪 Германия · ss · 263ms · 1ч"
+    type: "ss"
+    server: "31.76.11.83"
+    port: 15731
+    cipher: "chacha20-ietf-poly1305"
+    password: "xAYXtB+XMdfWWOlmL8PWcOZEPfKHKVv7NcTY6jpcL/A="
+    udp: true
+  - name: "109. 🇹🇭 Таиланд · vmess · 544ms · 1ч"
+    type: "vmess"
+    server: "119.46.51.45"
+    port: 37515
+    uuid: "9b76bc31-17a5-4454-934a-8d5fb602cd70"
+    alterId: 0
+    cipher: "auto"
+    udp: true
+    network: "tcp"
+  - name: "110. 🇷🇺 Россия · hysteria2 · 633ms · 1ч"
+    type: "hysteria2"
+    server: "189.74.106.162"
+    port: 54183
+    password: "082f5694-9019-4110-b67b-8125dbb9bab8"
+    sni: "outh.yandex-cloud.org"
+    skip-cert-verify: true
+    alpn:
+      - "h3"
+  - name: "111. 🇹🇼 Тайвань · vless · 661ms · 1ч"
+    type: "vless"
+    server: "hinet1.2yly.com"
+    port: 24215
+    uuid: "19d5a678-8396-4e3b-93da-ece618d0e83a"
+    udp: true
+    tls: true
+    servername: "addons.mozilla.org"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "mdWKUPMVTtTbDqK10BPb89OcqBC2-Lx-4NOYtqc1GWE"
+    network: "tcp"
+  - name: "112. 🇮🇳 Индия · vless · 674ms"
+    type: "vless"
+    server: "194.61.31.126"
+    port: 2053
+    uuid: "1d4e18bd-1f26-4915-b35a-7ace4826e76a"
+    udp: true
+    tls: true
+    servername: "www.apple.com"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "PuAGLfJy6cu1TNoHuKIKSxPetCbZI41fc8hQDjWPIAU"
+      short-id: "9980e0609b0d3891"
+    network: "tcp"
+  - name: "113. 🇦🇪 ОАЭ · vless · 693ms · 1ч"
+    type: "vless"
+    server: "uae.unixzone.us"
+    port: 22573
+    uuid: "39947382-3212-41c9-bc3a-589574ac8b23"
+    udp: true
+    network: "ws"
+    ws-opts:
+      path: "/"
+      headers:
+        Host: "uae.unixzone.us"
+  - name: "114. 🇮🇳 Индия · vless · 800ms · 1ч"
+    type: "vless"
+    server: "5.253.29.254"
+    port: 14430
+    uuid: "c7c27192-60a5-4ce1-b613-95270d82309d"
+    udp: true
+    network: "ws"
+    ws-opts:
+      path: "/vless"
+      headers:
+        Host: "5.253.29.254"
+  - name: "115. 🇨🇭 Швейцария · hysteria2 · 832ms · 1ч"
+    type: "hysteria2"
+    server: "208.69.78.217"
+    port: 33025
+    password: "capadm96216165:nXUv9sPkKFsDMmhZ7jbE28sw"
+    sni: "vpn.local"
+    skip-cert-verify: true
+    alpn:
+      - "h3"
+    obfs: "salamander"
+    obfs-password: "mbQXP2ASuHbF6ZPq"
+  - name: "116. 🇸🇪 Швеция · vless · 837ms"
+    type: "vless"
+    server: "77.110.97.245"
+    port: 443
+    uuid: "d342d11e-d224-4463-b982-532309285094"
+    udp: true
+    tls: true
+    servername: "ccc.010304.xyz"
+    network: "ws"
+    ws-opts:
+      path: "/fp=chrome"
+      headers:
+        Host: "ccc.010304.xyz"
+  - name: "117. 🇮🇱 Израиль · vless · 1005ms"
+    type: "vless"
+    server: "185.253.75.119"
+    port: 443
+    uuid: "d342d11e-d224-4463-b982-532309285094"
+    udp: true
+    tls: true
+    servername: "ccc.010304.xyz"
+    client-fingerprint: "chrome"
+    network: "ws"
+    ws-opts:
+      path: "/"
+      headers:
+        Host: "ccc.010304.xyz"
+  - name: "118. 🇹🇼 Тайвань · vless · 588ms · 1ч"
+    type: "vless"
+    server: "207.56.137.51"
+    port: 443
+    uuid: "01ada9fb-fa2f-45da-a0d0-bce80cdf433b"
+    udp: true
+    flow: "xtls-rprx-vision"
+    tls: true
+    servername: "www.cloudflare.com"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "WNifT0qNHWrUsvC6cuvej0rzZe6qPijopbmJyRADOF0"
+      short-id: "f713561d"
+    network: "tcp"
+  - name: "119. 🇮🇳 Индия · vless · 706ms · 1ч"
+    type: "vless"
+    server: "13.140.56.100"
+    port: 14430
+    uuid: "68512eac-cd53-4de3-8d1e-08f6e04af1a9"
+    udp: true
+    network: "ws"
+    ws-opts:
+      path: "/vless"
+      headers:
+        Host: "13.140.56.100"
+  - name: "120. 🇮🇳 Индия · vless · 1043ms"
+    type: "vless"
+    server: "148.113.5.44"
+    port: 443
+    uuid: "72ea5a91-ffcc-43d2-9297-5993c3abf186"
+    udp: true
+    flow: "xtls-rprx-vision"
+    tls: true
+    servername: "www.cloudflare.com"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "QLjTpkXRB453R9fXhJzKkc_q_gSm2MZrIOuxW4uW-mI"
+      short-id: "221873918e0bb74d"
+    network: "tcp"
+  - name: "121. 🇪🇪 Эстония · vless · 547ms"
+    type: "vless"
+    server: "ee.h1cloud.net"
+    port: 25895
+    uuid: "f90b7d43-69e2-4b46-a672-8029bc6796a2"
+    udp: true
+    tls: true
+    servername: "www.samsung.com"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "jOVKSP-bS9OkILJ8Epz8hadh6qhavCrOiJYeF0NCn0k"
+      short-id: "a73f0410d728c823"
+    network: "tcp"
+  - name: "122. 🇭🇰 Гонконг · hysteria2 · 655ms · 1ч"
+    type: "hysteria2"
+    server: "nas.aizhzo.com"
+    port: 5010
+    password: "eBTe6Ax2pUts8oMEWoYVDfnSlHfkLffQ"
+    sni: "127.0.0.1"
+    skip-cert-verify: true
+    alpn:
+      - "h3"
+    obfs: "salamander"
+    obfs-password: "7M4RXPFcQyQEGbkxBPfXo4bilMhCW2U9"
+  - name: "123. 🇧🇷 Бразилия · vless · 844ms · 1ч"
+    type: "vless"
+    server: "platform102.golnamakcert.top"
+    port: 80
+    uuid: "e13cf851-b4fd-413b-8d49-146e6eb8e5d4"
+    udp: true
+    network: "ws"
+    ws-opts:
+      path: "/platform102"
+      headers:
+        Host: "platform102.halalkhor.info"
+  - name: "124. 🇧🇷 Бразилия · vless · 853ms · 1ч"
+    type: "vless"
+    server: "platform101.golnamakcert.top"
+    port: 80
+    uuid: "e13cf851-b4fd-413b-8d49-146e6eb8e5d4"
+    udp: true
+    network: "ws"
+    ws-opts:
+      path: "/platform101"
+      headers:
+        Host: "platform101.halalkhor.info"
+  - name: "125. 🇧🇷 Бразилия · vless · 855ms · 1ч"
+    type: "vless"
+    server: "platform107.golnamakcert.top"
+    port: 80
+    uuid: "e13cf851-b4fd-413b-8d49-146e6eb8e5d4"
+    udp: true
+    network: "ws"
+    ws-opts:
+      path: "/platform107"
+      headers:
+        Host: "platform107.halalkhor.info"
+  - name: "126. 🇧🇷 Бразилия · vless · 856ms · 1ч"
+    type: "vless"
+    server: "platform108.golnamakcert.top"
+    port: 80
+    uuid: "e13cf851-b4fd-413b-8d49-146e6eb8e5d4"
+    udp: true
+    network: "ws"
+    ws-opts:
+      path: "/platform108"
+      headers:
+        Host: "platform108.halalkhor.info"
+  - name: "127. 🇮🇳 Индия · vmess · 890ms · 1ч"
+    type: "vmess"
+    server: "152.67.8.205"
+    port: 80
+    uuid: "9db4c708-aef8-4359-821b-38e47990be0d"
+    alterId: 0
+    cipher: "auto"
+    udp: true
+    network: "ws"
+    ws-opts:
+      path: "/"
+  - name: "128. 🇮🇷 Иран · vless · 1078ms · 1ч"
+    type: "vless"
+    server: "p1tun01.greewebservices.ir"
+    port: 38830
+    uuid: "b374647d-7516-4d1e-8c85-544c7d734c1f"
+    udp: true
+    tls: true
+    servername: "play.google.com"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "xQnXh5EfPDhcEBB7rRiLca33GYrMEeUa35domLL_yA8"
+      short-id: "e3085d4f"
+    network: "tcp"
+  - name: "129. 🇧🇬 Болгария · trojan · 1493ms · 1ч"
+    type: "trojan"
+    server: "ger8.fytpn.com"
+    port: 443
+    password: "-VbTw-xqE7XYmEsoZTE7ShJoYLCjdBMQ"
+    udp: true
+    tls: true
+    sni: "ger1.fytpn.com"
+    client-fingerprint: "chrome"
+    network: "tcp"
+  - name: "130. 🇨🇷 Коста-Рика · trojan · 1510ms"
+    type: "trojan"
+    server: "190.93.245.148"
+    port: 443
+    password: "humanity"
+    udp: true
+    tls: true
+    sni: "www.pleadcourt.org"
+    network: "ws"
+    ws-opts:
+      path: "/assignment"
+      headers:
+        Host: "www.pleadcourt.org"
+  - name: "131. 🇲🇾 Малайзия · vless · 3875ms · 1ч"
+    type: "vless"
+    server: "216.173.67.59"
+    port: 443
+    uuid: "d342d11e-d224-4463-b982-532309285094"
+    udp: true
+    tls: true
+    servername: "ccc.010304.xyz"
+    network: "ws"
+    ws-opts:
+      path: "/fp=chrome"
+      headers:
+        Host: "ccc.010304.xyz"
+  - name: "132. 🇰🇭 Камбоджа · vless · 6573ms · 1ч"
+    type: "vless"
+    server: "nl5.hap-plus.ru"
+    port: 8443
+    uuid: "05d7a479-a099-40cf-aecf-41aa934767b0"
+    udp: true
+    tls: true
+    servername: "nl5.hap-plus.ru"
+    alpn:
+      - "http/1.1"
+    client-fingerprint: "chrome"
+    network: "ws"
+    ws-opts:
+      path: "/api/v1/events"
+      headers:
+        Host: "nl5.hap-plus.ru"
+  - name: "133. 🇨🇦 Канада · vless · 72ms · 1ч"
+    type: "vless"
+    server: "104.18.35.86"
+    port: 8080
+    uuid: "e5cc16a6-ea42-46b2-82ae-ad2157e1641b"
+    udp: true
+    network: "ws"
+    ws-opts:
+      path: "/sg-melbi"
+      headers:
+        Host: "hhlfy.twiladaphne.ndjp.net"
+  - name: "134. 🇿🇦 ЮАР · ss · 495ms · 1ч"
+    type: "ss"
+    server: "102.133.165.160"
+    port: 16233
+    cipher: "chacha20-ietf-poly1305"
+    password: "Xsy8Ox4yOV3xLlpxtjzs3X"
+    udp: true
+  - name: "135. 🇹🇭 Таиланд · ss · 594ms · 1ч"
+    type: "ss"
+    server: "103.107.52.106"
+    port: 52351
+    cipher: "aes-256-gcm"
+    password: "sxajCTwrlK0zl+zmHpX0p0jXIfatnzlLzWlSQ950L1c="
+    udp: true
+  - name: "136. 🇨🇳 Китай · vmess · 861ms · 1ч"
+    type: "vmess"
+    server: "39.108.113.127"
+    port: 10086
+    uuid: "4fc543d5-23ce-4556-ae2b-01685edd4397"
+    alterId: 0
+    cipher: "auto"
+    udp: true
+    network: "ws"
+  - name: "137. 🇨🇳 Китай · vmess · 1043ms · 1ч"
+    type: "vmess"
+    server: "120.48.133.162"
+    port: 10086
+    uuid: "4fc543d5-23ce-4556-ae2b-01685edd4397"
+    alterId: 0
+    cipher: "auto"
+    udp: true
+    network: "ws"
+  - name: "138. 🇹🇷 Турция · trojan · 5215ms · 1ч"
+    type: "trojan"
+    server: "203.202.232.211"
+    port: 443
+    password: "humanity"
+    udp: true
+    tls: true
+    sni: "www.volumeroot.com"
+    alpn:
+      - "http/1.1"
+    network: "ws"
+    ws-opts:
+      path: "/assignment"
+      headers:
+        Host: "www.volumeroot.com"
+  - name: "139. 🇲🇪 ME · trojan · 616ms"
+    type: "trojan"
+    server: "31.57.190.40"
+    port: 443
+    password: "humanity"
+    udp: true
+    tls: true
+    sni: "www.pleadcourt.org"
+    alpn:
+      - "http/1.1"
+    network: "ws"
+    ws-opts:
+      path: "/assignment"
+      headers:
+        Host: "www.pleadcourt.org"
+  - name: "140. 🇹🇭 Таиланд · hysteria2 · 770ms"
+    type: "hysteria2"
+    server: "tg.zhujue.us"
+    port: 20501
+    password: "0e46345c-f33b-4f9b-b8ec-90e7c986af7e"
+    sni: "tg.zhujue.us"
+    skip-cert-verify: true
+    alpn:
+      - "h3"
+  - name: "141. 🇮🇷 Иран · vless · 2558ms"
+    type: "vless"
+    server: "p1tun0.greewebservices.ir"
+    port: 38820
+    uuid: "b374647d-7516-4d1e-8c85-544c7d734c1f"
+    udp: true
+    tls: true
+    servername: "play.google.com"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "xQnXh5EfPDhcEBB7rRiLca33GYrMEeUa35domLL_yA8"
+      short-id: "66ded2"
+    network: "tcp"
+  - name: "142. 🇨🇭 Швейцария · vless · 3901ms"
+    type: "vless"
+    server: "208.69.78.217"
+    port: 2053
+    uuid: "c0dd6d59-1573-43af-8b70-1470b2632a6d"
+    udp: true
+    tls: true
+    servername: "www.apple.com"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "A49ue7zXSusJZdErPAewg3jqGdUFIO1a9xOunEKJfC0"
+      short-id: "ad86e2d52ff40ebd"
+    network: "tcp"
+  - name: "143. 🇵🇱 Польша · ss · 275ms · 1ч"
+    type: "ss"
+    server: "51.83.192.80"
+    port: 8388
+    cipher: "aes-256-gcm"
+    password: "itzvpn@321"
+    udp: true
+  - name: "144. 🇱🇻 Латвия · vless · 545ms · 1ч"
+    type: "vless"
+    server: "185.220.223.24"
+    port: 443
+    uuid: "6338c01a-310e-42c3-bf4f-2a20e161054b"
+    udp: true
+    flow: "xtls-rprx-vision"
+    tls: true
+    servername: "lv.aiage.work"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "ds-U8G06uZvV9qFhAeO16dwS9Nkcw_coYr_4puEUGFg"
+      short-id: "3c6afdc4124d0560"
+    network: "tcp"
+  - name: "145. 🇱🇻 Латвия · vless · 617ms · 1ч"
+    type: "vless"
+    server: "138.124.63.224"
+    port: 8444
+    uuid: "f55e9aba-7b14-4f6f-b59a-d5b3d45c9309"
+    udp: true
+    tls: true
+    servername: "github.com"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "FWitre1jinQR7qz5HQ0q2Q4Gg9xA9B0SyizCziN7Ch0"
+      short-id: "457fab2ac885dbe0"
+    network: "grpc"
+    grpc-opts:
+      grpc-service-name: "GunService"
+  - name: "146. 🇰🇿 Казахстан · vmess · 901ms · 1ч"
+    type: "vmess"
+    server: "3h-kazakhstan1.09vpn.com"
+    port: 80
+    uuid: "567f4be5-12ab-42e1-b8d9-db6fd1fdd31c"
+    alterId: 0
+    cipher: "auto"
+    udp: true
+    network: "ws"
+    ws-opts:
+      path: "/vmess/"
+      headers:
+        Host: "wrmelmwxlf.gktevlrqznwqqozy.fabpfs66gizmnojhcvqxwl.kytrcfzqla87gvgvs6c7kjnrubuh.cc"
+  - name: "147. 🇦🇲 Армения · vless · 2685ms"
+    type: "vless"
+    server: "77.91.68.70"
+    port: 55983
+    uuid: "f667a096-5231-4cfb-8759-92bb32473139"
+    udp: true
+    tls: true
+    servername: "yahoo.com"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "nWQ7b9l9X6N3PrXLgIzOvMM8iSYrqjVHEb9ikWxqYSg"
+      short-id: "0e"
+    network: "tcp"
+  - name: "148. 🇸🇪 Швеция · vless · 4620ms · 1ч"
+    type: "vless"
+    server: "5.178.109.174"
+    port: 14430
+    uuid: "80de563a-cac8-40ea-8cb0-4cb082dd92f9"
+    udp: true
+    network: "ws"
+    ws-opts:
+      path: "/vless"
+      headers:
+        Host: "5.178.109.174"
+  - name: "149. 🇱🇻 Латвия · vless · 5715ms · 1ч"
+    type: "vless"
+    server: "lv.aiage.work"
+    port: 443
+    uuid: "6338c01a-310e-42c3-bf4f-2a20e161054b"
+    udp: true
+    flow: "xtls-rprx-vision"
+    tls: true
+    servername: "lv.aiage.work"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "ds-U8G06uZvV9qFhAeO16dwS9Nkcw_coYr_4puEUGFg"
+      short-id: "3c6afdc4124d0560"
+    network: "tcp"
+  - name: "150. 🇱🇻 Латвия · trojan · 2207ms · 1ч"
+    type: "trojan"
+    server: "46.8.228.165"
+    port: 443
+    password: "humanity"
+    udp: true
+    tls: true
+    sni: "www.volumeroot.com"
+    alpn:
+      - "http/1.1"
+    network: "ws"
+    ws-opts:
+      path: "/assignment"
+      headers:
+        Host: "www.volumeroot.com"
+  - name: "151. 🇰🇿 Казахстан · vless · 2861ms · 1ч"
+    type: "vless"
+    server: "83.222.23.81"
+    port: 38065
+    uuid: "4b9063e0-3288-44e9-9aac-80fbfce323a0"
+    udp: true
+    tls: true
+    servername: "yahoo.com"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "dSSDPTK6AHfAdRAXD9i4rzqcNIY65RxlF25UyCKdiyo"
+      short-id: "fa"
+    network: "tcp"
+  - name: "152. 🇸🇪 Швеция · hysteria2 · 3480ms · 1ч"
+    type: "hysteria2"
+    server: "77.110.96.201"
+    port: 36264
+    password: "Telegram-vpnjey"
+    sni: "se.vpnjey2.dpdns.org"
+    skip-cert-verify: true
+    alpn:
+      - "h3"
+    obfs: "salamander"
+    obfs-password: "Telegram@vpnjey"
+  - name: "153. 🇨🇭 Швейцария · ss · 294ms · 1ч"
+    type: "ss"
+    server: "132.243.175.144"
+    port: 8388
+    cipher: "chacha20-ietf-poly1305"
+    password: "e8KgS8fD0yDqYFpgN4G5piCOt9aFyqA3"
+    udp: true
+  - name: "154. 🇯🇵 Япония · vless · 357ms"
+    type: "vless"
+    server: "152.69.195.67"
+    port: 47878
+    uuid: "eb8613e3-8393-4cff-a3ad-6501fd4adc63"
+    udp: true
+    network: "tcp"
+  - name: "155. 🇹🇭 Таиланд · ss · 616ms · 1ч"
+    type: "ss"
+    server: "pphfree2.mvpnpvpn.de5.net"
+    port: 52351
+    cipher: "aes-256-gcm"
+    password: "sxajCTwrlK0zl+zmHpX0p0jXIfatnzlLzWlSQ950L1c="
+    udp: true
+  - name: "156. 🇦🇪 ОАЭ · vless · 1966ms · 1ч"
+    type: "vless"
+    server: "84.235.244.108"
+    port: 22573
+    uuid: "39947382-3212-41c9-bc3a-589574ac8b23"
+    udp: true
+    network: "ws"
+    ws-opts:
+      path: "/"
+      headers:
+        Host: "uae.unixzone.us"
+  - name: "157. 🇩🇪 Германия · vless · 382ms · 1ч"
+    type: "vless"
+    server: "64.188.70.56"
+    port: 443
+    uuid: "318c935d-c195-41d3-99ad-9bbcfdab3386"
+    udp: true
+    flow: "xtls-rprx-vision"
+    tls: true
+    servername: "de2.balancer.vbuste-bot.com"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "0-or5ogGhYbBgsVSrSC2Fhxyp2BN97Y9pqIdg61Qd08"
+      short-id: "4be4110078ebed4a"
+    network: "tcp"
+  - name: "158. 🇧🇾 Беларусь · vless · 546ms · 1ч"
+    type: "vless"
+    server: "178.172.227.124"
+    port: 14430
+    uuid: "1af36694-b548-4b18-89a0-bc076eab4ed7"
+    udp: true
+    network: "ws"
+    ws-opts:
+      path: "/vless"
+      headers:
+        Host: "178.172.227.124"
+  - name: "159. 🇰🇷 Корея · vmess · 647ms · 1ч"
+    type: "vmess"
+    server: "43.108.103.167"
+    port: 123
+    uuid: "35aa0fda-175a-4aec-c468-0231dee1a121"
+    alterId: 0
+    cipher: "auto"
+    udp: true
+    network: "h2"
+    h2-opts:
+      path: "/"
+  - name: "160. 🇧🇾 Беларусь · vless · 780ms · 1ч"
+    type: "vless"
+    server: "95.128.71.79"
+    port: 14430
+    uuid: "8cef7621-c6f0-486e-b51d-59c30c5b0b25"
+    udp: true
+    network: "ws"
+    ws-opts:
+      path: "/vless"
+      headers:
+        Host: "95.128.71.79"
+  - name: "161. 🇹🇭 Таиланд · vless · 808ms · 1ч"
+    type: "vless"
+    server: "103.40.119.56"
+    port: 11000
+    uuid: "0e46345c-f33b-4f9b-b8ec-90e7c986af7e"
+    udp: true
+    flow: "xtls-rprx-vision"
+    tls: true
+    servername: "s0.awsstatic.com"
+    skip-cert-verify: true
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "sFRyah8EOSGcab8TfIdkq53c5HBSwAVfYQCyvZ0_BG4"
+    network: "tcp"
+  - name: "162. 🇮🇷 Иран · vless · 1026ms · 1ч"
+    type: "vless"
+    server: "85.133.244.214"
+    port: 443
+    uuid: "fb5c43f4-bd23-453d-a3cf-45ad5b9c020b"
+    udp: true
+    network: "ws"
+    ws-opts:
+      path: "/"
+  - name: "163. 🇦🇺 Австралия · hysteria2 · 2365ms · 1ч"
+    type: "hysteria2"
+    server: "137.23.2.56"
+    port: 20000
+    password: "b42d90fa667942aebc734d60"
+    sni: "rmgyvpn.rest"
+    alpn:
+      - "h3"
+    obfs: "salamander"
+    obfs-password: "b42d90fa667942aebc734d60"
+  - name: "164. 🇰🇿 Казахстан · vless · 2536ms"
+    type: "vless"
+    server: "109.248.170.119"
+    port: 13447
+    uuid: "b573cefb-7bc7-4a42-b407-b8b534e66773"
+    udp: true
+    tls: true
+    servername: "yahoo.com"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "_0wM2ep44eAcrgf5PflKaBivknCWT6kMvQBQUoScCkE"
+      short-id: "83"
+    network: "tcp"
+  - name: "165. 🇨🇿 Чехия · ss · 3046ms · 1ч"
+    type: "ss"
+    server: "67.159.18.34"
+    port: 17001
+    cipher: "aes-256-gcm"
+    password: "I6o9NnialYLMEjVt28RF4dpjmr9wMvNL"
+    udp: true
+  - name: "166. 🇰🇿 Казахстан · vless · 5324ms · 1ч"
+    type: "vless"
+    server: "77.73.232.61"
+    port: 19747
+    uuid: "2a9ed01e-5455-44b4-a66a-76ee8165f0ac"
+    udp: true
+    tls: true
+    servername: "yahoo.com"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "ZO9dTeg1slvTXgVsBsaJ1BDvz_YUImTLJjbHs-GdVyM"
+      short-id: "2001"
+    network: "tcp"
+  - name: "167. 🇭🇰 Гонконг · vmess · 726ms · 1ч"
+    type: "vmess"
+    server: "8.210.24.181"
+    port: 443
+    uuid: "f23bb427-c1f9-4373-876c-2f43e9f790f3"
+    alterId: 0
+    cipher: "auto"
+    udp: true
+    tls: true
+    servername: "6jdvarazgu3qqr6q.v.3dns.vip"
+    client-fingerprint: "firefox"
+    network: "ws"
+    ws-opts:
+      path: "/ws-vmess"
+      headers:
+        Host: "6jdvarazgu3qqr6q.v.3dns.vip"
+  - name: "168. 🇧🇾 Беларусь · vless · 828ms · 1ч"
+    type: "vless"
+    server: "178.172.227.228"
+    port: 14430
+    uuid: "b6e5dc56-836f-48c1-9163-b0b0b43b647d"
+    udp: true
+    network: "ws"
+    ws-opts:
+      path: "/vless"
+      headers:
+        Host: "178.172.227.228"
+  - name: "169. 🇧🇾 Беларусь · vless · 1012ms · 1ч"
+    type: "vless"
+    server: "178.172.227.124"
+    port: 10444
+    uuid: "1af36694-b548-4b18-89a0-bc076eab4ed7"
+    udp: true
+    flow: "xtls-rprx-vision"
+    tls: true
+    servername: "ads.x5.ru"
+    client-fingerprint: "safari"
+    reality-opts:
+      public-key: "0oTkcqwLTUNLnSOP-VUWErmy6usAIg-biBE6ioZO-Vo"
+      short-id: "8debcf36f1cc69ff"
+    network: "tcp"
+  - name: "170. 🇧🇾 Беларусь · vless · 1321ms · 1ч"
+    type: "vless"
+    server: "178.172.227.228"
+    port: 10444
+    uuid: "b6e5dc56-836f-48c1-9163-b0b0b43b647d"
+    udp: true
+    flow: "xtls-rprx-vision"
+    tls: true
+    servername: "ads.x5.ru"
+    client-fingerprint: "safari"
+    reality-opts:
+      public-key: "0oTkcqwLTUNLnSOP-VUWErmy6usAIg-biBE6ioZO-Vo"
+      short-id: "8debcf36f1cc69ff"
+    network: "tcp"
+  - name: "171. 🇷🇴 Румыния · ss · 1579ms · 1ч"
+    type: "ss"
+    server: "194.68.44.42"
+    port: 64546
+    cipher: "chacha20-ietf-poly1305"
+    password: "U83u9OGpvSatIUW7LsWffr"
+    udp: true
+  - name: "172. 🇮🇳 Индия · vless · 1684ms · 1ч"
+    type: "vless"
+    server: "5.253.28.224"
+    port: 40443
+    uuid: "af5eac96-e478-488a-bc8c-45269d7e8847"
+    udp: true
+    flow: "xtls-rprx-vision"
+    tls: true
+    servername: "deepl.com"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "g77ZJbm18JEotapmVRjaXi133MzkbhkU2lxhVeXx8zw"
+      short-id: "68a8"
+    network: "tcp"
+  - name: "173. 🇹🇷 Турция · vless · 3620ms"
+    type: "vless"
+    server: "87.120.106.130"
+    port: 443
+    uuid: "6fab89df-d5c3-4d73-8df5-897ca352bfe8"
+    udp: true
+    tls: true
+    servername: "pqro5mlb4c88.dopwiz.com"
+    network: "tcp"
+  - name: "174. 🇦🇪 ОАЭ · vless · 7497ms · 1ч"
+    type: "vless"
+    server: "95.174.68.188"
+    port: 14430
+    uuid: "965ffbbe-c6b6-4d5f-8dea-6d8abc55d9c0"
+    udp: true
+    network: "ws"
+    ws-opts:
+      path: "/vless"
+      headers:
+        Host: "95.174.68.188"
+  - name: "175. 🇵🇱 Польша · vless · 589ms · 1ч"
+    type: "vless"
+    server: "2.26.225.89"
+    port: 8443
+    uuid: "51a1fd52-fd88-4905-a976-35e44be28e4b"
+    udp: true
+    tls: true
+    servername: "pl.flen-vpn.xyz"
+    network: "tcp"
+  - name: "176. 🇨🇦 Канада · trojan · 84ms · 1ч"
+    type: "trojan"
+    server: "ca.tronsg.com"
+    port: 443
+    password: "Trojan@82164024"
+    udp: true
+    tls: true
+    sni: "ca.tronsg.com"
+    network: "tcp"
+  - name: "177. 🇭🇰 Гонконг · hysteria2 · 182ms"
+    type: "hysteria2"
+    server: "fre.guren1.me"
+    port: 8443
+    password: "e795f042-4c9f-46d1-9d85-8816e0ff0cfb"
+    sni: "fre.guren1.me"
+    alpn:
+      - "h3"
+  - name: "178. 🇫🇷 Франция · vless · 375ms · 1ч"
+    type: "vless"
+    server: "163.245.42.48"
+    port: 443
+    uuid: "b9bfa54d-bc44-4592-a6d6-89a9665d286f"
+    udp: true
+    flow: "xtls-rprx-vision"
+    tls: true
+    servername: "mother-earth.fyi"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "SbVKOEMjK0sIlbwg4akyBg5mL5KZwwB-ed4eEE7YnRc"
+    network: "tcp"
+  - name: "179. 🇸🇬 Сингапур · vmess · 384ms"
+    type: "vmess"
+    server: "dog-hk.kunlun01dns.com"
+    port: 21020
+    uuid: "9464ca40-dd75-3742-a628-d931a9f413b2"
+    alterId: 0
+    cipher: "auto"
+    udp: true
+    network: "tcp"
+  - name: "180. 🇸🇬 Сингапур · vmess · 404ms · 1ч"
+    type: "vmess"
+    server: "zfd-hkv2.kunlun01dns.com"
+    port: 16116
+    uuid: "0802ac03-7973-39ef-a019-ba02de6c01e1"
+    alterId: 0
+    cipher: "auto"
+    udp: true
+    network: "tcp"
+  - name: "181. 🇸🇬 Сингапур · vless · 405ms · 1ч"
+    type: "vless"
+    server: "47.237.74.17"
+    port: 16263
+    uuid: "c538c9dd-2e3f-488f-a8ca-ac5b7c0773f3"
+    udp: true
+    network: "tcp"
+  - name: "182. 🇸🇬 Сингапур · vmess · 420ms · 1ч"
+    type: "vmess"
+    server: "dog-hk.kunlun01dns.com"
+    port: 21041
+    uuid: "9464ca40-dd75-3742-a628-d931a9f413b2"
+    alterId: 0
+    cipher: "auto"
+    udp: true
+    network: "tcp"
+  - name: "183. 🇷🇺 Россия · ss · 458ms · 1ч"
+    type: "ss"
+    server: "176.32.32.108"
+    port: 18443
+    cipher: "aes-256-gcm"
+    password: "cCMJgJTA3BA489YUYrFq7XHXSiSpWlLa"
+    udp: true
+  - name: "184. 🇸🇨 Сейшелы · trojan · 493ms"
+    type: "trojan"
+    server: "45.130.125.76"
+    port: 443
+    password: "humanity"
+    udp: true
+    tls: true
+    sni: "www.calmlunch.com"
+    alpn:
+      - "http/1.1"
+    network: "ws"
+    ws-opts:
+      path: "/assignment"
+      headers:
+        Host: "www.calmlunch.com"
+  - name: "185. 🇿🇦 ЮАР · ss · 502ms · 1ч"
+    type: "ss"
+    server: "20.164.216.208"
+    port: 443
+    cipher: "chacha20-ietf-poly1305"
+    password: "tM0sV3CrjAU0nokd"
+    udp: true
+  - name: "186. 🇵🇱 Польша · vless · 504ms · 1ч"
+    type: "vless"
+    server: "tg.riotvpn.eu"
+    port: 443
+    uuid: "a18f7c2d-9e45-4b8a-af3c-1d5e7f9c8b2a"
+    udp: true
+    tls: true
+    servername: "ads.x5.ru"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "8h8t5eBWL9oERK7xWHQLFJE5j6sZdgNDQAs3EGnNbho"
+      short-id: "2f49bccf11150ef2"
+    network: "tcp"
+  - name: "187. 🇵🇱 Польша · vless · 533ms · 1ч"
+    type: "vless"
+    server: "83.168.71.216"
+    port: 443
+    uuid: "a18f7c2d-9e45-4b8a-af3c-1d5e7f9c8b2a"
+    udp: true
+    tls: true
+    servername: "ads.x5.ru"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "8h8t5eBWL9oERK7xWHQLFJE5j6sZdgNDQAs3EGnNbho"
+      short-id: "2f49bccf11150ef2"
+    network: "tcp"
+  - name: "188. 🇪🇸 Испания · trojan · 547ms"
+    type: "trojan"
+    server: "185.18.250.252"
+    port: 443
+    password: "humanity"
+    udp: true
+    tls: true
+    sni: "www.calmlunch.com"
+    skip-cert-verify: true
+    network: "ws"
+    ws-opts:
+      path: "/assignment"
+      headers:
+        Host: "www.calmlunch.com"
+  - name: "189. 🇷🇺 Россия · vless · 648ms · 1ч"
+    type: "vless"
+    server: "du-rov.secureservice.top"
+    port: 8443
+    uuid: "c53ea5e9-ed8b-4990-805d-7f1d6451426c"
+    udp: true
+    flow: "xtls-rprx-vision"
+    tls: true
+    servername: "du-rov.secureservice.top"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "fSVfR9NB-6J6smrZlavi0GWd8JfDh0aXuEkKbtuFzUI"
+      short-id: "3cbc3d737fb9c4af"
+    network: "tcp"
+  - name: "190. 🇰🇿 Казахстан · vmess · 653ms · 1ч"
+    type: "vmess"
+    server: "38.107.234.57"
+    port: 80
+    uuid: "567f4be5-12ab-42e1-b8d9-db6fd1fdd31c"
+    alterId: 0
+    cipher: "auto"
+    udp: true
+    network: "ws"
+    ws-opts:
+      path: "/vmess/"
+  - name: "191. 🇭🇰 Гонконг · vmess · 723ms"
+    type: "vmess"
+    server: "lcv8v9l7oyamxxfz.v.3dns.vip"
+    port: 443
+    uuid: "f23bb427c1f94373876c2f43e9f790f3"
+    alterId: 0
+    cipher: "auto"
+    udp: true
+    tls: true
+    servername: "lcv8v9l7oyamxxfz.v.3dns.vip"
+    network: "ws"
+    ws-opts:
+      path: "/ws-vmess"
+  - name: "192. 🇲🇾 Малайзия · trojan · 1147ms"
+    type: "trojan"
+    server: "47.250.84.25"
+    port: 443
+    password: "5931134d1cde66bf83a54acdfebe7ab2"
+    udp: true
+    tls: true
+    sni: "47.250.84.25"
+    skip-cert-verify: true
+    client-fingerprint: "chrome"
+    network: "tcp"
+  - name: "193. 🇧🇬 Болгария · vless · 2679ms · 1ч"
+    type: "vless"
+    server: "p11real1.greewebservices.ir"
+    port: 1020
+    uuid: "b374647d-7516-4d1e-8c85-544c7d734c1f"
+    udp: true
+    tls: true
+    servername: "play.googleapis.com"
+    client-fingerprint: "chrome"
+    reality-opts:
+      public-key: "GzjL8Jq6iNwatTxuqL9gXElWIUgtOfbbCDaZ_wHG5SY"
+      short-id: "9b60d3"
+    network: "tcp"
+  - name: "194. 🇨🇱 Чили · ss · 7400ms"
+    type: "ss"
+    server: "64.176.2.21"
+    port: 8388
+    cipher: "aes-256-gcm"
+    password: "xBStBEVqvGwHPocc"
+    udp: true
+  - name: "195. 🇨🇳 Китай · vmess · 505ms · 1ч · ⚠"
+    type: "vmess"
+    server: "112.132.215.108"
+    port: 50002
+    uuid: "418048af-a293-4b99-9b0c-98ca3580dd24"
+    alterId: 0
+    cipher: "auto"
+    udp: true
+    network: "tcp"
+  - name: "196. 🇨🇳 Китай · trojan · 731ms · ⚠"
+    type: "trojan"
+    server: "ja262.magiclampcloud.cn"
+    port: 59443
+    password: "53d52598e15eda0daad99ec7d3461f06"
+    udp: true
+    tls: true
+    sni: "ja262.magiclampcloud.cn"
+    skip-cert-verify: true
+    network: "tcp"
+  - name: "197. 🇨🇳 Китай · trojan · 744ms · ⚠"
+    type: "trojan"
+    server: "118.253.167.243"
+    port: 59443
+    password: "14bac0e43c849123ccb0fd0690f24316"
+    udp: true
+    tls: true
+    sni: "tyy129.magiclampcloud.com"
+    skip-cert-verify: true
+    network: "tcp"
+  - name: "198. 🇨🇳 Китай · trojan · 752ms · ⚠"
+    type: "trojan"
+    server: "42.51.25.69"
+    port: 59443
+    password: "002023c45d18bca3eba2757bb683309a"
+    udp: true
+    tls: true
+    sni: "ja262.magiclampcloud.cn"
+    skip-cert-verify: true
+    network: "tcp"
+  - name: "199. 🇷🇴 Румыния · ss · 5361ms · ⚠"
+    type: "ss"
+    server: "154.46.31.106"
+    port: 443
+    cipher: "chacha20-ietf-poly1305"
+    password: "QFWzCw2uX9B9i6qAYeFBIE"
+    udp: true
+  - name: "200. 🇲🇾 Малайзия · vmess · 6585ms · ⚠"
+    type: "vmess"
+    server: "47.250.135.244"
+    port: 10000
+    uuid: "aedc66b8-99d7-4a21-8310-61870e7f870d"
+    alterId: 0
+    cipher: "auto"
+    udp: true
+    network: "tcp"
+proxy-groups:
+  - name: "Авто"
+    type: "url-test"
+    url: "http://cp.cloudflare.com/generate_204"
+    interval: 300
+    tolerance: 50
+    proxies:
+      - "01. 🇺🇸 США · ss · 69ms · 1ч"
+      - "02. 🇺🇸 США · hysteria2 · 93ms · 1ч"
+      - "03. 🇺🇸 США · ss · 65ms · 1ч"
+      - "04. 🇺🇸 США · ss · 95ms · 1ч"
+      - "05. 🇺🇸 США · ss · 74ms · 1ч"
+      - "06. 🇺🇸 США · ss · 99ms · 1ч"
+      - "07. 🇺🇸 США · ss · 77ms · 1ч"
+      - "08. 🇨🇦 Канада · vmess · 95ms · 1ч"
+      - "09. 🇨🇦 Канада · ss · 114ms · 1ч"
+      - "10. 🇨🇦 Канада · ss · 78ms · 1ч"
+      - "11. 🇲🇽 Мексика · ss · 135ms"
+      - "12. 🇫🇷 Франция · hysteria2 · 371ms · 1ч"
+      - "13. 🇫🇷 Франция · vless · 418ms · 1ч"
+      - "14. 🇮🇪 Ирландия · vmess · 238ms · 1ч"
+      - "15. 🇮🇪 Ирландия · vless · 300ms · 1ч"
+      - "16. 🇱🇻 Латвия · hysteria2 · 555ms · 1ч"
+      - "17. 🇳🇱 Нидерланды · ss · 230ms · 1ч"
+      - "18. 🇬🇧 Британия · ss · 234ms · 1ч"
+      - "19. 🇫🇷 Франция · hysteria2 · 416ms · 1ч"
+      - "20. 🇰🇷 Корея · hysteria2 · 530ms · 1ч"
+      - "21. 🇰🇿 Казахстан · hysteria2 · 571ms · 1ч"
+      - "22. 🇹🇷 Турция · vless · 687ms"
+      - "23. 🇬🇧 Британия · ss · 250ms · 1ч"
+      - "24. 🇳🇱 Нидерланды · ss · 251ms · 1ч"
+      - "25. 🇳🇱 Нидерланды · ss · 256ms · 1ч"
+      - "26. 🇳🇱 Нидерланды · ss · 259ms · 1ч"
+      - "27. 🇰🇷 Корея · hysteria2 · 604ms · 1ч"
+      - "28. 🇵🇱 Польша · hysteria2 · 624ms · 1ч"
+      - "29. 🇷🇴 Румыния · hysteria2 · 2682ms · 1ч"
+      - "30. 🇨🇦 Канада · vless · 88ms · 1ч"
+      - "31. 🇳🇱 Нидерланды · ss · 250ms · 1ч"
+      - "32. 🇫🇮 Финляндия · vless · 408ms"
+      - "33. 🇨🇭 Швейцария · hysteria2 · 522ms · 1ч"
+      - "34. 🇰🇷 Корея · hysteria2 · 582ms · 1ч"
+      - "35. 🇮🇹 Италия · ss · 4396ms · 1ч"
+      - "36. 🇨🇦 Канада · vless · 95ms · 1ч"
+      - "37. 🇩🇪 Германия · vmess · 259ms · 1ч"
+      - "38. 🇬🇧 Британия · ss · 310ms · 1ч"
+      - "39. 🇯🇵 Япония · ss · 318ms · 1ч"
+      - "40. 🇯🇵 Япония · ss · 327ms · 1ч"
+      - "41. 🇯🇵 Япония · ss · 329ms · 1ч"
+      - "42. 🇫🇷 Франция · vless · 372ms · 1ч"
+      - "43. 🇬🇧 Британия · vless · 377ms · 1ч"
+      - "44. 🇩🇪 Германия · vmess · 401ms · 1ч"
+      - "45. 🇨🇭 Швейцария · hysteria2 · 411ms · 1ч"
+      - "46. 🇦🇪 ОАЭ · vless · 425ms · 1ч"
+      - "47. 🇭🇺 Венгрия · vless · 869ms · 1ч"
+      - "48. 🇪🇪 Эстония · hysteria2 · 1997ms · 1ч"
+      - "49. 🇩🇪 Германия · ss · 268ms · 1ч"
+      - "50. 🇬🇧 Британия · ss · 300ms · 1ч"
+      - "51. 🇩🇪 Германия · ss · 327ms · 1ч"
+      - "52. 🇵🇱 Польша · ss · 337ms · 1ч"
+      - "53. 🇫🇮 Финляндия · vmess · 381ms · 1ч"
+      - "54. 🇯🇵 Япония · vless · 412ms · 1ч"
+      - "55. 🇯🇵 Япония · ss · 419ms"
+      - "56. 🇫🇮 Финляндия · vless · 446ms"
+      - "57. 🇷🇺 Россия · vless · 485ms"
+      - "58. 🇦🇺 Австралия · hysteria2 · 622ms"
+      - "59. 🇪🇸 Испания · vless · 1027ms"
+      - "60. 🇳🇱 Нидерланды · ss · 249ms · 1ч"
+      - "61. 🇫🇮 Финляндия · vmess · 308ms · 1ч"
+      - "62. 🇬🇧 Британия · ss · 312ms · 1ч"
+      - "63. 🇯🇵 Япония · ss · 399ms"
+      - "64. 🇵🇱 Польша · vless · 411ms · 1ч"
+      - "65. 🇫🇮 Финляндия · vless · 428ms"
+      - "66. 🇱🇹 Литва · vless · 488ms · 1ч"
+      - "67. 🇮🇹 Италия · vless · 488ms · 1ч"
+      - "68. 🇧🇷 Бразилия · vless · 492ms · 1ч"
+      - "69. 🇨🇿 Чехия · vless · 520ms"
+      - "70. 🇰🇷 Корея · hysteria2 · 641ms · 1ч"
+      - "71. 🇧🇷 Бразилия · vless · 642ms · 1ч"
+      - "72. 🇲🇪 ME · vless · 730ms · 1ч"
+      - "73. 🇩🇪 Германия · vless · 353ms · 1ч"
+      - "74. 🇫🇷 Франция · vless · 370ms · 1ч"
+      - "75. 🇪🇪 Эстония · trojan · 441ms · 1ч"
+      - "76. 🇲🇪 ME · vless · 511ms · 1ч"
+      - "77. 🇪🇸 Испания · vless · 602ms · 1ч"
+      - "78. 🇷🇴 Румыния · vless · 690ms"
+      - "79. 🇮🇹 Италия · vless · 1181ms · 1ч"
+      - "80. 🇳🇴 Норвегия · ss · 275ms · 1ч"
+      - "81. 🇸🇬 Сингапур · vmess · 391ms"
+      - "82. 🇫🇮 Финляндия · vless · 470ms"
+      - "83. 🇰🇷 Корея · vmess · 482ms · 1ч"
+      - "84. 🇫🇮 Финляндия · vless · 483ms · 1ч"
+      - "85. 🇹🇼 Тайвань · hysteria2 · 512ms · 1ч"
+      - "86. 🇷🇺 Россия · vless · 531ms · 1ч"
+      - "87. 🇹🇼 Тайвань · hysteria2 · 536ms · 1ч"
+      - "88. 🇹🇼 Тайвань · hysteria2 · 537ms · 1ч"
+      - "89. 🇭🇰 Гонконг · hysteria2 · 569ms · 1ч"
+      - "90. 🇭🇰 Гонконг · hysteria2 · 569ms · 1ч"
+      - "91. 🇷🇴 Румыния · vless · 698ms"
+      - "92. 🇷🇴 Румыния · ss · 5445ms"
+      - "93. 🇳🇱 Нидерланды · ss · 255ms · 1ч"
+      - "94. 🇸🇬 Сингапур · vmess · 465ms · 1ч"
+      - "95. 🇸🇪 Швеция · vless · 533ms · 1ч"
+      - "96. 🇲🇩 Молдова · vless · 578ms · 1ч"
+      - "97. 🇲🇩 Молдова · vless · 578ms · 1ч"
+      - "98. 🇦🇺 Австралия · vless · 595ms · 1ч"
+      - "99. 🇷🇺 Россия · hysteria2 · 645ms · 1ч"
+      - "100. 🇭🇰 Гонконг · hysteria2 · 662ms · 1ч"
+      - "101. 🇸🇦 Саудовская Аравия · vless · 846ms · 1ч"
+      - "102. 🇬🇧 Британия · ss · 328ms · 1ч"
+      - "103. 🇫🇷 Франция · vless · 374ms · 1ч"
+      - "104. 🇱🇻 Латвия · vless · 592ms · 1ч"
+      - "105. 🇹🇼 Тайвань · vless · 700ms · 1ч"
+      - "106. 🇹🇷 Турция · vless · 1107ms · 1ч"
+      - "107. 🇰🇭 Камбоджа · vless · 1810ms · 1ч"
+      - "108. 🇩🇪 Германия · ss · 263ms · 1ч"
+      - "109. 🇹🇭 Таиланд · vmess · 544ms · 1ч"
+      - "110. 🇷🇺 Россия · hysteria2 · 633ms · 1ч"
+      - "111. 🇹🇼 Тайвань · vless · 661ms · 1ч"
+      - "112. 🇮🇳 Индия · vless · 674ms"
+      - "113. 🇦🇪 ОАЭ · vless · 693ms · 1ч"
+      - "114. 🇮🇳 Индия · vless · 800ms · 1ч"
+      - "115. 🇨🇭 Швейцария · hysteria2 · 832ms · 1ч"
+      - "116. 🇸🇪 Швеция · vless · 837ms"
+      - "117. 🇮🇱 Израиль · vless · 1005ms"
+      - "118. 🇹🇼 Тайвань · vless · 588ms · 1ч"
+      - "119. 🇮🇳 Индия · vless · 706ms · 1ч"
+      - "120. 🇮🇳 Индия · vless · 1043ms"
+      - "121. 🇪🇪 Эстония · vless · 547ms"
+      - "122. 🇭🇰 Гонконг · hysteria2 · 655ms · 1ч"
+      - "123. 🇧🇷 Бразилия · vless · 844ms · 1ч"
+      - "124. 🇧🇷 Бразилия · vless · 853ms · 1ч"
+      - "125. 🇧🇷 Бразилия · vless · 855ms · 1ч"
+      - "126. 🇧🇷 Бразилия · vless · 856ms · 1ч"
+      - "127. 🇮🇳 Индия · vmess · 890ms · 1ч"
+      - "128. 🇮🇷 Иран · vless · 1078ms · 1ч"
+      - "129. 🇧🇬 Болгария · trojan · 1493ms · 1ч"
+      - "130. 🇨🇷 Коста-Рика · trojan · 1510ms"
+      - "131. 🇲🇾 Малайзия · vless · 3875ms · 1ч"
+      - "132. 🇰🇭 Камбоджа · vless · 6573ms · 1ч"
+      - "133. 🇨🇦 Канада · vless · 72ms · 1ч"
+      - "134. 🇿🇦 ЮАР · ss · 495ms · 1ч"
+      - "135. 🇹🇭 Таиланд · ss · 594ms · 1ч"
+      - "136. 🇨🇳 Китай · vmess · 861ms · 1ч"
+      - "137. 🇨🇳 Китай · vmess · 1043ms · 1ч"
+      - "138. 🇹🇷 Турция · trojan · 5215ms · 1ч"
+      - "139. 🇲🇪 ME · trojan · 616ms"
+      - "140. 🇹🇭 Таиланд · hysteria2 · 770ms"
+      - "141. 🇮🇷 Иран · vless · 2558ms"
+      - "142. 🇨🇭 Швейцария · vless · 3901ms"
+      - "143. 🇵🇱 Польша · ss · 275ms · 1ч"
+      - "144. 🇱🇻 Латвия · vless · 545ms · 1ч"
+      - "145. 🇱🇻 Латвия · vless · 617ms · 1ч"
+      - "146. 🇰🇿 Казахстан · vmess · 901ms · 1ч"
+      - "147. 🇦🇲 Армения · vless · 2685ms"
+      - "148. 🇸🇪 Швеция · vless · 4620ms · 1ч"
+      - "149. 🇱🇻 Латвия · vless · 5715ms · 1ч"
+      - "150. 🇱🇻 Латвия · trojan · 2207ms · 1ч"
+      - "151. 🇰🇿 Казахстан · vless · 2861ms · 1ч"
+      - "152. 🇸🇪 Швеция · hysteria2 · 3480ms · 1ч"
+      - "153. 🇨🇭 Швейцария · ss · 294ms · 1ч"
+      - "154. 🇯🇵 Япония · vless · 357ms"
+      - "155. 🇹🇭 Таиланд · ss · 616ms · 1ч"
+      - "156. 🇦🇪 ОАЭ · vless · 1966ms · 1ч"
+      - "157. 🇩🇪 Германия · vless · 382ms · 1ч"
+      - "158. 🇧🇾 Беларусь · vless · 546ms · 1ч"
+      - "159. 🇰🇷 Корея · vmess · 647ms · 1ч"
+      - "160. 🇧🇾 Беларусь · vless · 780ms · 1ч"
+      - "161. 🇹🇭 Таиланд · vless · 808ms · 1ч"
+      - "162. 🇮🇷 Иран · vless · 1026ms · 1ч"
+      - "163. 🇦🇺 Австралия · hysteria2 · 2365ms · 1ч"
+      - "164. 🇰🇿 Казахстан · vless · 2536ms"
+      - "165. 🇨🇿 Чехия · ss · 3046ms · 1ч"
+      - "166. 🇰🇿 Казахстан · vless · 5324ms · 1ч"
+      - "167. 🇭🇰 Гонконг · vmess · 726ms · 1ч"
+      - "168. 🇧🇾 Беларусь · vless · 828ms · 1ч"
+      - "169. 🇧🇾 Беларусь · vless · 1012ms · 1ч"
+      - "170. 🇧🇾 Беларусь · vless · 1321ms · 1ч"
+      - "171. 🇷🇴 Румыния · ss · 1579ms · 1ч"
+      - "172. 🇮🇳 Индия · vless · 1684ms · 1ч"
+      - "173. 🇹🇷 Турция · vless · 3620ms"
+      - "174. 🇦🇪 ОАЭ · vless · 7497ms · 1ч"
+      - "175. 🇵🇱 Польша · vless · 589ms · 1ч"
+      - "176. 🇨🇦 Канада · trojan · 84ms · 1ч"
+      - "177. 🇭🇰 Гонконг · hysteria2 · 182ms"
+      - "178. 🇫🇷 Франция · vless · 375ms · 1ч"
+      - "179. 🇸🇬 Сингапур · vmess · 384ms"
+      - "180. 🇸🇬 Сингапур · vmess · 404ms · 1ч"
+      - "181. 🇸🇬 Сингапур · vless · 405ms · 1ч"
+      - "182. 🇸🇬 Сингапур · vmess · 420ms · 1ч"
+      - "183. 🇷🇺 Россия · ss · 458ms · 1ч"
+      - "184. 🇸🇨 Сейшелы · trojan · 493ms"
+      - "185. 🇿🇦 ЮАР · ss · 502ms · 1ч"
+      - "186. 🇵🇱 Польша · vless · 504ms · 1ч"
+      - "187. 🇵🇱 Польша · vless · 533ms · 1ч"
+      - "188. 🇪🇸 Испания · trojan · 547ms"
+      - "189. 🇷🇺 Россия · vless · 648ms · 1ч"
+      - "190. 🇰🇿 Казахстан · vmess · 653ms · 1ч"
+      - "191. 🇭🇰 Гонконг · vmess · 723ms"
+      - "192. 🇲🇾 Малайзия · trojan · 1147ms"
+      - "193. 🇧🇬 Болгария · vless · 2679ms · 1ч"
+      - "194. 🇨🇱 Чили · ss · 7400ms"
+      - "195. 🇨🇳 Китай · vmess · 505ms · 1ч · ⚠"
+      - "196. 🇨🇳 Китай · trojan · 731ms · ⚠"
+      - "197. 🇨🇳 Китай · trojan · 744ms · ⚠"
+      - "198. 🇨🇳 Китай · trojan · 752ms · ⚠"
+      - "199. 🇷🇴 Румыния · ss · 5361ms · ⚠"
+      - "200. 🇲🇾 Малайзия · vmess · 6585ms · ⚠"
+  - name: "Ручной"
+    type: "select"
+    proxies:
+      - "01. 🇺🇸 США · ss · 69ms · 1ч"
+      - "02. 🇺🇸 США · hysteria2 · 93ms · 1ч"
+      - "03. 🇺🇸 США · ss · 65ms · 1ч"
+      - "04. 🇺🇸 США · ss · 95ms · 1ч"
+      - "05. 🇺🇸 США · ss · 74ms · 1ч"
+      - "06. 🇺🇸 США · ss · 99ms · 1ч"
+      - "07. 🇺🇸 США · ss · 77ms · 1ч"
+      - "08. 🇨🇦 Канада · vmess · 95ms · 1ч"
+      - "09. 🇨🇦 Канада · ss · 114ms · 1ч"
+      - "10. 🇨🇦 Канада · ss · 78ms · 1ч"
+      - "11. 🇲🇽 Мексика · ss · 135ms"
+      - "12. 🇫🇷 Франция · hysteria2 · 371ms · 1ч"
+      - "13. 🇫🇷 Франция · vless · 418ms · 1ч"
+      - "14. 🇮🇪 Ирландия · vmess · 238ms · 1ч"
+      - "15. 🇮🇪 Ирландия · vless · 300ms · 1ч"
+      - "16. 🇱🇻 Латвия · hysteria2 · 555ms · 1ч"
+      - "17. 🇳🇱 Нидерланды · ss · 230ms · 1ч"
+      - "18. 🇬🇧 Британия · ss · 234ms · 1ч"
+      - "19. 🇫🇷 Франция · hysteria2 · 416ms · 1ч"
+      - "20. 🇰🇷 Корея · hysteria2 · 530ms · 1ч"
+      - "21. 🇰🇿 Казахстан · hysteria2 · 571ms · 1ч"
+      - "22. 🇹🇷 Турция · vless · 687ms"
+      - "23. 🇬🇧 Британия · ss · 250ms · 1ч"
+      - "24. 🇳🇱 Нидерланды · ss · 251ms · 1ч"
+      - "25. 🇳🇱 Нидерланды · ss · 256ms · 1ч"
+      - "26. 🇳🇱 Нидерланды · ss · 259ms · 1ч"
+      - "27. 🇰🇷 Корея · hysteria2 · 604ms · 1ч"
+      - "28. 🇵🇱 Польша · hysteria2 · 624ms · 1ч"
+      - "29. 🇷🇴 Румыния · hysteria2 · 2682ms · 1ч"
+      - "30. 🇨🇦 Канада · vless · 88ms · 1ч"
+      - "31. 🇳🇱 Нидерланды · ss · 250ms · 1ч"
+      - "32. 🇫🇮 Финляндия · vless · 408ms"
+      - "33. 🇨🇭 Швейцария · hysteria2 · 522ms · 1ч"
+      - "34. 🇰🇷 Корея · hysteria2 · 582ms · 1ч"
+      - "35. 🇮🇹 Италия · ss · 4396ms · 1ч"
+      - "36. 🇨🇦 Канада · vless · 95ms · 1ч"
+      - "37. 🇩🇪 Германия · vmess · 259ms · 1ч"
+      - "38. 🇬🇧 Британия · ss · 310ms · 1ч"
+      - "39. 🇯🇵 Япония · ss · 318ms · 1ч"
+      - "40. 🇯🇵 Япония · ss · 327ms · 1ч"
+      - "41. 🇯🇵 Япония · ss · 329ms · 1ч"
+      - "42. 🇫🇷 Франция · vless · 372ms · 1ч"
+      - "43. 🇬🇧 Британия · vless · 377ms · 1ч"
+      - "44. 🇩🇪 Германия · vmess · 401ms · 1ч"
+      - "45. 🇨🇭 Швейцария · hysteria2 · 411ms · 1ч"
+      - "46. 🇦🇪 ОАЭ · vless · 425ms · 1ч"
+      - "47. 🇭🇺 Венгрия · vless · 869ms · 1ч"
+      - "48. 🇪🇪 Эстония · hysteria2 · 1997ms · 1ч"
+      - "49. 🇩🇪 Германия · ss · 268ms · 1ч"
+      - "50. 🇬🇧 Британия · ss · 300ms · 1ч"
+      - "51. 🇩🇪 Германия · ss · 327ms · 1ч"
+      - "52. 🇵🇱 Польша · ss · 337ms · 1ч"
+      - "53. 🇫🇮 Финляндия · vmess · 381ms · 1ч"
+      - "54. 🇯🇵 Япония · vless · 412ms · 1ч"
+      - "55. 🇯🇵 Япония · ss · 419ms"
+      - "56. 🇫🇮 Финляндия · vless · 446ms"
+      - "57. 🇷🇺 Россия · vless · 485ms"
+      - "58. 🇦🇺 Австралия · hysteria2 · 622ms"
+      - "59. 🇪🇸 Испания · vless · 1027ms"
+      - "60. 🇳🇱 Нидерланды · ss · 249ms · 1ч"
+      - "61. 🇫🇮 Финляндия · vmess · 308ms · 1ч"
+      - "62. 🇬🇧 Британия · ss · 312ms · 1ч"
+      - "63. 🇯🇵 Япония · ss · 399ms"
+      - "64. 🇵🇱 Польша · vless · 411ms · 1ч"
+      - "65. 🇫🇮 Финляндия · vless · 428ms"
+      - "66. 🇱🇹 Литва · vless · 488ms · 1ч"
+      - "67. 🇮🇹 Италия · vless · 488ms · 1ч"
+      - "68. 🇧🇷 Бразилия · vless · 492ms · 1ч"
+      - "69. 🇨🇿 Чехия · vless · 520ms"
+      - "70. 🇰🇷 Корея · hysteria2 · 641ms · 1ч"
+      - "71. 🇧🇷 Бразилия · vless · 642ms · 1ч"
+      - "72. 🇲🇪 ME · vless · 730ms · 1ч"
+      - "73. 🇩🇪 Германия · vless · 353ms · 1ч"
+      - "74. 🇫🇷 Франция · vless · 370ms · 1ч"
+      - "75. 🇪🇪 Эстония · trojan · 441ms · 1ч"
+      - "76. 🇲🇪 ME · vless · 511ms · 1ч"
+      - "77. 🇪🇸 Испания · vless · 602ms · 1ч"
+      - "78. 🇷🇴 Румыния · vless · 690ms"
+      - "79. 🇮🇹 Италия · vless · 1181ms · 1ч"
+      - "80. 🇳🇴 Норвегия · ss · 275ms · 1ч"
+      - "81. 🇸🇬 Сингапур · vmess · 391ms"
+      - "82. 🇫🇮 Финляндия · vless · 470ms"
+      - "83. 🇰🇷 Корея · vmess · 482ms · 1ч"
+      - "84. 🇫🇮 Финляндия · vless · 483ms · 1ч"
+      - "85. 🇹🇼 Тайвань · hysteria2 · 512ms · 1ч"
+      - "86. 🇷🇺 Россия · vless · 531ms · 1ч"
+      - "87. 🇹🇼 Тайвань · hysteria2 · 536ms · 1ч"
+      - "88. 🇹🇼 Тайвань · hysteria2 · 537ms · 1ч"
+      - "89. 🇭🇰 Гонконг · hysteria2 · 569ms · 1ч"
+      - "90. 🇭🇰 Гонконг · hysteria2 · 569ms · 1ч"
+      - "91. 🇷🇴 Румыния · vless · 698ms"
+      - "92. 🇷🇴 Румыния · ss · 5445ms"
+      - "93. 🇳🇱 Нидерланды · ss · 255ms · 1ч"
+      - "94. 🇸🇬 Сингапур · vmess · 465ms · 1ч"
+      - "95. 🇸🇪 Швеция · vless · 533ms · 1ч"
+      - "96. 🇲🇩 Молдова · vless · 578ms · 1ч"
+      - "97. 🇲🇩 Молдова · vless · 578ms · 1ч"
+      - "98. 🇦🇺 Австралия · vless · 595ms · 1ч"
+      - "99. 🇷🇺 Россия · hysteria2 · 645ms · 1ч"
+      - "100. 🇭🇰 Гонконг · hysteria2 · 662ms · 1ч"
+      - "101. 🇸🇦 Саудовская Аравия · vless · 846ms · 1ч"
+      - "102. 🇬🇧 Британия · ss · 328ms · 1ч"
+      - "103. 🇫🇷 Франция · vless · 374ms · 1ч"
+      - "104. 🇱🇻 Латвия · vless · 592ms · 1ч"
+      - "105. 🇹🇼 Тайвань · vless · 700ms · 1ч"
+      - "106. 🇹🇷 Турция · vless · 1107ms · 1ч"
+      - "107. 🇰🇭 Камбоджа · vless · 1810ms · 1ч"
+      - "108. 🇩🇪 Германия · ss · 263ms · 1ч"
+      - "109. 🇹🇭 Таиланд · vmess · 544ms · 1ч"
+      - "110. 🇷🇺 Россия · hysteria2 · 633ms · 1ч"
+      - "111. 🇹🇼 Тайвань · vless · 661ms · 1ч"
+      - "112. 🇮🇳 Индия · vless · 674ms"
+      - "113. 🇦🇪 ОАЭ · vless · 693ms · 1ч"
+      - "114. 🇮🇳 Индия · vless · 800ms · 1ч"
+      - "115. 🇨🇭 Швейцария · hysteria2 · 832ms · 1ч"
+      - "116. 🇸🇪 Швеция · vless · 837ms"
+      - "117. 🇮🇱 Израиль · vless · 1005ms"
+      - "118. 🇹🇼 Тайвань · vless · 588ms · 1ч"
+      - "119. 🇮🇳 Индия · vless · 706ms · 1ч"
+      - "120. 🇮🇳 Индия · vless · 1043ms"
+      - "121. 🇪🇪 Эстония · vless · 547ms"
+      - "122. 🇭🇰 Гонконг · hysteria2 · 655ms · 1ч"
+      - "123. 🇧🇷 Бразилия · vless · 844ms · 1ч"
+      - "124. 🇧🇷 Бразилия · vless · 853ms · 1ч"
+      - "125. 🇧🇷 Бразилия · vless · 855ms · 1ч"
+      - "126. 🇧🇷 Бразилия · vless · 856ms · 1ч"
+      - "127. 🇮🇳 Индия · vmess · 890ms · 1ч"
+      - "128. 🇮🇷 Иран · vless · 1078ms · 1ч"
+      - "129. 🇧🇬 Болгария · trojan · 1493ms · 1ч"
+      - "130. 🇨🇷 Коста-Рика · trojan · 1510ms"
+      - "131. 🇲🇾 Малайзия · vless · 3875ms · 1ч"
+      - "132. 🇰🇭 Камбоджа · vless · 6573ms · 1ч"
+      - "133. 🇨🇦 Канада · vless · 72ms · 1ч"
+      - "134. 🇿🇦 ЮАР · ss · 495ms · 1ч"
+      - "135. 🇹🇭 Таиланд · ss · 594ms · 1ч"
+      - "136. 🇨🇳 Китай · vmess · 861ms · 1ч"
+      - "137. 🇨🇳 Китай · vmess · 1043ms · 1ч"
+      - "138. 🇹🇷 Турция · trojan · 5215ms · 1ч"
+      - "139. 🇲🇪 ME · trojan · 616ms"
+      - "140. 🇹🇭 Таиланд · hysteria2 · 770ms"
+      - "141. 🇮🇷 Иран · vless · 2558ms"
+      - "142. 🇨🇭 Швейцария · vless · 3901ms"
+      - "143. 🇵🇱 Польша · ss · 275ms · 1ч"
+      - "144. 🇱🇻 Латвия · vless · 545ms · 1ч"
+      - "145. 🇱🇻 Латвия · vless · 617ms · 1ч"
+      - "146. 🇰🇿 Казахстан · vmess · 901ms · 1ч"
+      - "147. 🇦🇲 Армения · vless · 2685ms"
+      - "148. 🇸🇪 Швеция · vless · 4620ms · 1ч"
+      - "149. 🇱🇻 Латвия · vless · 5715ms · 1ч"
+      - "150. 🇱🇻 Латвия · trojan · 2207ms · 1ч"
+      - "151. 🇰🇿 Казахстан · vless · 2861ms · 1ч"
+      - "152. 🇸🇪 Швеция · hysteria2 · 3480ms · 1ч"
+      - "153. 🇨🇭 Швейцария · ss · 294ms · 1ч"
+      - "154. 🇯🇵 Япония · vless · 357ms"
+      - "155. 🇹🇭 Таиланд · ss · 616ms · 1ч"
+      - "156. 🇦🇪 ОАЭ · vless · 1966ms · 1ч"
+      - "157. 🇩🇪 Германия · vless · 382ms · 1ч"
+      - "158. 🇧🇾 Беларусь · vless · 546ms · 1ч"
+      - "159. 🇰🇷 Корея · vmess · 647ms · 1ч"
+      - "160. 🇧🇾 Беларусь · vless · 780ms · 1ч"
+      - "161. 🇹🇭 Таиланд · vless · 808ms · 1ч"
+      - "162. 🇮🇷 Иран · vless · 1026ms · 1ч"
+      - "163. 🇦🇺 Австралия · hysteria2 · 2365ms · 1ч"
+      - "164. 🇰🇿 Казахстан · vless · 2536ms"
+      - "165. 🇨🇿 Чехия · ss · 3046ms · 1ч"
+      - "166. 🇰🇿 Казахстан · vless · 5324ms · 1ч"
+      - "167. 🇭🇰 Гонконг · vmess · 726ms · 1ч"
+      - "168. 🇧🇾 Беларусь · vless · 828ms · 1ч"
+      - "169. 🇧🇾 Беларусь · vless · 1012ms · 1ч"
+      - "170. 🇧🇾 Беларусь · vless · 1321ms · 1ч"
+      - "171. 🇷🇴 Румыния · ss · 1579ms · 1ч"
+      - "172. 🇮🇳 Индия · vless · 1684ms · 1ч"
+      - "173. 🇹🇷 Турция · vless · 3620ms"
+      - "174. 🇦🇪 ОАЭ · vless · 7497ms · 1ч"
+      - "175. 🇵🇱 Польша · vless · 589ms · 1ч"
+      - "176. 🇨🇦 Канада · trojan · 84ms · 1ч"
+      - "177. 🇭🇰 Гонконг · hysteria2 · 182ms"
+      - "178. 🇫🇷 Франция · vless · 375ms · 1ч"
+      - "179. 🇸🇬 Сингапур · vmess · 384ms"
+      - "180. 🇸🇬 Сингапур · vmess · 404ms · 1ч"
+      - "181. 🇸🇬 Сингапур · vless · 405ms · 1ч"
+      - "182. 🇸🇬 Сингапур · vmess · 420ms · 1ч"
+      - "183. 🇷🇺 Россия · ss · 458ms · 1ч"
+      - "184. 🇸🇨 Сейшелы · trojan · 493ms"
+      - "185. 🇿🇦 ЮАР · ss · 502ms · 1ч"
+      - "186. 🇵🇱 Польша · vless · 504ms · 1ч"
+      - "187. 🇵🇱 Польша · vless · 533ms · 1ч"
+      - "188. 🇪🇸 Испания · trojan · 547ms"
+      - "189. 🇷🇺 Россия · vless · 648ms · 1ч"
+      - "190. 🇰🇿 Казахстан · vmess · 653ms · 1ч"
+      - "191. 🇭🇰 Гонконг · vmess · 723ms"
+      - "192. 🇲🇾 Малайзия · trojan · 1147ms"
+      - "193. 🇧🇬 Болгария · vless · 2679ms · 1ч"
+      - "194. 🇨🇱 Чили · ss · 7400ms"
+      - "195. 🇨🇳 Китай · vmess · 505ms · 1ч · ⚠"
+      - "196. 🇨🇳 Китай · trojan · 731ms · ⚠"
+      - "197. 🇨🇳 Китай · trojan · 744ms · ⚠"
+      - "198. 🇨🇳 Китай · trojan · 752ms · ⚠"
+      - "199. 🇷🇴 Румыния · ss · 5361ms · ⚠"
+      - "200. 🇲🇾 Малайзия · vmess · 6585ms · ⚠"
+  - name: "CA"
+    type: "select"
+    proxies:
+      - "08. 🇨🇦 Канада · vmess · 95ms · 1ч"
+      - "09. 🇨🇦 Канада · ss · 114ms · 1ч"
+      - "10. 🇨🇦 Канада · ss · 78ms · 1ч"
+      - "30. 🇨🇦 Канада · vless · 88ms · 1ч"
+      - "36. 🇨🇦 Канада · vless · 95ms · 1ч"
+      - "133. 🇨🇦 Канада · vless · 72ms · 1ч"
+      - "176. 🇨🇦 Канада · trojan · 84ms · 1ч"
+  - name: "DE"
+    type: "select"
+    proxies:
+      - "37. 🇩🇪 Германия · vmess · 259ms · 1ч"
+      - "44. 🇩🇪 Германия · vmess · 401ms · 1ч"
+      - "49. 🇩🇪 Германия · ss · 268ms · 1ч"
+      - "51. 🇩🇪 Германия · ss · 327ms · 1ч"
+      - "73. 🇩🇪 Германия · vless · 353ms · 1ч"
+      - "108. 🇩🇪 Германия · ss · 263ms · 1ч"
+      - "157. 🇩🇪 Германия · vless · 382ms · 1ч"
+  - name: "FI"
+    type: "select"
+    proxies:
+      - "32. 🇫🇮 Финляндия · vless · 408ms"
+      - "53. 🇫🇮 Финляндия · vmess · 381ms · 1ч"
+      - "56. 🇫🇮 Финляндия · vless · 446ms"
+      - "61. 🇫🇮 Финляндия · vmess · 308ms · 1ч"
+      - "65. 🇫🇮 Финляндия · vless · 428ms"
+      - "82. 🇫🇮 Финляндия · vless · 470ms"
+      - "84. 🇫🇮 Финляндия · vless · 483ms · 1ч"
+  - name: "FR"
+    type: "select"
+    proxies:
+      - "12. 🇫🇷 Франция · hysteria2 · 371ms · 1ч"
+      - "13. 🇫🇷 Франция · vless · 418ms · 1ч"
+      - "19. 🇫🇷 Франция · hysteria2 · 416ms · 1ч"
+      - "42. 🇫🇷 Франция · vless · 372ms · 1ч"
+      - "74. 🇫🇷 Франция · vless · 370ms · 1ч"
+      - "103. 🇫🇷 Франция · vless · 374ms · 1ч"
+      - "178. 🇫🇷 Франция · vless · 375ms · 1ч"
+  - name: "GB"
+    type: "select"
+    proxies:
+      - "18. 🇬🇧 Британия · ss · 234ms · 1ч"
+      - "23. 🇬🇧 Британия · ss · 250ms · 1ч"
+      - "38. 🇬🇧 Британия · ss · 310ms · 1ч"
+      - "43. 🇬🇧 Британия · vless · 377ms · 1ч"
+      - "50. 🇬🇧 Британия · ss · 300ms · 1ч"
+      - "62. 🇬🇧 Британия · ss · 312ms · 1ч"
+      - "102. 🇬🇧 Британия · ss · 328ms · 1ч"
+  - name: "HK"
+    type: "select"
+    proxies:
+      - "89. 🇭🇰 Гонконг · hysteria2 · 569ms · 1ч"
+      - "90. 🇭🇰 Гонконг · hysteria2 · 569ms · 1ч"
+      - "100. 🇭🇰 Гонконг · hysteria2 · 662ms · 1ч"
+      - "122. 🇭🇰 Гонконг · hysteria2 · 655ms · 1ч"
+      - "167. 🇭🇰 Гонконг · vmess · 726ms · 1ч"
+      - "177. 🇭🇰 Гонконг · hysteria2 · 182ms"
+      - "191. 🇭🇰 Гонконг · vmess · 723ms"
+  - name: "JP"
+    type: "select"
+    proxies:
+      - "39. 🇯🇵 Япония · ss · 318ms · 1ч"
+      - "40. 🇯🇵 Япония · ss · 327ms · 1ч"
+      - "41. 🇯🇵 Япония · ss · 329ms · 1ч"
+      - "54. 🇯🇵 Япония · vless · 412ms · 1ч"
+      - "55. 🇯🇵 Япония · ss · 419ms"
+      - "63. 🇯🇵 Япония · ss · 399ms"
+      - "154. 🇯🇵 Япония · vless · 357ms"
+  - name: "NL"
+    type: "select"
+    proxies:
+      - "17. 🇳🇱 Нидерланды · ss · 230ms · 1ч"
+      - "24. 🇳🇱 Нидерланды · ss · 251ms · 1ч"
+      - "25. 🇳🇱 Нидерланды · ss · 256ms · 1ч"
+      - "26. 🇳🇱 Нидерланды · ss · 259ms · 1ч"
+      - "31. 🇳🇱 Нидерланды · ss · 250ms · 1ч"
+      - "60. 🇳🇱 Нидерланды · ss · 249ms · 1ч"
+      - "93. 🇳🇱 Нидерланды · ss · 255ms · 1ч"
+  - name: "PL"
+    type: "select"
+    proxies:
+      - "28. 🇵🇱 Польша · hysteria2 · 624ms · 1ч"
+      - "52. 🇵🇱 Польша · ss · 337ms · 1ч"
+      - "64. 🇵🇱 Польша · vless · 411ms · 1ч"
+      - "143. 🇵🇱 Польша · ss · 275ms · 1ч"
+      - "175. 🇵🇱 Польша · vless · 589ms · 1ч"
+      - "186. 🇵🇱 Польша · vless · 504ms · 1ч"
+      - "187. 🇵🇱 Польша · vless · 533ms · 1ч"
+  - name: "US"
+    type: "select"
+    proxies:
+      - "01. 🇺🇸 США · ss · 69ms · 1ч"
+      - "02. 🇺🇸 США · hysteria2 · 93ms · 1ч"
+      - "03. 🇺🇸 США · ss · 65ms · 1ч"
+      - "04. 🇺🇸 США · ss · 95ms · 1ч"
+      - "05. 🇺🇸 США · ss · 74ms · 1ч"
+      - "06. 🇺🇸 США · ss · 99ms · 1ч"
+      - "07. 🇺🇸 США · ss · 77ms · 1ч"
+rules:
+  - "DOMAIN-SUFFIX,local,DIRECT"
+  - "IP-CIDR,127.0.0.0/8,DIRECT,no-resolve"
+  - "IP-CIDR,10.0.0.0/8,DIRECT,no-resolve"
+  - "IP-CIDR,172.16.0.0/12,DIRECT,no-resolve"
+  - "IP-CIDR,192.168.0.0/16,DIRECT,no-resolve"
+  - "MATCH,Авто"
