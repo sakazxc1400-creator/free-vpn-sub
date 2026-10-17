@@ -1,1 +1,1 @@
-vless://40af9131-d540-448a-bc56-5bba147a1dc3@154.218.15.250:2083?&security=tls&sni=proxy-1cu.pages.dev&type=ws&headerType=none&host=proxy-1cu.pages.dev&path=/#193.%20%F0%9F%87%B5%F0%9F%87%AA%20%D0%9F%D0%B5%D1%80%D1%83%20%C2%B7%20vless%20%C2%B7%20261ms
+vless://40af9131-d540-448a-bc56-5bba147a1dc3@154.218.15.250:2083?security=tls&type=ws&path=/&host=proxy-1cu.pages.dev&packetEncoding=xudp&sni=proxy-1cu.pages.dev&fp=chrome#24.%20%F0%9F%87%B5%F0%9F%87%AA%20%D0%9F%D0%B5%D1%80%D1%83%20%C2%B7%20vless%20%C2%B7%20133ms
