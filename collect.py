@@ -1069,17 +1069,6 @@ def main() -> int:
     veterans = sum(1 for n in selected_pool if n.streak >= STABLE_RUNS)
     log(f"      Держатся {STABLE_RUNS}+ прогонов подряд: {veterans}")
 
-    # --- Замер скорости ---
-    # Дорого по трафику, поэтому только для лучших по задержке: они и так
-    # идут в основную подписку.
-    if selected_pool:
-        by_latency = sorted(
-            selected_pool,
-            key=lambda n: (n.latency_ms if n.latency_ms is not None else 99999),
-        )
-        stats.speed_measured = probe.measure_speed(
-            by_latency[:probe.MAX_SPEED_NODES])
-
     # --- Страны ---
     log("[6/6] Определяю страны...")
     codes = geo.annotate([n.host for n in selected_pool[:VERIFY_CANDIDATES]])
@@ -1108,6 +1097,15 @@ def main() -> int:
     full = selected_pool[:MAX_FULL]
     # Основная: короткий список с перемешиванием по странам.
     published = pick_diverse(full, MAX_OUTPUT, MAX_PER_COUNTRY)
+
+    # --- Замер скорости ---
+    # Меряем ровно тех, кто попал в основную подписку: тогда скорость
+    # видна у каждого узла списка на сайте. Отбор идёт по сертификату и
+    # задержке, а замер уточняет порядок уже выбранных.
+    if published:
+        stats.speed_measured = probe.measure_speed(published)
+        published.sort(key=rank)
+
     # Стабильная: только те, кто держится уже несколько часов.
     stable = pick_diverse(pick_stable(full), MAX_OUTPUT, MAX_PER_COUNTRY)
     stats.stable = len(stable)

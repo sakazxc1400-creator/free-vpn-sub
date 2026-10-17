@@ -84,7 +84,7 @@ The `⚠` sign means the node passes traffic but failed the HTTPS certificate ch
 
 The main subscription includes no more than 12 servers from one country. This keeps the list from being filled almost entirely by a single datacenter. The full subscription has no country limit.
 
-Inside the main list servers are ranked by quality: certificate-checked nodes with a measured speed first, then by latency. Speed is measured for the best 150 nodes and stored in `output/nodes.json`.
+Inside the main list servers are ranked by quality: certificate-checked nodes first, and within that group the measured ones lead by speed, then by latency. The list itself is picked by latency with a per-country cap, and the speed measurement refines the order inside it. The measurements live in `output/nodes.json`.
 
 ## How to connect
 
@@ -187,7 +187,7 @@ After verification, the script looks up each server's country, measures latency,
 
 Next, every live node goes through an HTTPS check: the script connects through it to sites with known certificates and validates the certificate fully. If a node serves its own certificate, it reads the contents of your connections. Such a node stays only in the full subscription and is marked with `⚠`.
 
-The best 150 nodes by latency get a speed measurement: a file is downloaded through the node and the result in megabits per second lands in `output/nodes.json`. The subscription itself does not carry the speed, so the list stays small.
+Every node in the main subscription gets a speed measurement: a small file is downloaded through it, and the result in megabits per second lands in `output/nodes.json`. The subscription text itself does not carry the speed, so the list stays small.
 
 Runs are linked to each other through `output/history.json`. The script counts how many runs in a row a node keeps answering and remembers that number. Nodes alive for many hours go into the separate stable subscription: usually these are the most reliable servers in the list.
 
