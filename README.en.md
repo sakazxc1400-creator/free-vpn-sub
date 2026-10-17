@@ -191,7 +191,7 @@ Every node in the main subscription gets a speed measurement: a small file is do
 
 Runs are linked to each other through `output/history.json`. The script counts how many runs in a row a node keeps answering and remembers that number. Nodes alive for many hours go into the separate stable subscription: usually these are the most reliable servers in the list.
 
-If a build turns out noticeably worse than the previous one, under 60% of the previous server count, the script does not overwrite the subscriptions and exits with an error. That way a failure on the source side will not leave you with an empty list. Set `ALLOW_SHRINK=1` to bypass the guard when the drop is real.
+If a build turns out noticeably worse than the previous one, under 60% of the previous server count **and** under 400 servers in total, the script does not overwrite the subscriptions and exits with an error. That way a failure on the source side will not leave you with an empty list, while the normal run-to-run spread (when simply fewer nodes passed) does not block publication. Set `ALLOW_SHRINK=1` to bypass the guard when the drop is real.
 
 Servers with the same address and port are merged into one, keeping the fastest. The same node often appears in the sources as a dozen copies with different UUIDs, and without this the subscription would fill up with duplicates.
 

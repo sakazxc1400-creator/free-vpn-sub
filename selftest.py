@@ -16,6 +16,7 @@ from collect import (
     is_routable,
     parse_link,
     retag,
+    shrink_guard_blocks,
     split_host_port,
 )
 
@@ -140,6 +141,19 @@ b = parse_link("vless://uuid-1@1.2.3.4:443?sni=x.com#name-two")
 c = parse_link("vless://uuid-1@1.2.3.4:443?sni=other.com#name")
 check("разные имена = один узел", a and b and a.key == b.key)
 check("разный sni = разные узлы", a and c and a.key != c.key)
+
+print("== защита от плохой сборки ==")
+check("первый прогон не блокируется", not shrink_guard_blocks(None, 5))
+check("падение до 30 узлов после 1000 блокируется", shrink_guard_blocks(1000, 30))
+check("чуть меньше прошлого раза не блокируется", not shrink_guard_blocks(1000, 900))
+check("обвал при скромном прошлом блокируется", shrink_guard_blocks(500, 20))
+check("разброс 800 после 1400 публикуется", not shrink_guard_blocks(1400, 800))
+check("случай сегодня: 874 после 1461 публикуется",
+      not shrink_guard_blocks(1461, 874))
+check("мусор вместо прошлого числа не блокирует",
+      not shrink_guard_blocks("нет данных", 30))
+check("ALLOW_SHRINK обходит защиту",
+      not shrink_guard_blocks(1000, 30, allow=True))
 
 print()
 if failures:

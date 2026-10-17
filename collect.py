@@ -110,7 +110,13 @@ HISTORY_GAP_HOURS = 1.5
 # Если рабочих узлов стало заметно меньше, чем в прошлый раз, публиковать
 # это нельзя: скорее всего отвалился источник или чудит сеть раннера.
 # Оставляем прошлую подписку как есть и падаем с ошибкой.
+#
+# Порог двойной: блокируем только если подписка и просела относительно
+# прошлого раза, и стала маленькой сама по себе. У прогонов бывает
+# заметный разброс (в один час проверку проходит больше узлов, в другой
+# меньше), и здоровые 800 узлов после 1400 блокировать незачем.
 MIN_KEEP_RATIO = 0.6
+MIN_KEEP_ABS = 400
 
 USER_AGENT = "Mozilla/5.0 (compatible; free-vpn-sub/1.0; +https://github.com)"
 
@@ -632,6 +638,22 @@ def previous_report() -> dict | None:
     return data if isinstance(data, dict) else None
 
 
+def shrink_guard_blocks(prev_full, count: int, allow: bool = False) -> bool:
+    """
+    Стоит ли отказаться от публикации этой сборки.
+
+    Да, если узлов стало меньше MIN_KEEP_RATIO от прошлого раза И их
+    вообще мало (меньше MIN_KEEP_ABS). Второе условие важно: разброс
+    между прогонами бывает большим, и здоровые 800 узлов после 1400
+    публиковать можно, а 30 узлов после 1000 — нельзя.
+    """
+    if allow:
+        return False
+    if not isinstance(prev_full, int) or prev_full <= 100:
+        return False
+    return count < prev_full * MIN_KEEP_RATIO and count < MIN_KEEP_ABS
+
+
 # ----------------------------------------------------------------------------
 # Запись результатов
 # ----------------------------------------------------------------------------
@@ -1112,14 +1134,11 @@ def main() -> int:
 
     # --- Защита от плохой сборки ---
     prev_full = (previous_report() or {}).get("published_full")
-    if (
-        isinstance(prev_full, int)
-        and prev_full > 100
-        and len(full) < prev_full * MIN_KEEP_RATIO
-        and not os.environ.get("ALLOW_SHRINK")
-    ):
+    if shrink_guard_blocks(prev_full, len(full),
+                           allow=bool(os.environ.get("ALLOW_SHRINK"))):
         log(f"[!] Рабочих узлов {len(full)}, а в прошлый раз было {prev_full}. "
-            f"Это меньше {int(MIN_KEEP_RATIO * 100)}% от прошлого прогона.")
+            f"Это меньше {int(MIN_KEEP_RATIO * 100)}% от прошлого прогона, "
+            f"да и вообще меньше {MIN_KEEP_ABS}.")
         log("[!] Публиковать это не буду, прошлая подписка остаётся на месте. "
             "Если уменьшение ожидаемое, запусти с ALLOW_SHRINK=1.")
         return 1
