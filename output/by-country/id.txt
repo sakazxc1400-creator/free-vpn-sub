@@ -1,1 +1,1 @@
-vless://d342d11e-d224-4463-b982-532309285094@43.173.1.153:8443?encryption=none&security=tls&sni=ccc.010304.xyz&fp=chrome&type=ws&path=%2F&host=ccc.010304.xyz#1286.%20%F0%9F%87%AE%F0%9F%87%A9%20%D0%98%D0%BD%D0%B4%D0%BE%D0%BD%D0%B5%D0%B7%D0%B8%D1%8F%20%C2%B7%20vless%20%C2%B7%201011ms
+vless://d342d11e-d224-4463-b982-532309285094@43.173.1.153:8443?encryption=none&security=tls&sni=ccc.010304.xyz&fp=chrome&type=ws&path=%2F&host=ccc.010304.xyz#1235.%20%F0%9F%87%AE%F0%9F%87%A9%20%D0%98%D0%BD%D0%B4%D0%BE%D0%BD%D0%B5%D0%B7%D0%B8%D1%8F%20%C2%B7%20vless%20%C2%B7%20981ms
