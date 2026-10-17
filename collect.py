@@ -1165,7 +1165,10 @@ def main() -> int:
 
     try:
         import notify
-        notify.send_report(report)
+        if notify.send_report(report):
+            log("      Сводка отправлена в Telegram")
+        else:
+            log("      Сводка в Telegram не ушла: нет секретов или Telegram недоступен")
     except Exception as exc:
         log(f"      Уведомление не отправлено: {type(exc).__name__}")
 
@@ -1183,7 +1186,9 @@ if __name__ == "__main__":
         # О неудачном прогоне стоит узнать сразу: подписка не обновилась.
         try:
             import notify
-            notify.send_failure(f"Сборка подписки упала, код {code}")
+            if not notify.send_failure(f"Сборка подписки упала, код {code}"):
+                log("Уведомление о сбое не ушло: нет секретов или "
+                    "Telegram недоступен.")
         except Exception:
             pass
     sys.exit(code)
