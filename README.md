@@ -2,10 +2,10 @@
 
 [![Сайт](https://img.shields.io/badge/%D1%81%D0%B0%D0%B9%D1%82-%D0%B6%D0%B8%D0%B2%D0%BE%D0%B9%20%D1%81%D0%BF%D0%B8%D1%81%D0%BE%D0%BA-blueviolet)](https://sakazxc1400-creator.github.io/free-vpn-sub/)
 [![Обновление подписки](https://github.com/sakazxc1400-creator/free-vpn-sub/actions/workflows/update.yml/badge.svg)](https://github.com/sakazxc1400-creator/free-vpn-sub/actions/workflows/update.yml)
-[![Серверов](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsakazxc1400-creator%2Ffree-vpn-sub%2Fmain%2Foutput%2Fstats.json&query=%24.published&label=%D1%81%D0%B5%D1%80%D0%B2%D0%B5%D1%80%D0%BE%D0%B2&color=brightgreen)](output/all.txt)
-[![Всего](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsakazxc1400-creator%2Ffree-vpn-sub%2Fmain%2Foutput%2Fstats.json&query=%24.published_full&label=%D0%B2%D1%81%D0%B5%D0%B3%D0%BE&color=green)](output/all-full.txt)
-[![Стран](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsakazxc1400-creator%2Ffree-vpn-sub%2Fmain%2Foutput%2Fstats.json&query=%24.countries&label=%D1%81%D1%82%D1%80%D0%B0%D0%BD&color=blue)](output/by-country)
-[![Обновлено](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsakazxc1400-creator%2Ffree-vpn-sub%2Fmain%2Foutput%2Fstats.json&query=%24.updated&label=%D0%BE%D0%B1%D0%BD%D0%BE%D0%B2%D0%BB%D0%B5%D0%BD%D0%BE&color=informational)](output/stats.json)
+[![Серверов](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsakazxc1400-creator%2Ffree-vpn-sub%2Fdata%2Foutput%2Fstats.json&query=%24.published&label=%D1%81%D0%B5%D1%80%D0%B2%D0%B5%D1%80%D0%BE%D0%B2&color=brightgreen)](https://github.com/sakazxc1400-creator/free-vpn-sub/blob/data/output/all.txt)
+[![Всего](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsakazxc1400-creator%2Ffree-vpn-sub%2Fdata%2Foutput%2Fstats.json&query=%24.published_full&label=%D0%B2%D1%81%D0%B5%D0%B3%D0%BE&color=green)](https://github.com/sakazxc1400-creator/free-vpn-sub/blob/data/output/all-full.txt)
+[![Стран](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsakazxc1400-creator%2Ffree-vpn-sub%2Fdata%2Foutput%2Fstats.json&query=%24.countries&label=%D1%81%D1%82%D1%80%D0%B0%D0%BD&color=blue)](https://github.com/sakazxc1400-creator/free-vpn-sub/tree/data/output/by-country)
+[![Обновлено](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsakazxc1400-creator%2Ffree-vpn-sub%2Fdata%2Foutput%2Fstats.json&query=%24.updated&label=%D0%BE%D0%B1%D0%BD%D0%BE%D0%B2%D0%BB%D0%B5%D0%BD%D0%BE&color=informational)](https://github.com/sakazxc1400-creator/free-vpn-sub/blob/data/output/stats.json)
 [![Лицензия MIT](https://img.shields.io/badge/%D0%BB%D0%B8%D1%86%D0%B5%D0%BD%D0%B7%D0%B8%D1%8F-MIT-lightgrey)](LICENSE)
 
 **[English version](README.en.md)**
@@ -31,35 +31,35 @@
 Основная подписка:
 
 ```
-https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/main/output/sub.txt
+https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/data/output/sub.txt
 ```
 
 Стабильная подписка:
 
 ```
-https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/main/output/sub-stable.txt
+https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/data/output/sub-stable.txt
 ```
 
 Полная подписка:
 
 ```
-https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/main/output/sub-full.txt
+https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/data/output/sub-full.txt
 ```
 
 Конфиг Clash или Mihomo:
 
 ```
-https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/main/output/clash.yaml
+https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/data/output/clash.yaml
 ```
 
 Если `raw.githubusercontent.com` не открывается, попробуйте одно из зеркал. Содержимое то же самое.
 
 ```
-https://cdn.jsdelivr.net/gh/sakazxc1400-creator/free-vpn-sub@main/output/sub.txt
+https://cdn.jsdelivr.net/gh/sakazxc1400-creator/free-vpn-sub@data/output/sub.txt
 ```
 
 ```
-https://gh-proxy.com/https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/main/output/sub.txt
+https://gh-proxy.com/https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/data/output/sub.txt
 ```
 
 Для полной подписки замените `sub.txt` на `sub-full.txt` в ссылке. Для стабильной на `sub-stable.txt`.
@@ -84,7 +84,7 @@ jsdelivr может отдавать сохранённую версию нес�
 
 В основной подписке от одной страны может быть не больше 12 серверов. Это помогает не получить список, состоящий почти целиком из одного датацентра. В полной подписке такого ограничения нет.
 
-В основной подписке серверы идут по качеству: сначала проверенные по сертификату, внутри группы сначала те, чья скорость измерена, потом по скорости, затем по задержке. Список собирается по задержке с оглядкой на страны, а замер скорости уточняет порядок в нём. Сами замеры лежат в `output/nodes.json`.
+В основной подписке серверы идут по качеству: сначала проверенные по сертификату, внутри группы сначала те, чья скорость измерена, потом по скорости, затем по задержке. Список собирается по задержке с оглядкой на страны, а замер скорости уточняет порядок в нём. Сами замеры лежат в `nodes.json` в ветке `data`.
 
 ## Как подключиться
 
@@ -131,13 +131,15 @@ jsdelivr может отдавать сохранённую версию нес�
 
 **Не работает ни один сервер.** Обновите подписку в приложении. Список меняется каждый час.
 
-**Подписка не загружается.** Используйте зеркало выше. Если оно тоже недоступно, скачайте `output/all.txt` и импортируйте содержимое из буфера обмена.
+**Подписка не загружается.** Используйте зеркало выше. Если оно тоже недоступно, откройте `all.txt` в ветке `data` (ссылка на него есть в таблице ниже) и импортируйте содержимое из буфера обмена.
 
 **Соединение медленное.** Бесплатные серверы иногда перегружены. Начните с верхних строк списка. На нестабильном интернете Hysteria2 часто работает лучше других протоколов.
 
 ## Файлы
 
-| Файл | Что внутри |
+Готовые списки лежат в ветке `data`, в каталоге `output/`. В `main` их нет намеренно: содержимое меняется каждый прогон, и если складывать его в историю, репозиторий пухнет примерно на полтора мегабайта за прогон. Ветка `data` плоская: в ней всегда ровно один коммит со свежим снимком, поэтому размер репозитория не растёт.
+
+| Файл в ветке `data` | Что внутри |
 |------|-----------|
 | `output/sub.txt` | Основная подписка в формате base64 |
 | `output/all.txt` | Основная подписка обычным текстом |
@@ -165,8 +167,8 @@ clashout.py     собрать конфиг Clash и Mihomo из провере�
 notify.py       отправка итогов прогона в Telegram
 geo.py          определить страну по IP
 mirror/         зеркало подписки на Cloudflare Workers
-output/         готовые списки
 docs/           сайт для GitHub Pages
+data (ветка)    готовые списки, один свежий коммит без истории
 ```
 
 Каждый час GitHub Actions запускает сборку.
@@ -187,9 +189,9 @@ Hysteria2 и TUIC работают через QUIC, поэтому TCP-пров�
 
 Дальше каждый живой узел проходит проверку HTTPS: скрипт подключается через него к сайтам с известными сертификатами и проверяет сертификат полностью. Если узел подсовывает свой сертификат, значит он читает содержимое соединений. Такой узел остаётся только в полной подписке и помечается знаком `⚠`.
 
-Для каждого узла основной подписки измеряется скорость: через узел скачивается небольшой файл, и результат в мегабитах в секунду попадает в `output/nodes.json`. В тексте подписки скорость не пишется, чтобы не раздувать список.
+Для каждого узла основной подписки измеряется скорость: через узел скачивается небольшой файл, и результат в мегабитах в секунду попадает в `nodes.json`. В тексте подписки скорость не пишется, чтобы не раздувать список.
 
-Прогоны связаны между собой через `output/history.json`. Скрипт считает, сколько прогонов подряд узел отвечает, и запоминает это число. Узлы, живущие много часов, попадают в отдельную стабильную подписку: обычно это самые надёжные серверы списка.
+Прогоны связаны между собой через `history.json` в ветке `data`. Скрипт считает, сколько прогонов подряд узел отвечает, и запоминает это число. Узлы, живущие много часов, попадают в отдельную стабильную подписку: обычно это самые надёжные серверы списка.
 
 Если сборка получилась заметно хуже предыдущей, меньше 60% от прошлого числа серверов и меньше 400 штук, скрипт не перезаписывает подписки и завершается с ошибкой. Так сбой на стороне источников не оставит вас с пустым списком, а обычный разброс прогонов (когда узлов просто прошло меньше) публикацию не блокирует. Обойти защиту можно переменной `ALLOW_SHRINK=1`, если падение честное.
 

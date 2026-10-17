@@ -1,6 +1,7 @@
 /* Free VPN Sub — логика сайта.
-   Данные берутся из output/ репозитория: сначала raw.githubusercontent,
-   если он недоступен, переключаемся на зеркало jsdelivr.
+   Данные берутся из ветки data: сначала raw.githubusercontent, если он
+   недоступен, переключаемся на зеркало jsdelivr. Ветка плоская: в ней
+   лежит только свежий снимок подписок, поэтому она не растёт.
 
    Всё считается в браузере: ни выбранные узлы, ни своя подписка никуда
    не отправляются. */
@@ -9,7 +10,7 @@
   "use strict";
 
   const REPO = "sakazxc1400-creator/free-vpn-sub";
-  const BRANCH = "main";
+  const BRANCH = "data";
   const RAW = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/output/`;
   const CDN = `https://cdn.jsdelivr.net/gh/${REPO}@${BRANCH}/output/`;
   const GITHUB = `https://github.com/${REPO}`;

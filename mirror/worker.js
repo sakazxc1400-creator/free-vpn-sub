@@ -22,7 +22,9 @@
  */
 
 const REPO = "sakazxc1400-creator/free-vpn-sub";
-const BRANCH = "main";
+// Данные живут в плоской ветке data: свежий снимок подписок одним
+// коммитом, история там не копится.
+const BRANCH = "data";
 const UPSTREAM = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/output/`;
 const FALLBACK = `https://cdn.jsdelivr.net/gh/${REPO}@${BRANCH}/output/`;
 const SITE = "https://sakazxc1400-creator.github.io/free-vpn-sub/";

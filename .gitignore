@@ -11,3 +11,8 @@ venv/
 sing-box
 sing-box.exe
 GeoLite2-Country.mmdb
+
+# Готовые списки лежат не в main, а в плоской ветке data: иначе история
+# репозитория растёт примерно на 1.5 МБ за каждый прогон.
+output/
+geo_cache.json

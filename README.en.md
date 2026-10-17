@@ -2,10 +2,10 @@
 
 [![Website](https://img.shields.io/badge/website-live%20list-blueviolet)](https://sakazxc1400-creator.github.io/free-vpn-sub/)
 [![Update subscription](https://github.com/sakazxc1400-creator/free-vpn-sub/actions/workflows/update.yml/badge.svg)](https://github.com/sakazxc1400-creator/free-vpn-sub/actions/workflows/update.yml)
-[![Servers](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsakazxc1400-creator%2Ffree-vpn-sub%2Fmain%2Foutput%2Fstats.json&query=%24.published&label=servers&color=brightgreen)](output/all.txt)
-[![Total](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsakazxc1400-creator%2Ffree-vpn-sub%2Fmain%2Foutput%2Fstats.json&query=%24.published_full&label=total&color=green)](output/all-full.txt)
-[![Countries](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsakazxc1400-creator%2Ffree-vpn-sub%2Fmain%2Foutput%2Fstats.json&query=%24.countries&label=countries&color=blue)](output/by-country)
-[![Updated](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsakazxc1400-creator%2Ffree-vpn-sub%2Fmain%2Foutput%2Fstats.json&query=%24.updated&label=updated&color=informational)](output/stats.json)
+[![Servers](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsakazxc1400-creator%2Ffree-vpn-sub%2Fdata%2Foutput%2Fstats.json&query=%24.published&label=servers&color=brightgreen)](https://github.com/sakazxc1400-creator/free-vpn-sub/blob/data/output/all.txt)
+[![Total](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsakazxc1400-creator%2Ffree-vpn-sub%2Fdata%2Foutput%2Fstats.json&query=%24.published_full&label=total&color=green)](https://github.com/sakazxc1400-creator/free-vpn-sub/blob/data/output/all-full.txt)
+[![Countries](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsakazxc1400-creator%2Ffree-vpn-sub%2Fdata%2Foutput%2Fstats.json&query=%24.countries&label=countries&color=blue)](https://github.com/sakazxc1400-creator/free-vpn-sub/tree/data/output/by-country)
+[![Updated](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsakazxc1400-creator%2Ffree-vpn-sub%2Fdata%2Foutput%2Fstats.json&query=%24.updated&label=updated&color=informational)](https://github.com/sakazxc1400-creator/free-vpn-sub/blob/data/output/stats.json)
 [![License MIT](https://img.shields.io/badge/license-MIT-lightgrey)](LICENSE)
 
 **[Русская версия](README.md)**
@@ -31,35 +31,35 @@ Supported protocols include VLESS, including Reality, VMess, Trojan, Shadowsocks
 Main subscription:
 
 ```
-https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/main/output/sub.txt
+https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/data/output/sub.txt
 ```
 
 Stable subscription:
 
 ```
-https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/main/output/sub-stable.txt
+https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/data/output/sub-stable.txt
 ```
 
 Full subscription:
 
 ```
-https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/main/output/sub-full.txt
+https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/data/output/sub-full.txt
 ```
 
 Clash or Mihomo config:
 
 ```
-https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/main/output/clash.yaml
+https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/data/output/clash.yaml
 ```
 
 If `raw.githubusercontent.com` is blocked on your network, try one of the mirrors below. The content is the same.
 
 ```
-https://cdn.jsdelivr.net/gh/sakazxc1400-creator/free-vpn-sub@main/output/sub.txt
+https://cdn.jsdelivr.net/gh/sakazxc1400-creator/free-vpn-sub@data/output/sub.txt
 ```
 
 ```
-https://gh-proxy.com/https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/main/output/sub.txt
+https://gh-proxy.com/https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/data/output/sub.txt
 ```
 
 For the full subscription, replace `sub.txt` with `sub-full.txt` in the link. For the stable one, use `sub-stable.txt`.
@@ -84,7 +84,7 @@ The `⚠` sign means the node passes traffic but failed the HTTPS certificate ch
 
 The main subscription includes no more than 12 servers from one country. This keeps the list from being filled almost entirely by a single datacenter. The full subscription has no country limit.
 
-Inside the main list servers are ranked by quality: certificate-checked nodes first, and within that group the measured ones lead by speed, then by latency. The list itself is picked by latency with a per-country cap, and the speed measurement refines the order inside it. The measurements live in `output/nodes.json`.
+Inside the main list servers are ranked by quality: certificate-checked nodes first, and within that group the measured ones lead by speed, then by latency. The list itself is picked by latency with a per-country cap, and the speed measurement refines the order inside it. The measurements live in `nodes.json` in the `data` branch.
 
 ## How to connect
 
@@ -131,13 +131,15 @@ Use [Nekoray](https://github.com/MatsuriDayo/nekoray/releases) or [Hiddify](http
 
 **None of the servers work.** Refresh the subscription in your app. The list changes every hour.
 
-**The subscription will not load.** Use one of the mirrors above. If that is blocked too, download `output/all.txt` and import its contents from the clipboard.
+**The subscription will not load.** Use one of the mirrors above. If that is blocked too, open `all.txt` in the `data` branch (the link is in the table below) and import its contents from the clipboard.
 
 **The connection is slow.** Free servers can get overloaded. Start with the first few entries. Hysteria2 often performs better than other protocols on unstable connections.
 
 ## Files
 
-| File | Contents |
+The generated lists live in the `data` branch, inside the `output/` directory. They are deliberately absent from `main`: the content changes on every run, and keeping it in history would grow the repository by about 1.5 MB per run. The `data` branch is flat: it always holds exactly one commit with the fresh snapshot, so the repository size stays put.
+
+| File in the `data` branch | Contents |
 |------|----------|
 | `output/sub.txt` | Main subscription in base64 |
 | `output/all.txt` | Main subscription as plain text |
@@ -165,8 +167,8 @@ clashout.py     build a Clash or Mihomo config from checked nodes
 notify.py       send run summaries to Telegram
 geo.py          look up the country by IP
 mirror/         subscription mirror on Cloudflare Workers
-output/         generated lists
 docs/           website for GitHub Pages
+data (branch)   generated lists, one fresh commit with no history
 ```
 
 GitHub Actions runs the collection every hour.
@@ -187,9 +189,9 @@ After verification, the script looks up each server's country, measures latency,
 
 Next, every live node goes through an HTTPS check: the script connects through it to sites with known certificates and validates the certificate fully. If a node serves its own certificate, it reads the contents of your connections. Such a node stays only in the full subscription and is marked with `⚠`.
 
-Every node in the main subscription gets a speed measurement: a small file is downloaded through it, and the result in megabits per second lands in `output/nodes.json`. The subscription text itself does not carry the speed, so the list stays small.
+Every node in the main subscription gets a speed measurement: a small file is downloaded through it, and the result in megabits per second lands in `nodes.json`. The subscription text itself does not carry the speed, so the list stays small.
 
-Runs are linked to each other through `output/history.json`. The script counts how many runs in a row a node keeps answering and remembers that number. Nodes alive for many hours go into the separate stable subscription: usually these are the most reliable servers in the list.
+Runs are linked to each other through `history.json` in the `data` branch. The script counts how many runs in a row a node keeps answering and remembers that number. Nodes alive for many hours go into the separate stable subscription: usually these are the most reliable servers in the list.
 
 If a build turns out noticeably worse than the previous one, under 60% of the previous server count **and** under 400 servers in total, the script does not overwrite the subscriptions and exits with an error. That way a failure on the source side will not leave you with an empty list, while the normal run-to-run spread (when simply fewer nodes passed) does not block publication. Set `ALLOW_SHRINK=1` to bypass the guard when the drop is real.
 

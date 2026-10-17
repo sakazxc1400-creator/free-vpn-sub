@@ -80,6 +80,29 @@ jobs:
       - name: Run end-to-end test
         run: python e2etest.py
 
+      # История узлов, прошлый stats.json и кэш гео живут в ветке data:
+      # она плоская (один коммит) и поэтому не растёт. Без этого шага
+      # прогон считал бы стаж с нуля и заново опрашивал гео-сервис.
+      - name: Подтягиваю историю из ветки data
+        run: |
+          set -u
+          mkdir -p output
+          if ! git fetch --depth=1 origin data; then
+            echo "Ветки data пока нет — начинаю с чистого листа."
+            exit 0
+          fi
+          take() {
+            if git show "FETCH_HEAD:$1" > "$1.tmp" 2>/dev/null && [ -s "$1.tmp" ]; then
+              mv "$1.tmp" "$1"
+              echo "взял $1 из ветки data"
+            else
+              rm -f "$1.tmp"
+            fi
+          }
+          take output/history.json
+          take output/stats.json
+          take geo_cache.json
+
       # ulimit должен стоять в том же шаге, что и сбор: каждый шаг run
       # выполняется в отдельной оболочке, лимит из соседнего шага не
       # наследуется. На раннере по умолчанию nofile = 1024, а у sing-box
@@ -104,7 +127,15 @@ jobs:
             echo "stats.json отсутствует"
           fi
 
-      - name: Commit and push
+      # Данные публикуются в ветку data одним коммитом поверх (force-push).
+      # Причина: history.json, nodes.json и остальные артефакты меняются
+      # каждый прогон, и если хранить их в истории main, репозиторий растёт
+      # примерно на 1.5 МБ за прогон. Плоская ветка хранит только свежий
+      # снимок, поэтому размер репозитория стоит на месте.
+      #
+      # Гонка двух прогонов не страшна: каждый пушит свой полный снимок,
+      # и последний push побеждает.
+      - name: Опубликовать данные в ветку data
         if: steps.collect.outcome == 'success'
         run: |
           set -u
@@ -113,37 +144,21 @@ jobs:
 
           MAIN=$(python -c "import json;print(json.load(open('output/stats.json'))['published'])")
           FULL=$(python -c "import json;d=json.load(open('output/stats.json'));print(d.get('published_full', d['published']))")
-          COUNT="${MAIN}/${FULL}"
 
-          # output/ — полностью генерируемый каталог. При гонке двух прогонов
-          # мержить его содержимое бессмысленно: нужен свежий результат целиком.
-          # Поэтому сохраняем файлы, перечитываем remote и накладываем заново.
-          rm -rf "$RUNNER_TEMP/output-fresh"
-          cp -r output "$RUNNER_TEMP/output-fresh"
-          cp geo_cache.json "$RUNNER_TEMP/geo_cache.json" 2>/dev/null || true
+          # Дерево без истории: только свежие данные.
+          git rm -r --quiet --cached .
+          git add --force output geo_cache.json
+          TREE=$(git write-tree)
+          COMMIT=$(git commit-tree "$TREE" -m "data: ${MAIN}/${FULL} узлов, $(date -u '+%Y-%m-%d %H:%M') UTC")
 
           for attempt in 1 2 3 4 5; do
-            git add -A output/ geo_cache.json
-            if git diff --cached --quiet; then
-              echo "Изменений нет — коммит не нужен."
+            if git push --force origin "$COMMIT:refs/heads/data"; then
+              echo "Данные опубликованы: ${MAIN}/${FULL} узлов."
               exit 0
             fi
-
-            git commit -m "auto: обновление подписки — ${COUNT} узлов [skip ci]"
-
-            if git push; then
-              echo "Запушено с попытки $attempt."
-              exit 0
-            fi
-
-            echo "push отклонён (попытка $attempt) — синхронизируюсь с remote."
-            git fetch origin main
-            git reset --hard origin/main
-            rm -rf output
-            cp -r "$RUNNER_TEMP/output-fresh" output
-            cp "$RUNNER_TEMP/geo_cache.json" geo_cache.json 2>/dev/null || true
+            echo "push отклонён (попытка $attempt) — пробую снова."
             sleep $((attempt * 3))
           done
 
-          echo "Не удалось запушить за 5 попыток."
+          echo "Не удалось запушить ветку data за 5 попыток."
           exit 1
