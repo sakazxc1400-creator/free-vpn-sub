@@ -19,6 +19,8 @@ on:
       - "collect.py"
       - "probe.py"
       - "outbound.py"
+      - "clashout.py"
+      - "notify.py"
       - "geo.py"
       - "sources.txt"
       - ".github/workflows/update.yml"
@@ -65,6 +67,13 @@ jobs:
       - name: Run converter tests
         run: python testconv.py
 
+      - name: Run Clash converter tests
+        run: |
+          # PyYAML нужен только этому тесту: он проверяет, что собранный
+          # YAML действительно разбирается. Без него тест тоже проходит.
+          python -m pip install --quiet pyyaml || true
+          python testclash.py
+
       - name: Run sing-box config tests
         run: python testsingbox.py
 
@@ -77,6 +86,11 @@ jobs:
       # по инбаунду на каждый узел батча.
       - name: Collect configs
         id: collect
+        env:
+          # Уведомления в Telegram о результате прогона. Пока секреты не
+          # заведены, шаг просто ничего не отправляет.
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
           ulimit -n 65535 || true
           python collect.py
