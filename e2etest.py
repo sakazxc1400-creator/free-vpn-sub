@@ -11,6 +11,7 @@ import socketserver
 import sys
 import threading
 import urllib.parse
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import collect
@@ -286,6 +287,15 @@ try:
     check("посчитаны узлы с проверенным сертификатом", stats4["tls_ok"] == 1,
           str(stats4["tls_ok"]))
 
+    # прогоны в тесте идут подряд, а в жизни между ними часы: двигаю историю назад
+    hist_path = out / "history.json"
+    hist = json.loads(hist_path.read_text(encoding="utf-8"))
+    now = datetime.now(timezone.utc)
+    for entry in hist["nodes"].values():
+        entry["last"] = (now - timedelta(hours=2)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        entry["first"] = (now - timedelta(hours=12)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    hist_path.write_text(json.dumps(hist), encoding="utf-8")
+
     # второй прогон: те же адреса, значит стабильные
     rc5 = collect.main()
     stats5 = json.loads((out / "stats.json").read_text(encoding="utf-8"))
@@ -295,7 +305,7 @@ try:
     stable_plain = (out / "all-stable.txt").read_text(encoding="utf-8")
     check("в стабильной подписке есть узлы", stable_plain.strip() != "")
     check("в названии узла виден срок жизни",
-          "ч" in urllib.parse.unquote(stable_plain),
+          "12ч" in urllib.parse.unquote(stable_plain),
           urllib.parse.unquote(stable_plain)[:200])
 
     print("== сценарий: защита от плохой сборки ==")

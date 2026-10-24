@@ -56,10 +56,10 @@ MAX_PER_COUNTRY = 12
 
 # между прогонами копим стаж узлов
 HISTORY_FILE = OUTPUT_DIR / "history.json"
-RUNS_PER_HOUR = 2           # два прогона в час по расписанию workflow
-STABLE_RUNS = 6             # 6 прогонов это 3 часа
+STABLE_RUNS = 6             # столько замеров подряд нужен для стабильной
 HISTORY_KEEP_HOURS = 48     # сколько помним выпавшие из сборки узлы
-HISTORY_GAP_HOURS = 1.5     # пауза больше этого обнуляет стаж
+HISTORY_GAP_HOURS = 8       # пауза больше этого обнуляет стаж
+HISTORY_VERSION = 2         # 2: стаж в часах, а не в прогонах
 
 # блокируем публикацию, только если узлов и стало меньше прошлого раза, и вообще мало
 MIN_KEEP_RATIO = 0.6
@@ -442,12 +442,16 @@ def parse_stamp(value: str) -> datetime | None:
 
 
 def load_history() -> dict:
+    empty = {"v": HISTORY_VERSION, "nodes": {}}
     try:
         data = json.loads(HISTORY_FILE.read_text(encoding="utf-8"))
     except (OSError, ValueError):
-        return {"nodes": {}}
+        return empty
     if not isinstance(data, dict) or not isinstance(data.get("nodes"), dict):
-        return {"nodes": {}}
+        return empty
+    if data.get("v") != HISTORY_VERSION:
+        # старый формат считал стаж в прогонах, а прогоны идут неравномерно
+        return empty
     return data
 
 
@@ -465,14 +469,18 @@ def apply_history(history: dict, nodes: list[Node], now: datetime) -> None:
         prev_stamp = parse_stamp(str(prev.get("last", "")))
         if prev_stamp is not None and now - prev_stamp <= tolerance:
             streak = int(prev.get("streak", 0)) + 1
+            first = prev.get("first") or stamp
         else:
             streak = 1
+            first = stamp
 
         node.streak = streak
-        node.uptime_hours = round(streak / RUNS_PER_HOUR, 1)
+        started = parse_stamp(str(first))
+        hours = (now - started).total_seconds() / 3600 if started else 0.0
+        node.uptime_hours = round(hours, 1)
         stored[key] = {
             "streak": streak,
-            "first": prev.get("first") or stamp,
+            "first": first,
             "last": stamp,
             "runs": int(prev.get("runs", 0)) + 1,
         }

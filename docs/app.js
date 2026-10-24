@@ -15,7 +15,7 @@ const SOURCES = [
 
 const SUBS = [
   ["Основная", "200 самых быстрых", RAW + "sub.txt"],
-  ["Стабильная", "эти серверы живут уже 6 прогонов", RAW + "sub-stable.txt"],
+  ["Стабильная", "держатся 6 замеров подряд, обычно больше полусуток", RAW + "sub-stable.txt"],
   ["Полная", "все живые серверы", RAW + "sub-full.txt"],
   ["Clash", "для Clash Verge, FlClash и Mihomo", RAW + "clash.yaml"],
 ];

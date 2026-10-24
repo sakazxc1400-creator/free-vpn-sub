@@ -5,13 +5,16 @@ import base64
 import json
 import sys
 import urllib.parse
+from datetime import datetime, timedelta, timezone
 
 from collect import (
     Node,
+    apply_history,
     b64_decode_loose,
     extract_links,
     is_routable,
     parse_link,
+    pick_stable,
     retag,
     shrink_guard_blocks,
     split_host_port,
@@ -151,6 +154,62 @@ check("мусор вместо прошлого числа не блокируе
       not shrink_guard_blocks("нет данных", 30))
 check("ALLOW_SHRINK обходит защиту",
       not shrink_guard_blocks(1000, 30, allow=True))
+
+print("== стаж узлов ==")
+NOW = datetime(2026, 10, 24, 12, 0, 0, tzinfo=timezone.utc)
+STAMP = "%Y-%m-%dT%H:%M:%SZ"
+
+
+def one_node_history(streak: int, gap_hours: float, first_hours: float) -> dict:
+    last = (NOW - timedelta(hours=gap_hours)).strftime(STAMP)
+    first = (NOW - timedelta(hours=first_hours)).strftime(STAMP)
+    return {"nodes": {"1.2.3.4:443": {
+        "streak": streak, "first": first, "last": last, "runs": 10}}}
+
+
+def node_after(history: dict) -> Node:
+    node = Node(raw="vless://x@1.2.3.4:443", proto="vless",
+                host="1.2.3.4", port=443, ident="k")
+    apply_history(history, [node], NOW)
+    return node
+
+
+check("полчаса между прогонами стаж растит",
+      node_after(one_node_history(4, 0.5, 20)).streak == 5)
+check("пять часов между прогонами стаж не сбрасывают",
+      node_after(one_node_history(4, 5, 20)).streak == 5)
+check("девять часов тишины сбрасывают стаж",
+      node_after(one_node_history(4, 9, 20)).streak == 1)
+check("стаж в часах считается по времени, а не по числу прогонов",
+      node_after(one_node_history(10, 2, 20)).uptime_hours == 20.0)
+check("сброшенный стаж начинает часы заново",
+      node_after(one_node_history(4, 9, 20)).uptime_hours == 0.0)
+check("старая запись без first не роняет сборку",
+      node_after({"nodes": {"1.2.3.4:443": {"streak": 2,
+                                             "last": (NOW - timedelta(hours=1)).strftime(STAMP)}}}).streak == 3)
+check("шесть замеров подряд это стабильный узел",
+      len(pick_stable([node_after(one_node_history(5, 1, 10))])) == 1)
+check("пять замеров подряд в стабильные не идут",
+      not pick_stable([node_after(one_node_history(4, 1, 10))]))
+
+import tempfile
+from pathlib import Path
+import collect
+
+with tempfile.TemporaryDirectory() as tmp:
+    real = collect.HISTORY_FILE
+    collect.HISTORY_FILE = Path(tmp) / "history.json"
+    collect.HISTORY_FILE.write_text(
+        json.dumps({"nodes": {"1.2.3.4:443": {"streak": 30, "runs": 30,
+                                              "first": "2026-10-01T00:00:00Z",
+                                              "last": "2026-10-24T11:00:00Z"}}}),
+        encoding="utf-8")
+    check("история старого формата начинается заново",
+          collect.load_history() == {"v": 2, "nodes": {}})
+    collect.save_history({"v": 2, "nodes": {}})
+    check("история нового формата читается",
+          collect.load_history() == {"v": 2, "nodes": {}})
+    collect.HISTORY_FILE = real
 
 print()
 if failures:
