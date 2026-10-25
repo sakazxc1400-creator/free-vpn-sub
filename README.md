@@ -134,7 +134,7 @@ python3 collect.py      # полный прогон
 
 ## Поддержать
 
-Подписка бесплатная и такой останется. Пригодилось, можно [скинуть донат](https://www.donationalerts.com/r/saka1232131)
+Подписка бесплатная и такой останется. Пригодилось, можно https://www.donationalerts.com/r/saka12312312
 или перевести TON:
 
 ![QR-код для TON](assets/ton-qr.png)
