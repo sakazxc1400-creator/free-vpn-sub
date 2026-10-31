@@ -1,0 +1,1 @@
+trojan://humanity@194.135.119.82:2053?allowInsecure=1&sni=www.cordweave.com&type=ws&host=www.cordweave.com&path=/assignment#996.%20%F0%9F%87%AC%F0%9F%87%AA%20%D0%93%D1%80%D1%83%D0%B7%D0%B8%D1%8F%20%C2%B7%20trojan%20%C2%B7%201002ms%20%C2%B7%204%D1%87

@@ -1,0 +1,2 @@
+trojan://humanity@35.241.172.224:443?allowInsecure=1&sni=www.cordweave.com&type=ws&host=www.cordweave.com&path=/assignment#906.%20%F0%9F%87%A7%F0%9F%87%AA%20%D0%91%D0%B5%D0%BB%D1%8C%D0%B3%D0%B8%D1%8F%20%C2%B7%20trojan%20%C2%B7%20733ms%20%C2%B7%204%D1%87
+trojan://humanity@141.98.233.6:443?allowInsecure=1&sni=www.cordweave.com&type=ws&host=www.cordweave.com&path=/assignment#908.%20%F0%9F%87%A7%F0%9F%87%AA%20%D0%91%D0%B5%D0%BB%D1%8C%D0%B3%D0%B8%D1%8F%20%C2%B7%20trojan%20%C2%B7%20736ms%20%C2%B7%204%D1%87
