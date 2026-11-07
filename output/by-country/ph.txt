@@ -1,0 +1,2 @@
+trojan://5t6i121em5lkmsmk@ph001.zestapp778.com:46298?security=tls&insecure=1&fp=&type=tcp#682.%20%F0%9F%87%B5%F0%9F%87%AD%20%D0%A4%D0%B8%D0%BB%D0%B8%D0%BF%D0%BF%D0%B8%D0%BD%D1%8B%20%C2%B7%20trojan%20%C2%B7%20948ms%20%C2%B7%2045%D1%87
+trojan://5t6i121em5lkmsmk@130.94.51.219:46298?security=tls&sni=ph001.zestapp778.com&type=tcp&headerType=none#713.%20%F0%9F%87%B5%F0%9F%87%AD%20%D0%A4%D0%B8%D0%BB%D0%B8%D0%BF%D0%BF%D0%B8%D0%BD%D1%8B%20%C2%B7%20trojan%20%C2%B7%201302ms
