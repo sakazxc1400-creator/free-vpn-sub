@@ -5,7 +5,12 @@ on:
     # дважды в час, на некруглых минутах: очередь Actions короче
     - cron: "23 * * * *"
     - cron: "53 * * * *"
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      allow_shrink:
+        description: Allow an expected drop in the number of working servers
+        type: boolean
+        default: false
   push:
     branches: [main]
     paths:
@@ -15,6 +20,9 @@ on:
       - "clashout.py"
       - "notify.py"
       - "geo.py"
+      - "install_singbox.py"
+      - "runtests.py"
+      - "testregressions.py"
       - "sources.txt"
       - ".github/workflows/update.yml"
 
@@ -41,46 +49,25 @@ jobs:
           python-version: "3.12"
 
       - name: Install sing-box
-        run: |
-          set -euo pipefail
-          VERSION=$(curl -fsSL https://api.github.com/repos/SagerNet/sing-box/releases/latest \
-            | python -c "import json,sys;print(json.load(sys.stdin)['tag_name'].lstrip('v'))")
-          echo "sing-box $VERSION"
-          curl -fsSL -o sb.tar.gz \
-            "https://github.com/SagerNet/sing-box/releases/download/v${VERSION}/sing-box-${VERSION}-linux-amd64.tar.gz"
-          tar -xzf sb.tar.gz
-          mv "sing-box-${VERSION}-linux-amd64/sing-box" ./sing-box
-          chmod +x ./sing-box
-          rm -rf sb.tar.gz "sing-box-${VERSION}-linux-amd64"
-          ./sing-box version
+        run: python install_singbox.py
 
-      - name: Run unit tests
-        run: python selftest.py
+      - name: Install test dependencies
+        run: python -m pip install PyYAML==6.0.2
 
-      - name: Run converter tests
-        run: python testconv.py
-
-      - name: Run Clash converter tests
-        run: |
-          # PyYAML нужен только этому тесту, без него он тоже проходит
-          python -m pip install --quiet pyyaml || true
-          python testclash.py
-
-      - name: Run sing-box config tests
-        run: python testsingbox.py
-
-      - name: Run end-to-end test
-        run: python e2etest.py
+      - name: Run Python tests
+        run: python runtests.py --require-singbox
 
       # история, прошлый stats.json и гео-кэш лежат в ветке data
       - name: Подтягиваю историю из ветки data
         run: |
-          set -u
+          set -euo pipefail
           mkdir -p output
-          if ! git fetch --depth=1 origin data; then
-            echo "Ветки data пока нет — начинаю с чистого листа."
+          DATA_REF=$(git ls-remote --heads origin refs/heads/data)
+          if [ -z "$DATA_REF" ]; then
+            echo "The data branch does not exist yet; starting the first snapshot."
             exit 0
           fi
+          git fetch --depth=1 origin data
           take() {
             if git show "FETCH_HEAD:$1" > "$1.tmp" 2>/dev/null && [ -s "$1.tmp" ]; then
               mv "$1.tmp" "$1"
@@ -100,6 +87,7 @@ jobs:
           # без секретов просто ничего не отправляет
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          ALLOW_SHRINK: ${{ inputs.allow_shrink && '1' || '0' }}
         run: |
           ulimit -n 65535 || true
           python collect.py
@@ -117,7 +105,7 @@ jobs:
       - name: Опубликовать данные в ветку data
         if: steps.collect.outcome == 'success'
         run: |
-          set -u
+          set -euo pipefail
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
@@ -125,7 +113,10 @@ jobs:
           FULL=$(python -c "import json;d=json.load(open('output/stats.json'));print(d.get('published_full', d['published']))")
 
           git rm -r --quiet --cached .
-          git add --force output geo_cache.json
+          git add --force output
+          if [ -f geo_cache.json ]; then
+            git add --force geo_cache.json
+          fi
           TREE=$(git write-tree)
           COMMIT=$(git commit-tree "$TREE" -m "data: ${MAIN}/${FULL} узлов, $(date -u '+%Y-%m-%d %H:%M') UTC")
 

@@ -116,8 +116,30 @@ python3 e2etest.py      # весь сценарий на выдуманных к
 python3 collect.py      # полный прогон
 ```
 
-Нужен Python 3.9 или новее, ничего ставить не надо. Полная проверка серверов требует бинарник
-[sing-box](https://github.com/SagerNet/sing-box/releases) рядом с файлами, без него прогон проверит только порты.
+Python 3.9+ is required. Publication also requires the tested sing-box binary:
+
+```sh
+python install_singbox.py
+python runtests.py --require-singbox
+python collect.py
+```
+
+If traffic or HTTPS verification cannot produce a usable selection, the previous
+subscription is preserved. TCP-only results are never published.
+
+### Website development
+
+The Swiss/Bento landing page is implemented in one React file: `site/App.jsx`.
+Node.js 22.12+ is required to build it.
+
+```sh
+npm ci
+npm run dev
+npm run build
+```
+
+The production build is written to `docs/` for GitHub Pages. See
+[MAINTENANCE.md](MAINTENANCE.md) for browser tests, architecture, and publication rules.
 
 Свой источник добавляется строкой в `sources.txt`. Строки с `#` это комментарии.
 

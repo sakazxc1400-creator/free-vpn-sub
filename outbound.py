@@ -222,7 +222,7 @@ def _from_vless(link: str) -> dict | None:
 
     transport = _transport_block(
         net,
-        path=urllib.parse.unquote(_first(params, "path")),
+        path=_first(params, "path"),
         host=_first(params, "host"),
         service_name=_first(params, "serviceName"),
         header_type=_first(params, "headerType"),
@@ -258,7 +258,7 @@ def _from_vless(link: str) -> dict | None:
 
 
 def _from_vmess(link: str) -> dict | None:
-    decoded = _b64(link[len("vmess://"):])
+    decoded = _b64(link[len("vmess://"):].split("#", 1)[0])
     if not decoded:
         return None
     try:
@@ -332,7 +332,7 @@ def _from_trojan(link: str) -> dict | None:
 
     transport = _transport_block(
         _first(params, "type", "net", default="tcp"),
-        path=urllib.parse.unquote(_first(params, "path")),
+        path=_first(params, "path"),
         host=_first(params, "host"),
         service_name=_first(params, "serviceName"),
         header_type=_first(params, "headerType"),
@@ -370,7 +370,8 @@ def _from_ss(link: str) -> dict | None:
 
     if "@" in body:
         creds, _, endpoint = body.rpartition("@")
-        decoded_creds = _b64(creds) or urllib.parse.unquote(creds)
+        creds = urllib.parse.unquote(creds)
+        decoded_creds = creds if ":" in creds else (_b64(creds) or "")
     else:
         decoded = _b64(body)
         if not decoded or "@" not in decoded:

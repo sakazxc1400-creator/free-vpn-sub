@@ -32,8 +32,8 @@ TLS_PROBE_URLS = (
 )
 
 SPEED_TARGETS = (
-    "https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/main/output/all-full.txt",
-    "https://cdn.jsdelivr.net/gh/sakazxc1400-creator/free-vpn-sub@main/output/all-full.txt",
+    "https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/data/output/all-full.txt",
+    "https://cdn.jsdelivr.net/gh/sakazxc1400-creator/free-vpn-sub@data/output/all-full.txt",
     "https://proof.ovh.net/files/1Mb.dat",
 )
 SPEED_BYTES = 200000
@@ -52,8 +52,8 @@ VERIFY_PARALLEL = max(1, int(os.environ.get("VERIFY_PARALLEL", "3")))
 # у каждого процесса sing-box свой отрезок портов
 PORT_SEGMENT = BATCH_SIZE + 16
 
-# меньше этого батч при падении не делим
-MIN_BATCH = 20
+# Isolate a bad configuration without discarding its healthy neighbors.
+MIN_BATCH = 1
 
 # потолок на всю проверку, дальше отдаём что нашли
 VERIFY_BUDGET = 25 * 60
@@ -86,9 +86,8 @@ def find_singbox() -> str | None:
 def free_ports(count: int, start: int = PORT_BASE) -> list[int]:
     ports: list[int] = []
     port = start
-    while len(ports) < count and port < 65000:
+    while len(ports) < count and port < min(start + PORT_SEGMENT, 65000):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-            sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             try:
                 sock.bind(("127.0.0.1", port))
                 ports.append(port)
@@ -148,7 +147,7 @@ def build_config(pairs: list[tuple[int, dict]]) -> dict:
 def wait_ready(proc, ports: list[int], deadline: float) -> str:
     """Ждёт порты: ready, exited (конфиг битый) или timeout."""
     probe = ports[: min(5, len(ports))]
-    while time.time() < deadline:
+    while time.monotonic() < deadline:
         if proc.poll() is not None:
             return "exited"
         ready = 0
@@ -166,7 +165,8 @@ def wait_ready(proc, ports: list[int], deadline: float) -> str:
 
 def stop_singbox(proc, error_tail: bool = False) -> str:
     err = ""
-    proc.terminate()
+    if proc.poll() is None:
+        proc.terminate()
     try:
         _, stderr = proc.communicate(timeout=5)
         if error_tail and stderr:
@@ -177,24 +177,38 @@ def stop_singbox(proc, error_tail: bool = False) -> str:
     return err
 
 
+class NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+
+def proxy_opener():
+    """Never inherit system proxies, NO_PROXY, or follow captive-portal redirects."""
+    return urllib.request.build_opener(
+        urllib.request.ProxyHandler({}),
+        urllib.request.HTTPSHandler(context=ssl.create_default_context()),
+        NoRedirect(),
+    )
+
+
+def proxy_request(url: str, port: int) -> urllib.request.Request:
+    request = urllib.request.Request(url)
+    request.set_proxy(f"127.0.0.1:{port}", "http")
+    return request
+
+
 def probe_one(port: int) -> tuple[int | None, bool]:
     """Через прокси: (задержка мс или None, tls_ok)."""
-    opener = urllib.request.build_opener(
-        urllib.request.ProxyHandler({
-            "http": f"http://127.0.0.1:{port}",
-            "https": f"http://127.0.0.1:{port}",
-        }),
-        urllib.request.HTTPSHandler(),
-    )
+    opener = proxy_opener()
     latency: int | None = None
     for url in PROBE_URLS:
         start = time.perf_counter()
         try:
-            with opener.open(url, timeout=PROBE_TIMEOUT) as resp:
-                if resp.status in (200, 204):
+            with opener.open(proxy_request(url, port), timeout=PROBE_TIMEOUT) as resp:
+                if resp.status == 204:
                     body = resp.read(64)
                     # generate_204 должен вернуть пустое тело
-                    if resp.status == 204 and body:
+                    if body:
                         continue
                     latency = int((time.perf_counter() - start) * 1000)
                     break
@@ -209,20 +223,14 @@ def probe_one(port: int) -> tuple[int | None, bool]:
 
 def probe_tls(port: int) -> bool:
     """HTTPS через узел с проверкой сертификата."""
-    opener = urllib.request.build_opener(
-        urllib.request.ProxyHandler({
-            "http": f"http://127.0.0.1:{port}",
-            "https": f"http://127.0.0.1:{port}",
-        }),
-        urllib.request.HTTPSHandler(context=ssl.create_default_context()),
-    )
+    opener = proxy_opener()
     for url in TLS_PROBE_URLS:
         try:
-            with opener.open(url, timeout=PROBE_TIMEOUT) as resp:
-                if resp.status not in (200, 204):
+            with opener.open(proxy_request(url, port), timeout=PROBE_TIMEOUT) as resp:
+                if resp.status != 204:
                     continue
                 body = resp.read(64)
-                if resp.status == 204 and body:
+                if body:
                     continue
                 return True
         except (urllib.error.URLError, urllib.error.HTTPError, OSError,
@@ -232,17 +240,11 @@ def probe_tls(port: int) -> bool:
 
 
 def probe_speed(port: int, nbytes: int = SPEED_BYTES) -> float | None:
-    opener = urllib.request.build_opener(
-        urllib.request.ProxyHandler({
-            "http": f"http://127.0.0.1:{port}",
-            "https": f"http://127.0.0.1:{port}",
-        }),
-        urllib.request.HTTPSHandler(context=ssl.create_default_context()),
-    )
+    opener = proxy_opener()
     for url in SPEED_TARGETS:
         start = time.perf_counter()
         try:
-            with opener.open(url, timeout=SPEED_TIMEOUT) as resp:
+            with opener.open(proxy_request(url, port), timeout=SPEED_TIMEOUT) as resp:
                 data = resp.read(nbytes)
         except (urllib.error.URLError, urllib.error.HTTPError, OSError,
                 ValueError, TimeoutError, ssl.SSLError):
@@ -278,7 +280,7 @@ def prepare_nodes(nodes: list) -> list[tuple[object, dict]]:
     return prepared
 
 
-def verify_batch(nodes: list, singbox: str,
+def verify_batch(nodes: list, singbox: str | list[str],
                  port_base: int = PORT_BASE) -> list[tuple[object, int]]:
     """Проверяет один батч узлов, возвращает пары (узел, задержка мс)."""
     prepared = prepare_nodes(nodes)
@@ -287,13 +289,16 @@ def verify_batch(nodes: list, singbox: str,
     return _verify_prepared(prepared, singbox, port_base)
 
 
-def _verify_prepared(prepared: list[tuple[object, dict]], singbox: str,
+def _verify_prepared(prepared: list[tuple[object, dict]], singbox: str | list[str],
                      port_base: int = PORT_BASE, probe=None,
                      workers: int = PROBE_WORKERS) -> list:
     probe = probe or default_probe
+    if not prepared:
+        return []
     ports = free_ports(len(prepared), port_base)
     if len(ports) < len(prepared):
-        prepared = prepared[: len(ports)]
+        log(f"    Not enough free ports for {len(prepared)} nodes at {port_base}")
+        return []
     pairs = [(ports[i], cfg) for i, (_, cfg) in enumerate(prepared)]
 
     config = build_config(pairs)
@@ -304,13 +309,14 @@ def _verify_prepared(prepared: list[tuple[object, dict]], singbox: str,
         json.dump(config, tmp)
         tmp.close()
 
+        command = [singbox] if isinstance(singbox, str) else list(singbox)
         proc = subprocess.Popen(
-            [singbox, "run", "-c", tmp.name],
+            command + ["run", "-c", tmp.name],
             stdout=subprocess.DEVNULL,
             stderr=subprocess.PIPE,
         )
         try:
-            status = wait_ready(proc, ports, time.time() + STARTUP_TIMEOUT)
+            status = wait_ready(proc, ports, time.monotonic() + STARTUP_TIMEOUT)
             if status != "ready":
                 err = stop_singbox(proc, error_tail=(status == "exited"))
                 if status == "exited" and len(prepared) >= MIN_BATCH * 2:
@@ -321,7 +327,7 @@ def _verify_prepared(prepared: list[tuple[object, dict]], singbox: str,
                     return (_verify_prepared(prepared[:mid], singbox, port_base,
                                             probe, workers)
                             + _verify_prepared(prepared[mid:], singbox,
-                                               port_base + mid, probe, workers))
+                                               port_base, probe, workers))
                 log(f"    батч из {len(prepared)} узлов пропущен: "
                     f"{err or 'sing-box не поднялся'}")
                 return []
@@ -370,7 +376,7 @@ def verify(nodes: list, need: int) -> list[tuple[object, int]]:
 
     good: list[tuple[object, int]] = []
     checked = 0
-    deadline = time.time() + VERIFY_BUDGET
+    deadline = time.monotonic() + VERIFY_BUDGET
 
     # каждому батчу свой отрезок портов
     batches = [
@@ -400,7 +406,7 @@ def verify(nodes: list, need: int) -> list[tuple[object, int]]:
         log(f"    проверено {checked}/{len(nodes)}, рабочих {len(good)}")
         if len(good) >= need:
             break
-        if time.time() >= deadline:
+        if time.monotonic() >= deadline:
             log(f"    бюджет времени ({VERIFY_BUDGET}s) исчерпан, останавливаюсь")
             break
 
@@ -421,10 +427,10 @@ def measure_speed(nodes: list, singbox: str | None = None) -> int:
 
     log(f"    замер скорости: {len(prepared)} узлов по "
         f"{SPEED_BYTES // 1024} КБ, параллельно {SPEED_WORKERS}")
-    deadline = time.time() + SPEED_BUDGET
+    deadline = time.monotonic() + SPEED_BUDGET
     measured = 0
     for index in range(0, len(prepared), SPEED_WORKERS):
-        if time.time() >= deadline:
+        if time.monotonic() >= deadline:
             log(f"    бюджет замера ({SPEED_BUDGET}s) исчерпан")
             break
         chunk = prepared[index:index + SPEED_WORKERS]

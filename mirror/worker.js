@@ -54,6 +54,10 @@ function corsHeaders() {
   };
 }
 
+function reply(request, body, options) {
+  return new Response(request.method === "HEAD" ? null : body, options);
+}
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
@@ -62,7 +66,9 @@ export default {
       return new Response(null, { status: 204, headers: corsHeaders() });
     }
     if (request.method !== "GET" && request.method !== "HEAD") {
-      return new Response("Только GET\n", { status: 405, headers: corsHeaders() });
+      return reply(request, "Only GET and HEAD are supported\n", {
+        status: 405, headers: { ...corsHeaders(), allow: "GET, HEAD, OPTIONS" },
+      });
     }
 
     const path = url.pathname.replace(/^\/+/, "");
@@ -70,7 +76,7 @@ export default {
       return Response.redirect(SITE, 302);
     }
     if (!isAllowed(path)) {
-      return new Response(
+      return reply(request,
         "Такого файла здесь нет. Список файлов: " + SITE + "\n",
         { status: 404, headers: { ...corsHeaders(), "content-type": "text/plain; charset=utf-8" } },
       );
@@ -81,22 +87,33 @@ export default {
     const cacheKey = new Request(`https://free-vpn-sub.mirror/${path}`, { method: "GET" });
     const cached = await cache.match(cacheKey);
     if (cached) {
-      return new Response(cached.body, { status: 200, headers: { ...corsHeaders(), ...Object.fromEntries(cached.headers) } });
+      return reply(request, cached.body, {
+        status: cached.status,
+        headers: { ...Object.fromEntries(cached.headers), ...corsHeaders() },
+      });
     }
 
     for (const base of [UPSTREAM, FALLBACK]) {
-      let upstream;
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 8000);
+      let body;
       try {
-        upstream = await fetch(base + path, {
+        const upstream = await fetch(base + path, {
           headers: { "user-agent": "free-vpn-sub-mirror" },
           cf: { cacheTtl: 300, cacheEverything: true },
+          signal: controller.signal,
         });
+        if (!upstream.ok) {
+          if (upstream.body) await upstream.body.cancel();
+          continue;
+        }
+        body = await upstream.text();
       } catch (err) {
         continue;
+      } finally {
+        clearTimeout(timer);
       }
-      if (!upstream.ok) continue;
 
-      const body = await upstream.text();
       const response = new Response(body, {
         status: 200,
         headers: {
@@ -107,10 +124,12 @@ export default {
         },
       });
       ctx.waitUntil(cache.put(cacheKey, response.clone()));
-      return response;
+      return request.method === "HEAD"
+        ? reply(request, null, { status: response.status, headers: response.headers })
+        : response;
     }
 
-    return new Response("Не удалось получить файл ни с GitHub, ни с jsdelivr\n", {
+    return reply(request, "Neither upstream could provide the file\n", {
       status: 502,
       headers: { ...corsHeaders(), "content-type": "text/plain; charset=utf-8" },
     });

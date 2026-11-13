@@ -14,3 +14,7 @@ GeoLite2-Country.mmdb
 output/
 geo_cache.json
 arena-rust/
+node_modules/
+test-results/
+playwright-report/
+.subscription-*/

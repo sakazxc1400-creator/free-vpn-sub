@@ -101,12 +101,12 @@ try:
     # битый узел первым: без деления потерялся бы весь батч
     nodes = [FakeNode(bad_link)] + [FakeNode(l) for l in good_links]
 
-    results = probe.verify_batch(nodes, fake)
+    results = probe.verify_batch(nodes, [sys.executable, fake])
     salvaged = {n.raw for n, _ in results}
     check("битый узел не в результатах",
           not any("bad.invalid" in raw for raw in salvaged))
-    # потери ограничены 2*MIN_BATCH, а не всем батчем
-    check("здоровая часть батча спасена", len(results) >= 70,
+    # Every healthy configuration must survive a bad neighbor.
+    check("All healthy nodes are salvaged", len(results) == 99,
           f"спасено {len(results)} из 99")
     check("задержки посчитаны",
           all(isinstance(lat, int) and lat >= 0 for _, lat in results))
@@ -116,7 +116,7 @@ finally:
 binary = probe.find_singbox()
 if not binary:
     print("sing-box не найден — проверка конфигов пропущена.")
-    sys.exit(0)
+    sys.exit(1 if failures or os.environ.get("REQUIRE_SINGBOX") == "1" else 0)
 
 print(f"== {binary} ==")
 

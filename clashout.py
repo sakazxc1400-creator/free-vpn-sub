@@ -56,10 +56,10 @@ def _yaml_lines(value: object, indent: int = 0) -> list[str]:
                 first = True
                 for key, sub in item.items():
                     prefix = "- " if first else "  "
-                    if isinstance(sub, dict | list) and sub:
+                    if isinstance(sub, (dict, list)) and sub:
                         lines.append(f"{pad}{prefix}{key}:")
                         lines.extend(_yaml_lines(sub, indent + 4))
-                    elif isinstance(sub, dict | list):
+                    elif isinstance(sub, (dict, list)):
                         lines.append(
                             f"{pad}{prefix}{key}: "
                             + ("{}" if isinstance(sub, dict) else "[]")
@@ -274,11 +274,14 @@ def _fallback_name(node: object) -> str:
 
 def _unique(name: str, used: dict[str, int]) -> str:
     name = name.strip() or "node"
-    if name not in used:
-        used[name] = 1
-        return name
-    used[name] += 1
-    return f"{name} #{used[name]}"
+    candidate = name
+    index = used.get(name, 1)
+    while candidate in used:
+        index += 1
+        candidate = f"{name} #{index}"
+    used[name] = index
+    used[candidate] = 1
+    return candidate
 
 
 def clash_proxy(node: object) -> dict | None:

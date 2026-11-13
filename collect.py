@@ -5,12 +5,15 @@ from __future__ import annotations
 
 import base64
 import binascii
+import hashlib
 import ipaddress
 import json
 import os
 import re
+import shutil
 import socket
 import sys
+import tempfile
 import time
 import urllib.error
 import urllib.parse
@@ -87,7 +90,7 @@ class Node:
     latency_ms: int | None = None
     country: str = ""
     verified: bool = False
-    tls_ok: bool = True            # HTTPS с проверкой сертификата
+    tls_ok: bool = False           # Set only after a successful HTTPS probe.
     speed_mbps: float | None = None
     streak: int = 0
     uptime_hours: float = 0.0
@@ -124,10 +127,10 @@ def log(msg: str) -> None:
     print(msg, flush=True)
 
 
-def b64_decode_loose(data: str) -> str | None:
+def b64_decode_loose(data: str, min_length: int = 16) -> str | None:
     """base64 без padding и url-safe; None, если это не base64."""
     cleaned = re.sub(r"\s+", "", data)
-    if not cleaned or len(cleaned) < 16:
+    if not cleaned or len(cleaned) < min_length:
         return None
     if not re.fullmatch(r"[A-Za-z0-9+/=_-]+", cleaned):
         return None
@@ -230,9 +233,15 @@ def extract_links(payload: str) -> list[str]:
     return []
 
 
+def identity_digest(value: object) -> str:
+    """Keep complete credentials and transport settings without exposing secrets."""
+    data = json.dumps(value, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
+    return hashlib.sha256(data.encode("utf-8")).hexdigest()
+
+
 def parse_vmess(link: str) -> Node | None:
     """vmess:// + base64(JSON)."""
-    payload = link[len("vmess://"):]
+    payload = link[len("vmess://"):].split("#", 1)[0]
     decoded = b64_decode_loose(payload)
     if not decoded:
         return None
@@ -255,12 +264,14 @@ def parse_vmess(link: str) -> Node | None:
     if not is_routable(host):
         return None
 
+    identity = {k: v for k, v in cfg.items() if k != "ps"}
+    identity.update(add=host, port=port, id=uuid)
     return Node(
         raw=link,
         proto="vmess",
         host=host,
         port=port,
-        ident=f"vmess|{host}|{port}|{uuid}",
+        ident=f"vmess|{host}|{port}|{identity_digest(identity)}",
     )
 
 
@@ -268,9 +279,10 @@ def parse_ss(link: str) -> Node | None:
     """ss:// в двух вариантах: userinfo в base64 или вся ссылка целиком."""
     body = link[len("ss://"):]
     body = body.split("#", 1)[0]
-    body = body.split("?", 1)[0]
+    body, _, query = body.partition("?")
 
-    if "@" not in body:
+    whole_encoded = "@" not in body
+    if whole_encoded:
         decoded = b64_decode_loose(body)
         if not decoded or "@" not in decoded:
             return None
@@ -279,6 +291,16 @@ def parse_ss(link: str) -> Node | None:
     creds, _, endpoint = body.rpartition("@")
     if not endpoint:
         return None
+
+    if not whole_encoded:
+        creds = urllib.parse.unquote(creds)
+    if ":" not in creds:
+        creds = b64_decode_loose(creds, min_length=0) or ""
+    method, separator, password = creds.partition(":")
+    if not method or not separator:
+        return None
+    identity = [method.lower(), password,
+                urllib.parse.parse_qs(query, keep_blank_values=True)]
 
     host, port = split_host_port(endpoint)
     if host is None or port is None:
@@ -289,7 +311,7 @@ def parse_ss(link: str) -> Node | None:
         proto="ss",
         host=host,
         port=port,
-        ident=f"ss|{host}|{port}|{creds[:24]}",
+        ident=f"ss|{host}|{port}|{identity_digest(identity)}",
     )
 
 
@@ -338,20 +360,23 @@ def parse_uri_style(link: str, proto: str) -> Node | None:
     if not host or port not in VALID_PORT_RANGE or not is_routable(host):
         return None
 
-    user = (parsed.username or "").strip().lower()
-    if proto in ("vless", "trojan") and not user:
+    user = urllib.parse.unquote(parsed.username or "")
+    if proto in ("vless", "tuic"):
+        user = user.strip().lower()
+    if not user:
         return None
 
     # sni входит в ident
-    qs = urllib.parse.parse_qs(parsed.query)
+    qs = urllib.parse.parse_qs(parsed.query, keep_blank_values=True)
     sni = (qs.get("sni") or qs.get("host") or [""])[0].lower()
+    identity = [user, urllib.parse.unquote(parsed.password or ""), parsed.path, qs]
 
     return Node(
         raw=link,
         proto=proto,
         host=host,
         port=port,
-        ident=f"{proto}|{host}|{port}|{user[:36]}|{sni}",
+        ident=f"{proto}|{host}|{port}|{sni}|{identity_digest(identity)}",
     )
 
 
@@ -462,13 +487,22 @@ def apply_history(history: dict, nodes: list[Node], now: datetime) -> None:
     tolerance = timedelta(hours=HISTORY_GAP_HOURS)
     alive: set[str] = set()
 
+    def count(value: object) -> int:
+        try:
+            return max(0, int(value))
+        except (TypeError, ValueError, OverflowError):
+            return 0
+
     for node in nodes:
         key = node.addr
         alive.add(key)
         prev = stored.get(key) or {}
+        if not isinstance(prev, dict):
+            prev = {}
         prev_stamp = parse_stamp(str(prev.get("last", "")))
-        if prev_stamp is not None and now - prev_stamp <= tolerance:
-            streak = int(prev.get("streak", 0)) + 1
+        if (count(prev.get("streak")) > 0 and prev_stamp is not None
+                and timedelta(0) <= now - prev_stamp <= tolerance):
+            streak = count(prev.get("streak")) + 1
             first = prev.get("first") or stamp
         else:
             streak = 1
@@ -476,13 +510,16 @@ def apply_history(history: dict, nodes: list[Node], now: datetime) -> None:
 
         node.streak = streak
         started = parse_stamp(str(first))
-        hours = (now - started).total_seconds() / 3600 if started else 0.0
+        if started is None or started > now:
+            started = now
+            first = stamp
+        hours = (now - started).total_seconds() / 3600
         node.uptime_hours = round(hours, 1)
         stored[key] = {
             "streak": streak,
             "first": first,
             "last": stamp,
-            "runs": int(prev.get("runs", 0)) + 1,
+            "runs": count(prev.get("runs")) + 1,
         }
 
     # выпавшие узлы теряют стаж, но запись живёт ещё HISTORY_KEEP_HOURS
@@ -491,6 +528,9 @@ def apply_history(history: dict, nodes: list[Node], now: datetime) -> None:
         if key in alive:
             continue
         entry = stored.get(key) or {}
+        if not isinstance(entry, dict):
+            del stored[key]
+            continue
         last = parse_stamp(str(entry.get("last", "")))
         if last is None or last < cutoff:
             del stored[key]
@@ -502,9 +542,10 @@ def apply_history(history: dict, nodes: list[Node], now: datetime) -> None:
     history["count"] = len(stored)
 
 
-def save_history(history: dict) -> None:
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    HISTORY_FILE.write_text(
+def save_history(history: dict, path: Path | None = None) -> None:
+    path = path or HISTORY_FILE
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
         json.dumps(history, ensure_ascii=False, separators=(",", ":")) + "\n",
         encoding="utf-8",
     )
@@ -531,8 +572,8 @@ def shrink_guard_blocks(prev_full, count: int, allow: bool = False) -> bool:
     return count < prev_full * MIN_KEEP_RATIO and count < MIN_KEEP_ABS
 
 
-def retag(node: Node, index: int) -> str:
-    """Название узла: страна, протокол, задержка, стаж."""
+def node_label(node: Node, index: int) -> str:
+    """Build the display name independently of the share-link encoding."""
     parts: list[str] = []
     if node.country:
         parts.append(f"{geo.flag(node.country)} {geo.country_name(node.country)}")
@@ -547,45 +588,58 @@ def retag(node: Node, index: int) -> str:
         # сертификат не проверился, узел может подменять TLS
         parts.append("⚠")
 
-    label = f"{index:02d}. " + " · ".join(parts)
+    return f"{index:02d}. " + " · ".join(parts)
+
+
+def retag(node: Node, index: int) -> str:
+    """Store VMess names in ps; URI protocols use a fragment."""
+    label = node_label(node, index)
+    if node.proto == "vmess":
+        payload = node.raw.split("://", 1)[1].split("#", 1)[0]
+        cfg = json.loads(b64_decode_loose(payload))
+        cfg["ps"] = label
+        encoded = json.dumps(cfg, ensure_ascii=False, separators=(",", ":"))
+        return "vmess://" + base64.b64encode(encoded.encode("utf-8")).decode("ascii")
     tag = urllib.parse.quote(label, safe="")
     base = node.raw.split("#", 1)[0]
     return f"{base}#{tag}"
 
 
 def write_outputs(nodes: list[Node], full: list[Node], stats: Stats,
-                  stable: list[Node] | None = None) -> dict:
+                  stable: list[Node] | None = None,
+                  output_dir: Path | None = None) -> dict:
     """Пишет sub.txt, sub-full.txt, sub-stable.txt и разбивки в output/."""
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    output_dir = output_dir or OUTPUT_DIR
+    output_dir.mkdir(parents=True, exist_ok=True)
     updated = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
 
     tagged = [retag(n, i + 1) for i, n in enumerate(nodes)]
     plain = "\n".join(tagged)
 
     # в sub.txt base64, в all.txt тот же список текстом
-    (OUTPUT_DIR / "sub.txt").write_text(
+    (output_dir / "sub.txt").write_text(
         base64.b64encode(plain.encode("utf-8")).decode("ascii"),
         encoding="utf-8",
     )
-    (OUTPUT_DIR / "all.txt").write_text(plain + "\n", encoding="utf-8")
+    (output_dir / "all.txt").write_text(plain + "\n", encoding="utf-8")
 
     full_tagged = [retag(n, i + 1) for i, n in enumerate(full)]
     full_plain = "\n".join(full_tagged)
-    (OUTPUT_DIR / "sub-full.txt").write_text(
+    (output_dir / "sub-full.txt").write_text(
         base64.b64encode(full_plain.encode("utf-8")).decode("ascii"),
         encoding="utf-8",
     )
-    (OUTPUT_DIR / "all-full.txt").write_text(full_plain + "\n", encoding="utf-8")
+    (output_dir / "all-full.txt").write_text(full_plain + "\n", encoding="utf-8")
 
     # пишем всегда, даже пустыми: иначе клиент получит 404
     stable = stable or []
     stable_tagged = [retag(n, i + 1) for i, n in enumerate(stable)]
     stable_plain = "\n".join(stable_tagged)
-    (OUTPUT_DIR / "sub-stable.txt").write_text(
+    (output_dir / "sub-stable.txt").write_text(
         base64.b64encode(stable_plain.encode("utf-8")).decode("ascii"),
         encoding="utf-8",
     )
-    (OUTPUT_DIR / "all-stable.txt").write_text(
+    (output_dir / "all-stable.txt").write_text(
         stable_plain + "\n", encoding="utf-8"
     )
 
@@ -604,7 +658,7 @@ def write_outputs(nodes: list[Node], full: list[Node], stats: Stats,
         }
         for index, n in enumerate(nodes)
     ]
-    (OUTPUT_DIR / "nodes.json").write_text(
+    (output_dir / "nodes.json").write_text(
         json.dumps(nodes_json, ensure_ascii=False, separators=(",", ":")) + "\n",
         encoding="utf-8",
     )
@@ -612,7 +666,7 @@ def write_outputs(nodes: list[Node], full: list[Node], stats: Stats,
     # старые файлы удаляем, чтобы не остались от прошлого прогона
     known_protos = {"vless", "vmess", "trojan", "ss", "hysteria2", "tuic"}
     for proto in known_protos:
-        stale = OUTPUT_DIR / f"{proto}.txt"
+        stale = output_dir / f"{proto}.txt"
         if stale.exists():
             stale.unlink()
 
@@ -620,12 +674,12 @@ def write_outputs(nodes: list[Node], full: list[Node], stats: Stats,
     for node, line in zip(full, full_tagged):
         by_proto.setdefault(node.proto, []).append(line)
     for proto, lines in by_proto.items():
-        (OUTPUT_DIR / f"{proto}.txt").write_text(
+        (output_dir / f"{proto}.txt").write_text(
             "\n".join(lines) + "\n", encoding="utf-8"
         )
     stats.by_proto = {p: len(v) for p, v in sorted(by_proto.items())}
 
-    country_dir = OUTPUT_DIR / "by-country"
+    country_dir = output_dir / "by-country"
     country_dir.mkdir(exist_ok=True)
     for stale in country_dir.glob("*.txt"):
         stale.unlink()
@@ -674,32 +728,54 @@ def write_outputs(nodes: list[Node], full: list[Node], stats: Stats,
         "best_speed_mbps": speeds[-1] if speeds else None,
         "median_speed_mbps": speeds[len(speeds) // 2] if speeds else None,
     }
-    (OUTPUT_DIR / "stats.json").write_text(
+    (output_dir / "stats.json").write_text(
         json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
     return report
 
 
-def write_clash(nodes: list[Node]) -> int:
-    """Пишет output/clash.yaml; если конвертер упал, сборка идёт дальше."""
-    try:
-        import clashout
-    except ImportError:
-        log("      clashout.py не найден: Clash-подписка пропущена")
-        return 0
+def write_clash(nodes: list[Node], output_dir: Path | None = None) -> int:
+    """Build Clash output; propagate errors before publishing any files."""
+    import clashout
+    output_dir = output_dir or OUTPUT_DIR
+    labels = [node_label(n, i + 1) for i, n in enumerate(nodes)]
+    text = clashout.build_clash(nodes, labels=labels)
+    count = sum(clashout.clash_proxy(n) is not None for n in nodes)
+    if not count:
+        raise ValueError("No nodes can be exported to Clash")
+    (output_dir / "clash.yaml").write_text(text, encoding="utf-8")
+    return count
 
-    labels = [
-        urllib.parse.unquote(retag(n, i + 1).split("#", 1)[1])
-        for i, n in enumerate(nodes)
-    ]
-    try:
-        text = clashout.build_clash(nodes, labels=labels)
-    except Exception as exc:
-        log(f"      Clash-подписка не собралась: {type(exc).__name__}: {exc}")
-        return 0
 
-    (OUTPUT_DIR / "clash.yaml").write_text(text, encoding="utf-8")
-    return len(nodes)
+def publish_outputs(nodes: list[Node], full: list[Node], stats: Stats,
+                    stable: list[Node], history: dict) -> tuple[dict, int]:
+    """Stage the whole snapshot before replacing the last successful output."""
+    OUTPUT_DIR.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix=".subscription-", dir=OUTPUT_DIR.parent) as tmp:
+        stage = Path(tmp) / "new"
+        # Keep the backup outside automatic cleanup if restoring it also fails.
+        backup = OUTPUT_DIR.parent / f"{Path(tmp).name}-previous"
+        report = write_outputs(nodes, full, stats, stable, output_dir=stage)
+        save_history(history, path=stage / "history.json")
+        count = write_clash(nodes, output_dir=stage)
+        had_previous = OUTPUT_DIR.exists()
+        if had_previous:
+            OUTPUT_DIR.rename(backup)
+        try:
+            stage.rename(OUTPUT_DIR)
+        except OSError:
+            if had_previous:
+                try:
+                    backup.rename(OUTPUT_DIR)
+                except OSError as exc:
+                    raise OSError(f"Previous snapshot preserved at {backup}") from exc
+            raise
+        if had_previous:
+            try:
+                shutil.rmtree(backup)
+            except OSError:
+                log(f"    Previous snapshot cleanup deferred: {backup}")
+    return report, count
 
 
 def interleave(*groups: list[Node]) -> list[Node]:
@@ -725,7 +801,7 @@ def interleave(*groups: list[Node]) -> list[Node]:
 
 
 def dedupe_servers(nodes: list[Node]) -> list[Node]:
-    """По одному узлу на адрес сервера, остаётся самый быстрый."""
+    """Prefer verified TLS before latency when sharing an endpoint."""
     best: dict[tuple[str, int], Node] = {}
     for node in nodes:
         key = (node.host, node.port)
@@ -735,7 +811,8 @@ def dedupe_servers(nodes: list[Node]) -> list[Node]:
             continue
         current_ms = current.latency_ms if current.latency_ms is not None else 99999
         node_ms = node.latency_ms if node.latency_ms is not None else 99999
-        if node_ms < current_ms:
+        if (not node.verified, not node.tls_ok, node_ms) < (
+                not current.verified, not current.tls_ok, current_ms):
             best[key] = node
     return list(best.values())
 
@@ -771,9 +848,7 @@ def pick_diverse(nodes: list[Node], limit: int, per_country: int) -> list[Node]:
                 taken[code] = index + 1
                 added = True
         if not added:
-            if all(taken[c] >= len(buckets[c]) for c in buckets):
-                break
-            quota += max(1, per_country)
+            break
     return chosen
 
 
@@ -869,8 +944,9 @@ def main() -> int:
         log(f"      Реально работают: {len(working)}")
         selected_pool = working
     else:
-        log("      Настоящая проверка недоступна, откат на TCP-результаты.")
-        selected_pool = tcp_alive + alive_udp
+        log("[!] No traffic-verified nodes. Previous subscription preserved. "
+            "Install sing-box and check probe diagnostics.")
+        return 1
 
     stats.alive = len(selected_pool)
 
@@ -880,6 +956,9 @@ def main() -> int:
         log(f"      Уникальных адресов: {len(servers)} "
             f"(из {len(selected_pool)} рабочих конфигов)")
     stats.tls_ok = sum(1 for n in servers if n.tls_ok)
+    if not stats.tls_ok:
+        log("[!] No nodes passed HTTPS verification. Previous subscription preserved.")
+        return 1
     if stats.tls_ok < len(servers):
         log(f"      HTTPS с проверкой сертификата прошли {stats.tls_ok} "
             f"из {len(servers)}: остальные могут подменять TLS и попадут "
@@ -911,7 +990,8 @@ def main() -> int:
     selected_pool.sort(key=rank)
     full = selected_pool[:MAX_FULL]
     # короткий список с разбросом по странам
-    published = pick_diverse(full, MAX_OUTPUT, MAX_PER_COUNTRY)
+    trusted = [n for n in full if n.verified and n.tls_ok]
+    published = pick_diverse(trusted, MAX_OUTPUT, MAX_PER_COUNTRY)
 
     # меряем тех, кто попал в основную подписку
     if published:
@@ -919,12 +999,15 @@ def main() -> int:
         published.sort(key=rank)
 
     # стабильные: держатся уже несколько часов
-    stable = pick_diverse(pick_stable(full), MAX_OUTPUT, MAX_PER_COUNTRY)
+    trusted.sort(key=rank)
+    full.sort(key=rank)
+    stable = pick_diverse(pick_stable(trusted), MAX_OUTPUT, MAX_PER_COUNTRY)
+    stable.sort(key=rank)
     stats.stable = len(stable)
 
     prev_full = (previous_report() or {}).get("published_full")
     if shrink_guard_blocks(prev_full, len(full),
-                           allow=bool(os.environ.get("ALLOW_SHRINK"))):
+                           allow=os.environ.get("ALLOW_SHRINK", "").strip() == "1"):
         log(f"[!] Рабочих узлов {len(full)}, а в прошлый раз было {prev_full}. "
             f"Это меньше {int(MIN_KEEP_RATIO * 100)}% от прошлого прогона, "
             f"да и вообще меньше {MIN_KEEP_ABS}.")
@@ -932,9 +1015,11 @@ def main() -> int:
             "Если уменьшение ожидаемое, запусти с ALLOW_SHRINK=1.")
         return 1
 
-    report = write_outputs(published, full, stats, stable)
-    save_history(history)
-    clash_count = write_clash(published)
+    try:
+        report, clash_count = publish_outputs(published, full, stats, stable, history)
+    except Exception as exc:
+        log(f"[!] Publication failed: {type(exc).__name__}: {exc}")
+        return 1
     if clash_count:
         log(f"      Clash-подписка: {clash_count} узлов")
 

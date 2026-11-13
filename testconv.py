@@ -265,24 +265,24 @@ nodes = ([Node(raw=f"vless://u@1.0.0.{i}:443", proto="vless", host=f"1.0.0.{i}",
                  port=443, ident=f"b{i}", latency_ms=100 + i, country="DE")
             for i in range(20)])
 picked = collect.pick_diverse(nodes, limit=10, per_country=3)
-check("лимит соблюдён", len(picked) == 10)
+check("country quota is enforced", len(picked) == 6)
 nl = sum(1 for n in picked if n.country == "NL")
 de = sum(1 for n in picked if n.country == "DE")
-check("страны сбалансированы", nl == 5 and de == 5, f"nl={nl} de={de}")
+check("countries stay balanced", nl == 3 and de == 3, f"nl={nl} de={de}")
 check("самый быстрый первым", picked[0].latency_ms == 0)
 check("чередование стран", picked[0].country != picked[1].country,
       f"{picked[0].country},{picked[1].country}")
 
 picked2 = collect.pick_diverse(nodes, limit=40, per_country=3)
-check("если квоты мало — потолок поднимается", len(picked2) == 40)
+check("country cap does not grow to fill the list", len(picked2) == 6)
 
 picked3 = collect.pick_diverse(nodes, limit=100, per_country=3)
-check("больше узлов, чем есть, не выдумывает", len(picked3) == 40)
+check("large limit preserves the country cap", len(picked3) == 6)
 
 single = [Node(raw="x", proto="vless", host="h", port=1, ident=str(i),
                latency_ms=i, country="RU") for i in range(5)]
-check("одна страна не блокирует набор",
-      len(collect.pick_diverse(single, limit=5, per_country=2)) == 5)
+check("one country respects its quota",
+      len(collect.pick_diverse(single, limit=5, per_country=2)) == 2)
 check("пустой вход", collect.pick_diverse([], limit=10, per_country=3) == [])
 check("limit=0", collect.pick_diverse(nodes, limit=0, per_country=3) == [])
 

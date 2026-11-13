@@ -1,64 +1,18 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Free VPN Sub</title>
-<meta name="description" content="Бесплатные VPN-серверы одной ссылкой. Собираю из открытых источников, проверяю живым трафиком, отдаю в vless, vmess, trojan, shadowsocks, hysteria2 и tuic.">
-<link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="styles.css">
-</head>
-<body>
-<main>
-
-<h1>Free VPN Sub</h1>
-
-<p>Собираю бесплатные впн-серверы из открытых источников и каждый прогон проверяю их живьём:
-сначала отвечает ли порт, потом идёт ли через сервер настоящий трафик, потом сертификат и скорость.
-Что не отвечает, в подписку не попадает.</p>
-
-<p class="state" id="state">смотрю, когда обновлялось…</p>
-
-<h2>Подписки</h2>
-<ul class="subs" id="subs"></ul>
-<p class="note">Открыть сразу в клиенте: <span id="deep"></span>. Работает, если клиент уже стоит.</p>
-
-<h2>Зеркала</h2>
-<p>Если raw.githubusercontent.com у тебя не открывается, те же файлы лежат вот здесь:</p>
-<ul class="mirrors" id="mirrors"></ul>
-
-<h2>Как подключиться</h2>
-<ol class="steps">
-  <li>Поставь клиент: <a href="https://github.com/hiddify/hiddify-app/releases" target="_blank" rel="noopener">Hiddify</a> (Windows, Android, iPhone, Linux), <a href="https://github.com/2dust/v2rayNG/releases" target="_blank" rel="noopener">v2rayNG</a> (Android) или <a href="https://github.com/SagerNet/sing-box/releases" target="_blank" rel="noopener">sing-box</a> (iPhone).</li>
-  <li>В клиенте нажми «+» и выбери «добавить из ссылки», вставь ссылку на основную подписку.</li>
-  <li>Обнови профиль и подключайся. Если сервер не открывается, переключись на другой, в списке их много.</li>
-</ol>
-<p class="note">Clash-конфиг подойдёт для Clash Verge, FlClash и других клиентов на Mihomo.</p>
-
-<h2>Что внутри</h2>
-<ul class="nums" id="nums"></ul>
-
-<h2>Про безопасность</h2>
-<p>Серверы чужие. Их владельцы могут видеть твой трафик, поэтому для банков, госуслуг и важных
-аккаунтов такие впн не подходят.</p>
-<p>Не передавай через них пароли и документы. Для обычных сайтов и обхода блокировок сойдёт,
-а для приватности лучше поднять свой сервер на VPS.</p>
-<p>Каждый узел проверяется HTTPS-запросом с полной проверкой сертификата. Тот, кто подменяет
-сертификаты и читает трафик, в основную подписку не попадает.</p>
-
-<h2>Если пригодилось</h2>
-<p>Можно поставить звезду <a href="https://github.com/sakazxc1400-creator/free-vpn-sub" target="_blank" rel="noopener">репозиторию</a>
-или скинуть донат на <a href="https://www.donationalerts.com/r/saka1232131" target="_blank" rel="noopener">donationalerts</a>.</p>
-<p>TON: <code id="ton">UQDj7y9AG8P_4oZ4KAnpRDfCulC-FsgnqSI_8xABobHvc1F3</code>
-<button class="copy" type="button" data-copy="ton">копировать</button></p>
-<p><img class="tonqr" src="assets/ton-qr.png" alt="QR-код для перевода в TON" width="150" height="150"></p>
-
-<footer>
-<p>Собираю публичные конфиги в один список, VPN-услуг не оказываю. Серверы принадлежат их владельцам, код под MIT.</p>
-<p><a href="https://github.com/sakazxc1400-creator/free-vpn-sub">github.com/sakazxc1400-creator/free-vpn-sub</a></p>
-</footer>
-
-</main>
-<script src="app.js"></script>
-</body>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f7f8f5" />
+    <meta name="description" content="An open-source collection of free VPN subscriptions. Traffic-tested servers, live network data, and one simple link for your favorite client." />
+    <meta property="og:title" content="Free VPN Sub — A freer internet. One simple link." />
+    <meta property="og:description" content="Community-powered VPN subscriptions. Open source. No account. Updated automatically." />
+    <title>Free VPN Sub — A freer internet.</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <script type="module" crossorigin src="./build/index-WBRPXQGB.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>This page needs JavaScript for live network data. <a href="https://raw.githubusercontent.com/sakazxc1400-creator/free-vpn-sub/data/output/sub.txt">Open the main subscription</a>.</noscript>
+  </body>
 </html>

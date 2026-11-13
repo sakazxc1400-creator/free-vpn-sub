@@ -5,19 +5,24 @@ import base64
 import http.server
 import json
 import os
-import shutil
 import socket
 import socketserver
 import sys
+import tempfile
 import threading
 import urllib.parse
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import collect
+import notify
 
-ROOT = Path(__file__).resolve().parent
-BACKUP = ROOT / "_e2e_backup"
+SANDBOX = tempfile.TemporaryDirectory(prefix="free-vpn-sub-e2e-")
+ROOT = Path(SANDBOX.name)
+collect.SOURCES_FILE = ROOT / "sources.txt"
+collect.OUTPUT_DIR = ROOT / "output"
+collect.HISTORY_FILE = collect.OUTPUT_DIR / "history.json"
+notify.send_report = lambda report: False
 
 failures: list[str] = []
 
@@ -93,20 +98,6 @@ base_url = f"http://127.0.0.1:{port}"
 
 print(f"== локальный сервер на {base_url} ==")
 
-if BACKUP.exists():
-    shutil.rmtree(BACKUP)
-BACKUP.mkdir()
-for name in ("sources.txt",):
-    if (ROOT / name).exists():
-        shutil.copy2(ROOT / name, BACKUP / name)
-if (ROOT / "output").exists():
-    shutil.copytree(ROOT / "output", BACKUP / "output")
-
-exit_code = 1
-GEO_BACKUP = BACKUP / "geo_cache.json"
-if (ROOT / "geo_cache.json").exists():
-    shutil.copy2(ROOT / "geo_cache.json", GEO_BACKUP)
-
 try:
     # тест должен начинаться с пустой истории
     history_file = ROOT / "output" / "history.json"
@@ -124,11 +115,17 @@ try:
 
     collect.is_routable = lambda host: True
     collect.CHECK_TIMEOUT = 1.0
+    collect.FETCH_RETRIES = 1
     # иначе сработала бы защита от плохой сборки
     os.environ["ALLOW_SHRINK"] = "1"
     collect.STABLE_RUNS = 2
-    # sing-box не запускаем: проверяем откат на TCP
-    collect.probe.verify = lambda nodes, need: []
+    # Traffic verification is deterministic; only source fetching uses local sockets.
+    def verify_all(nodes, need):
+        for node in nodes:
+            node.tls_ok = True
+        return [(node, 20 + i) for i, node in enumerate(nodes)]
+
+    collect.probe.verify = verify_all
     collect.probe.measure_speed = lambda nodes, singbox=None: 0
     # вместо сети отдаём фиксированную страну
     collect.geo.annotate = lambda hosts: {h: "NL" for h in hosts}
@@ -152,7 +149,7 @@ try:
     check("дубликат отброшен", stats["unique"] < stats["parsed"], f"{stats['unique']}/{stats['parsed']}")
     check("tcp_alive = 3", stats["tcp_alive"] == 3, str(stats["tcp_alive"]))
     check("мёртвые отброшены", stats["tcp_alive"] < stats["unique"])
-    check("verified = 0 без sing-box", stats["verified"] == 0, str(stats["verified"]))
+    check("all three nodes were traffic-verified", stats["verified"] == 3, str(stats["verified"]))
     check("best_latency не None", stats["best_latency_ms"] is not None)
     check("median_latency не None", stats["median_latency_ms"] is not None)
     check("countries посчитаны", stats["countries"] == 1, str(stats["countries"]))
@@ -261,9 +258,9 @@ try:
     ]) + "\n", encoding="utf-8")
 
     def fake_verify(nodes, need):
-        # у второго сертификат не проверился, он должен идти ниже
+        # Keep the same nodes across runs regardless of TCP completion order.
         result = []
-        for i, node in enumerate(nodes[:2]):
+        for i, node in enumerate(sorted(nodes, key=lambda n: n.proto)[:2]):
             node.tls_ok = i == 0
             node.speed_mbps = 5.0 if i == 0 else None
             result.append((node, 40 + i * 10))
@@ -274,16 +271,17 @@ try:
     stats4 = json.loads((out / "stats.json").read_text(encoding="utf-8"))
     check("main() вернул 0", rc4 == 0, f"rc={rc4}")
     check("verified заполнен", stats4["verified"] == 2, str(stats4["verified"]))
-    check("published = verified", stats4["published"] == 2, str(stats4["published"]))
+    check("only the TLS-verified node is published", stats4["published"] == 1, str(stats4["published"]))
     plain4 = (out / "all.txt").read_text(encoding="utf-8")
     check("в подписке только проверенные",
-          len([l for l in plain4.splitlines() if l.strip()]) == 2)
+          len([l for l in plain4.splitlines() if l.strip()]) == 1)
     check("задержка из проверки", "40ms" in urllib.parse.unquote(plain4), plain4[:200])
 
     lines4 = [l for l in urllib.parse.unquote(plain4).splitlines() if l.strip()]
     check("узел с проверенным сертификатом стоит первым", "⚠" not in lines4[0])
-    check("узел с непроверенным сертификатом помечен", "⚠" in lines4[1],
-          lines4[1][:120])
+    full4 = urllib.parse.unquote((out / "all-full.txt").read_text(encoding="utf-8"))
+    check("TLS-failed node is marked in the full subscription", "\u26a0" in full4)
+    check("primary subscription excludes TLS failures", "\u26a0" not in "\n".join(lines4))
     check("посчитаны узлы с проверенным сертификатом", stats4["tls_ok"] == 1,
           str(stats4["tls_ok"]))
 
@@ -303,6 +301,7 @@ try:
     check("стабильная подписка наполнилась", stats5["stable"] >= 1,
           str(stats5["stable"]))
     stable_plain = (out / "all-stable.txt").read_text(encoding="utf-8")
+    check("stable subscription excludes TLS failures", "%E2%9A%A0" not in stable_plain)
     check("в стабильной подписке есть узлы", stable_plain.strip() != "")
     check("в названии узла виден срок жизни",
           "12ч" in urllib.parse.unquote(stable_plain),
@@ -322,20 +321,12 @@ try:
 
 finally:
     httpd.shutdown()
+    httpd.server_close()
     for s in live_servers:
         s.shutdown()
-    if (BACKUP / "sources.txt").exists():
-        shutil.copy2(BACKUP / "sources.txt", ROOT / "sources.txt")
-    if (ROOT / "output").exists():
-        shutil.rmtree(ROOT / "output")
-    if (BACKUP / "output").exists():
-        shutil.copytree(BACKUP / "output", ROOT / "output")
-    if GEO_BACKUP.exists():
-        shutil.copy2(GEO_BACKUP, ROOT / "geo_cache.json")
-    elif (ROOT / "geo_cache.json").exists():
-        (ROOT / "geo_cache.json").unlink()
-    shutil.rmtree(BACKUP)
-    print("== файлы восстановлены ==")
+        s.server_close()
+    SANDBOX.cleanup()
+    print("== temporary test files removed ==")
 
 print()
 if failures:
