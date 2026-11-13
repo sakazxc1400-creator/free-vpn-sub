@@ -15,6 +15,10 @@ The installer supports Windows and Linux x86-64, verifies a pinned SHA-256, and
 replaces the binary only after validation. Other platforms can install sing-box
 manually. PyYAML is optional locally and required by CI to validate YAML exports.
 
+The Python 3.9 CI job is pinned to `ubuntu-24.04`: `ubuntu-latest` moved to
+Ubuntu 26.04, for which `actions/setup-python` has no Python 3.9 builds. Keep
+this job on a compatible runner while Python 3.9 remains the supported minimum.
+
 The website uses React and Vite with Node.js 22.12+:
 
 ```sh

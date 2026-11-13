@@ -23,7 +23,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-latest
+          # Python 3.9 builds are unavailable for Ubuntu 26.04.
+          - os: ubuntu-24.04
             python: "3.9"
           - os: windows-latest
             python: "3.12"
