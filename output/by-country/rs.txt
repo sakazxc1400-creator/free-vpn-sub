@@ -1,0 +1,1 @@
+trojan://X00HagvwL8gQXNDAnsxsN8dv1_VdneEo@38.180.101.235:5443?security=tls&sni=rs.nebulaguard.org&alpn=h2%2Chttp%2F1.1&fp=firefox#97.%20%F0%9F%87%B7%F0%9F%87%B8%20%D0%A1%D0%B5%D1%80%D0%B1%D0%B8%D1%8F%20%C2%B7%20trojan%20%C2%B7%20754ms
