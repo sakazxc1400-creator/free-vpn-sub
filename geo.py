@@ -9,6 +9,7 @@ import gzip
 import io
 import ipaddress
 import json
+import re
 import socket
 import time
 import urllib.error
@@ -35,6 +36,7 @@ CSV_URLS = (
     "https://raw.githubusercontent.com/sapics/ip-location-db/main/"
     "dbip-country/dbip-country-ipv4.csv",
 )
+MAX_CSV_BYTES = 24 * 1024 * 1024
 CSV_TIMEOUT = 120
 
 _FLAG_OFFSET = 0x1F1E6 - ord("A")
@@ -90,17 +92,37 @@ def load_cache() -> dict[str, str]:
     if not isinstance(entries, dict):
         return {}
     saved_at = raw.get("saved_at", 0)
+    stamps = raw.get("updated_at", {})
+    if not isinstance(stamps, dict):
+        stamps = {}
+    result = {}
+    now = time.time()
+    for host, code in entries.items():
+        if not isinstance(code, str) or not re.fullmatch(r"[A-Z]{2}", code):
+            continue
+        try:
+            updated = float(stamps.get(host, saved_at))
+        except (TypeError, ValueError, OverflowError):
+            continue
+        age_days = (now - updated) / 86400
+        if 0 <= age_days <= CACHE_TTL_DAYS:
+            result[str(host)] = code
+    return result
+
+
+def save_cache(cache: dict[str, str], refreshed: set[str] | None = None) -> None:
+    previous_stamps = {}
     try:
-        age_days = (time.time() - float(saved_at)) / 86400
-    except (TypeError, ValueError):
-        return {}
-    if age_days > CACHE_TTL_DAYS:
-        return {}
-    return {str(k): str(v) for k, v in entries.items() if isinstance(v, str)}
-
-
-def save_cache(cache: dict[str, str]) -> None:
-    payload = {"saved_at": time.time(), "entries": cache}
+        previous = json.loads(CACHE_FILE.read_text(encoding="utf-8"))
+        if isinstance(previous.get("updated_at"), dict):
+            previous_stamps = previous["updated_at"]
+    except (OSError, ValueError, AttributeError):
+        pass
+    now = time.time()
+    refreshed = set(cache) if refreshed is None else refreshed
+    stamps = {host: (now if host in refreshed else previous_stamps.get(host, now))
+              for host in cache}
+    payload = {"saved_at": now, "updated_at": stamps, "entries": cache}
     try:
         CACHE_FILE.write_text(
             json.dumps(payload, ensure_ascii=False, indent=0, sort_keys=True),
@@ -108,6 +130,23 @@ def save_cache(cache: dict[str, str]) -> None:
         )
     except OSError:
         pass
+
+
+def read_limited_response(response, limit: int) -> bytes | None:
+    """Read compressed or plain HTTP content without unbounded allocation."""
+    encoding = response.headers.get("Content-Encoding", "").lower()
+    raw = response.read(limit + 1)
+    if encoding == "gzip":
+        if len(raw) > limit:
+            return None
+        try:
+            with gzip.GzipFile(fileobj=io.BytesIO(raw)) as archive:
+                raw = archive.read(limit + 1)
+        except (OSError, EOFError):
+            return None
+    elif encoding:
+        return None
+    return raw if len(raw) <= limit else None
 
 
 def resolve(host: str) -> str | None:
@@ -164,6 +203,8 @@ def lookup_api(ips: list[str]) -> dict[str, str]:
     for start in range(0, len(ips), BATCH_SIZE):
         chunk = ips[start:start + BATCH_SIZE]
         body = json.dumps(chunk).encode("utf-8")
+        if len(body) > MAX_CSV_BYTES:
+            continue
         req = urllib.request.Request(
             BATCH_URL,
             data=body,
@@ -171,7 +212,10 @@ def lookup_api(ips: list[str]) -> dict[str, str]:
         )
         try:
             with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT) as resp:
-                payload = json.loads(resp.read().decode("utf-8", "ignore"))
+                raw = resp.read(1024 * 1024 + 1)
+                if len(raw) > 1024 * 1024:
+                    continue
+                payload = json.loads(raw.decode("utf-8", "ignore"))
         except (urllib.error.URLError, urllib.error.HTTPError, OSError,
                 json.JSONDecodeError, ValueError, TimeoutError):
             continue
@@ -210,10 +254,9 @@ def _load_csv_table() -> tuple[list[int], list[int], list[str]] | None:
                 url, headers={"User-Agent": "geo/1.0", "Accept-Encoding": "gzip"}
             )
             with urllib.request.urlopen(req, timeout=CSV_TIMEOUT) as resp:
-                data = resp.read()
-                if resp.headers.get("Content-Encoding") == "gzip":
-                    data = gzip.decompress(data)
-                raw = data
+                raw = read_limited_response(resp, MAX_CSV_BYTES)
+                if raw is None:
+                    continue
             break
         except (urllib.error.URLError, urllib.error.HTTPError, OSError,
                 TimeoutError, gzip.BadGzipFile, EOFError):
@@ -297,11 +340,13 @@ def annotate(hosts: list[str]) -> dict[str, str]:
     if missing:
         ip_to_code.update(lookup_csv(missing))
 
+    resolved_hosts = set()
     for host, ip in host_to_ip.items():
         code = ip_to_code.get(ip)
         if code:
             known[host] = code
             cache[host] = code
+            resolved_hosts.add(host)
 
-    save_cache(cache)
+    save_cache(cache, refreshed=resolved_hosts)
     return known

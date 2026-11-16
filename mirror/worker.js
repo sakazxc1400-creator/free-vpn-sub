@@ -33,6 +33,8 @@ const ALLOWED_PREFIXES = ["by-country/"];
 const BY_COUNTRY = /^by-country\/[a-z]{2}\.txt$/;
 
 function isAllowed(path) {
+  if (!path || path.includes("\\") || /%(?:2e|2f|5c)/i.test(path)) return false;
+  if (path.split("/").some((part) => part === "." || part === "..")) return false;
   if (ALLOWED.has(path)) return true;
   if (ALLOWED_PREFIXES.some((prefix) => path.startsWith(prefix))) {
     return BY_COUNTRY.test(path);
@@ -60,6 +62,7 @@ function reply(request, body, options) {
 
 export default {
   async fetch(request, env, ctx) {
+    const rawPath = request.url.replace(/^https?:\/\/[^/]+/i, "").split(/[?#]/, 1)[0];
     const url = new URL(request.url);
 
     if (request.method === "OPTIONS") {
@@ -72,6 +75,9 @@ export default {
     }
 
     const path = url.pathname.replace(/^\/+/, "");
+    if (/%(?:2e|2f|5c)/i.test(rawPath) || rawPath.split("/").some((part) => part === "..")) {
+      return reply(request, "Invalid path\n", { status: 404, headers: corsHeaders() });
+    }
     if (!path) {
       return Response.redirect(SITE, 302);
     }

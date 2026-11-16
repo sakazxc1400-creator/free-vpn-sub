@@ -7,6 +7,7 @@
     "dev": "vite --host 127.0.0.1",
     "build": "vite build",
     "preview": "vite preview --host 127.0.0.1",
+    "preview:pages": "node site/tests/preview-server.mjs",
     "test": "node --test testweb.mjs",
     "test:ui": "playwright test"
   },

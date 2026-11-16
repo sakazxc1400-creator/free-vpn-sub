@@ -163,7 +163,7 @@ STAMP = "%Y-%m-%dT%H:%M:%SZ"
 def one_node_history(streak: int, gap_hours: float, first_hours: float) -> dict:
     last = (NOW - timedelta(hours=gap_hours)).strftime(STAMP)
     first = (NOW - timedelta(hours=first_hours)).strftime(STAMP)
-    return {"nodes": {"1.2.3.4:443": {
+    return {"nodes": {"k": {
         "streak": streak, "first": first, "last": last, "runs": 10}}}
 
 
@@ -185,7 +185,7 @@ check("стаж в часах считается по времени, а не п
 check("сброшенный стаж начинает часы заново",
       node_after(one_node_history(4, 9, 20)).uptime_hours == 0.0)
 check("старая запись без first не роняет сборку",
-      node_after({"nodes": {"1.2.3.4:443": {"streak": 2,
+      node_after({"nodes": {"k": {"streak": 2,
                                              "last": (NOW - timedelta(hours=1)).strftime(STAMP)}}}).streak == 3)
 check("шесть замеров подряд это стабильный узел",
       len(pick_stable([node_after(one_node_history(5, 1, 10))])) == 1)
@@ -205,10 +205,10 @@ with tempfile.TemporaryDirectory() as tmp:
                                               "last": "2026-10-24T11:00:00Z"}}}),
         encoding="utf-8")
     check("история старого формата начинается заново",
-          collect.load_history() == {"v": 2, "nodes": {}})
-    collect.save_history({"v": 2, "nodes": {}})
+          collect.load_history() == {"v": 3, "nodes": {}})
+    collect.save_history({"v": 3, "nodes": {}})
     check("история нового формата читается",
-          collect.load_history() == {"v": 2, "nodes": {}})
+          collect.load_history() == {"v": 3, "nodes": {}})
     collect.HISTORY_FILE = real
 
 print()

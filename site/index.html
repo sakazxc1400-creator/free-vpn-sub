@@ -3,7 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#f7f8f5" />
+    <meta name="theme-color" content="#eef2f4" />
+    <script>
+      document.documentElement.classList.add("js");
+      try {
+        const preference = localStorage.getItem("fvps-theme") || "system";
+        const dark = preference === "dark" || (preference === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.dataset.theme = dark ? "dark" : "light";
+      } catch { document.documentElement.dataset.theme = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"; }
+    </script>
     <meta name="description" content="An open-source collection of free VPN subscriptions. Traffic-tested servers, live network data, and one simple link for your favorite client." />
     <meta property="og:title" content="Free VPN Sub — A freer internet. One simple link." />
     <meta property="og:description" content="Community-powered VPN subscriptions. Open source. No account. Updated automatically." />

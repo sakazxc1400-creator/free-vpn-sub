@@ -129,8 +129,10 @@ subscription is preserved. TCP-only results are never published.
 
 ### Website development
 
-The Swiss/Bento landing page is implemented in one React file: `site/App.jsx`.
-Node.js 22.12+ is required to build it.
+The website is implemented in React under `site/`: screen components in
+`site/components/`, network and theme hooks in `site/hooks/`, snapshot handling in
+`site/data.js`, shared links in `site/config.js`, and design tokens in
+`site/styles.css`. Node.js 22.12+ is required to build it.
 
 ```sh
 npm ci

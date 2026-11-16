@@ -5,8 +5,12 @@ import base64
 import json
 import os
 import tempfile
+import time
 import unittest
+import threading
+from concurrent.futures import ThreadPoolExecutor
 import urllib.parse
+import gzip
 from contextlib import ExitStack
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -14,6 +18,7 @@ from unittest.mock import MagicMock, patch
 
 import clashout
 import collect
+import geo
 import outbound
 import probe
 
@@ -105,6 +110,29 @@ class SelectionTests(unittest.TestCase):
         secure = node(tls_ok=True, verified=True, latency_ms=200)
         self.assertIs(collect.dedupe_servers([insecure, secure])[0], secure)
 
+    def test_server_dedupe_preserves_different_credentials(self):
+        first = node("trojan://first@1.2.3.4:443", tls_ok=True)
+        second = node("trojan://second@1.2.3.4:443", tls_ok=True)
+        self.assertEqual(len(collect.dedupe_servers([first, second])), 2)
+
+    def test_history_identity_changes_reset_stability(self):
+        now = datetime(2026, 11, 13, 12, tzinfo=timezone.utc)
+        first = node("trojan://first@1.2.3.4:443")
+        second = node("trojan://second@1.2.3.4:443")
+        history = {"nodes": {}}
+        collect.apply_history(history, [first], now - timedelta(minutes=30))
+        collect.apply_history(history, [second], now)
+        self.assertEqual(second.streak, 1)
+        self.assertEqual(second.uptime_hours, 0)
+
+    def test_future_history_entry_does_not_survive_forever(self):
+        now = datetime(2026, 11, 13, 12, tzinfo=timezone.utc)
+        stale = node("trojan://stale@1.2.3.4:443")
+        current = node("trojan://current@5.6.7.8:443")
+        history = {"nodes": {stale.key: {"streak": 9, "last": "2099-01-01T00:00:00Z"}}}
+        collect.apply_history(history, [current], now)
+        self.assertNotIn(stale.key, history["nodes"])
+
     def test_history_resets_hours_after_a_missed_run(self):
         now = datetime(2026, 11, 13, 12, tzinfo=timezone.utc)
         history = {"nodes": {}}
@@ -123,7 +151,7 @@ class SelectionTests(unittest.TestCase):
         for entry in bad_entries:
             with self.subTest(entry=entry):
                 current = node()
-                history = {"nodes": {current.addr: entry}}
+                history = {"nodes": {current.key: entry}}
                 collect.apply_history(history, [current], now)
                 self.assertEqual(current.streak, 1)
                 self.assertEqual(current.uptime_hours, 0)
@@ -190,6 +218,37 @@ class PublicationTests(unittest.TestCase):
                 self.assertEqual(self.run_collection(tmp, [(node(tls_ok=True), 10)]), 1)
             self.assertEqual(path.read_text(), "previous")
             self.assertEqual(list(Path(tmp).iterdir()), [path])
+
+    def test_concurrent_publication_cannot_mix_snapshots(self):
+        with tempfile.TemporaryDirectory() as tmp, patch.object(collect, "OUTPUT_DIR", Path(tmp) / "output"):
+            collect.OUTPUT_DIR.mkdir()
+            (collect.OUTPUT_DIR / "sub.txt").write_text("previous", encoding="utf-8")
+            started = threading.Event()
+            release = threading.Event()
+            original = collect.write_outputs
+
+            def slow_write(*args, **kwargs):
+                started.set()
+                release.wait(timeout=5)
+                return original(*args, **kwargs)
+
+            errors = []
+            with patch.object(collect, "write_outputs", side_effect=slow_write):
+                with ThreadPoolExecutor(max_workers=2) as pool:
+                    first = pool.submit(collect.publish_outputs, [node(tls_ok=True)], [node(tls_ok=True)], collect.Stats(), [], {"nodes": {}})
+                    self.assertTrue(started.wait(timeout=2))
+                    second = pool.submit(collect.publish_outputs, [node(tls_ok=True)], [node(tls_ok=True)], collect.Stats(), [], {"nodes": {}})
+                    try:
+                        second.result(timeout=2)
+                    except OSError as exc:
+                        errors.append(str(exc))
+                    release.set()
+                    first.result(timeout=5)
+            self.assertEqual(len(errors), 1)
+            report = json.loads((collect.OUTPUT_DIR / "stats.json").read_text(encoding="utf-8"))
+            self.assertEqual(report["published"], 1)
+            self.assertTrue((collect.OUTPUT_DIR / "clash.yaml").is_file())
+            self.assertFalse((Path(tmp) / ".subscription-publish.lock").exists())
 
     def test_failed_replacement_restores_previous_directory(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -264,6 +323,47 @@ class ClashTests(unittest.TestCase):
         used = {}
         names = [clashout._unique(name, used) for name in ["node", "node #2", "node", "node #2"]]
         self.assertEqual(len(set(names)), len(names))
+
+
+class FetchTests(unittest.TestCase):
+    def test_source_reads_only_bounded_body(self):
+        response = MagicMock()
+        response.read.return_value = b"vless://ignored"
+        response.headers.get.return_value = "text/plain"
+        response.__enter__.return_value = response
+        with patch("urllib.request.urlopen", return_value=response):
+            self.assertIsNotNone(collect.fetch("https://source.example/sub"))
+        self.assertEqual(response.read.call_args.args[0], collect.MAX_SOURCE_BYTES + 1)
+
+    def test_source_rejects_oversized_and_unexpected_content(self):
+        for body, content_type in [(b"x" * (collect.MAX_SOURCE_BYTES + 1), "text/plain"),
+                                   (b"vless://valid", "text/html")]:
+            with self.subTest(content_type=content_type):
+                response = MagicMock()
+                response.read.return_value = body
+                response.headers.get.return_value = content_type
+                response.__enter__.return_value = response
+                with patch("urllib.request.urlopen", return_value=response), \
+                        patch.object(collect, "FETCH_RETRIES", 1):
+                    self.assertIsNone(collect.fetch("https://source.example/sub"))
+
+    def test_compressed_geo_data_is_bounded_after_decompression(self):
+        compressed = gzip.compress(b"x" * (geo.MAX_CSV_BYTES + 1))
+        response = MagicMock()
+        response.read.side_effect = [compressed, b""]
+        response.headers.get.return_value = "gzip"
+        response.__enter__.return_value = response
+        with patch("urllib.request.urlopen", return_value=response):
+            self.assertIsNone(geo.read_limited_response(response, geo.MAX_CSV_BYTES))
+    def test_geo_cache_entries_expire_independently(self):
+        with tempfile.TemporaryDirectory() as tmp, patch.object(geo, "CACHE_FILE", Path(tmp) / "geo.json"):
+            now = time.time()
+            geo.CACHE_FILE.write_text(json.dumps({
+                "saved_at": now,
+                "updated_at": {"old.example": now - 31 * 86400, "new.example": now},
+                "entries": {"old.example": "NL", "new.example": "DE"},
+            }), encoding="utf-8")
+            self.assertEqual(geo.load_cache(), {"new.example": "DE"})
 
 
 if __name__ == "__main__":

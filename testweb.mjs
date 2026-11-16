@@ -51,6 +51,27 @@ test("worker enforces file allowlist and request methods", async () => {
   assert.equal(post.headers.get("allow"), "GET, HEAD, OPTIONS");
 });
 
+test("worker OPTIONS and encoded traversal stay constrained", async () => {
+  const mock = setup(() => { throw new Error("Must not fetch"); });
+  const options = await worker.fetch(new Request("https://mirror.example/sub.txt", { method: "OPTIONS" }), {}, mock.ctx);
+  assert.equal(options.status, 204);
+  assert.equal(options.headers.get("access-control-allow-methods"), "GET, HEAD, OPTIONS");
+  for (const path of ["../secrets", "by-country/%252e%252e/stats.json", "by-country/nl.txt/extra"]) {
+    const response = await worker.fetch(new Request(`https://mirror.example/${path}`), {}, mock.ctx);
+    assert.equal(response.status, 404, path);
+  }
+});
+
+test("worker returns 502 after upstream timeout and body failure", async () => {
+  const mock = setup(async (url, options) => {
+    assert.ok(options.signal instanceof AbortSignal);
+    throw new DOMException("Timed out", "TimeoutError");
+  });
+  const response = await worker.fetch(new Request("https://mirror.example/stats.json"), {}, mock.ctx);
+  assert.equal(response.status, 502);
+  assert.equal(response.headers.get("access-control-allow-origin"), "*");
+});
+
 test("retired service worker only clears this project's caches", async () => {
   const events = {};
   const removed = [];

@@ -15,8 +15,17 @@ async function mockNetwork(page) {
   await page.route(/\/output\/(stats|nodes)\.json/, (route) => route.fulfill({ json: route.request().url().includes("stats.json") ? stats : nodes }));
 }
 
-test("subscription tabs, mirror selection and copy stay in sync", async ({ page, context }) => {
-  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+test("subscription tabs, mirror selection and copy stay in sync", async ({ page, context, browserName }) => {
+  if (browserName === "chromium") {
+    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  } else {
+    await page.addInitScript(() => {
+      let value = "";
+      Object.defineProperty(navigator, "clipboard", { configurable: true, value: {
+        writeText: async (text) => { value = text; }, readText: async () => value,
+      } });
+    });
+  }
   await mockNetwork(page);
   await page.goto("/");
   await page.getByRole("tab", { name: "Stable", exact: true }).click();
@@ -84,6 +93,23 @@ test("blocked primary source times out and switches to a mirror", async ({ page 
   await page.goto("/");
   await expect(page.getByText("Data from jsDelivr")).toBeVisible({ timeout: 10000 });
   await expect(page.locator("tbody tr")).toHaveCount(6);
+});
+
+test("production subpath, zoom and reduced-transparency layout stay usable", async ({ page }) => {
+  await mockNetwork(page);
+  await page.goto("/free-vpn-sub/");
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  const assets = await page.locator('script[type="module"], link[rel="stylesheet"]').evaluateAll((items) => items.map((item) => item.src || item.href));
+  for (const asset of assets) {
+    const response = await page.request.get(asset);
+    expect(response.ok(), asset).toBe(true);
+    expect(response.headers()["content-type"]).not.toContain("text/html");
+  }
+  // A 360px CSS viewport is the 200% browser-zoom equivalent for 720px.
+  await page.setViewportSize({ width: 360, height: 900 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect(page.locator(".principles-grid")).toBeVisible();
 });
 
 for (const [name, width, height] of [["mobile", 375, 812], ["tablet", 768, 1024], ["desktop", 1440, 1000], ["landscape", 812, 375]]) {

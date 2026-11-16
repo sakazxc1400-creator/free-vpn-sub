@@ -18,6 +18,7 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
+from contextlib import contextmanager
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
@@ -40,6 +41,8 @@ LINK_RE = re.compile(
 FETCH_TIMEOUT = 25
 FETCH_RETRIES = 3
 FETCH_WORKERS = 12
+MAX_SOURCE_BYTES = 8 * 1024 * 1024
+MAX_LINK_LENGTH = 16384
 
 CHECK_TIMEOUT = 3.0
 CHECK_WORKERS = 300
@@ -62,7 +65,7 @@ HISTORY_FILE = OUTPUT_DIR / "history.json"
 STABLE_RUNS = 6             # столько замеров подряд нужен для стабильной
 HISTORY_KEEP_HOURS = 48     # сколько помним выпавшие из сборки узлы
 HISTORY_GAP_HOURS = 8       # пауза больше этого обнуляет стаж
-HISTORY_VERSION = 2         # 2: стаж в часах, а не в прогонах
+HISTORY_VERSION = 3         # 3: identity-based keys, not host:port
 
 # блокируем публикацию, только если узлов и стало меньше прошлого раза, и вообще мало
 MIN_KEEP_RATIO = 0.6
@@ -130,7 +133,7 @@ def log(msg: str) -> None:
 def b64_decode_loose(data: str, min_length: int = 16) -> str | None:
     """base64 без padding и url-safe; None, если это не base64."""
     cleaned = re.sub(r"\s+", "", data)
-    if not cleaned or len(cleaned) < min_length:
+    if not cleaned or len(cleaned) < min_length or len(cleaned) > MAX_SOURCE_BYTES:
         return None
     if not re.fullmatch(r"[A-Za-z0-9+/=_-]+", cleaned):
         return None
@@ -207,14 +210,20 @@ def fetch(url: str) -> str | None:
         for attempt in range(1, FETCH_RETRIES + 1):
             try:
                 with urllib.request.urlopen(req, timeout=FETCH_TIMEOUT) as resp:
-                    body = resp.read().decode("utf-8", errors="ignore")
+                    content_type = resp.headers.get("Content-Type", "").lower()
+                    if content_type.startswith("text/html"):
+                        raise ValueError("unexpected HTML response")
+                    raw = resp.read(MAX_SOURCE_BYTES + 1)
+                    if len(raw) > MAX_SOURCE_BYTES:
+                        raise ValueError("source exceeds size limit")
+                    body = raw.decode("utf-8", errors="ignore")
                 if body.strip():
                     return body
                 last_error = "пустой ответ"
                 break
             except (urllib.error.URLError, urllib.error.HTTPError,
                     socket.timeout, ConnectionError, TimeoutError,
-                    OSError) as exc:
+                    OSError, ValueError) as exc:
                 last_error = f"{type(exc).__name__}: {exc}"
                 if attempt < FETCH_RETRIES:
                     time.sleep(1.5 * attempt)
@@ -226,10 +235,10 @@ def extract_links(payload: str) -> list[str]:
     """Ссылки из текста, при неудаче из base64."""
     links = LINK_RE.findall(payload)
     if links:
-        return links
+        return [link[:MAX_LINK_LENGTH] for link in links]
     decoded = b64_decode_loose(payload)
     if decoded:
-        return LINK_RE.findall(decoded)
+        return [link[:MAX_LINK_LENGTH] for link in LINK_RE.findall(decoded)]
     return []
 
 
@@ -494,7 +503,7 @@ def apply_history(history: dict, nodes: list[Node], now: datetime) -> None:
             return 0
 
     for node in nodes:
-        key = node.addr
+        key = node.key
         alive.add(key)
         prev = stored.get(key) or {}
         if not isinstance(prev, dict):
@@ -532,7 +541,7 @@ def apply_history(history: dict, nodes: list[Node], now: datetime) -> None:
             del stored[key]
             continue
         last = parse_stamp(str(entry.get("last", "")))
-        if last is None or last < cutoff:
+        if last is None or last < cutoff or last > now + timedelta(minutes=5):
             del stored[key]
             continue
         if entry.get("streak"):
@@ -747,11 +756,30 @@ def write_clash(nodes: list[Node], output_dir: Path | None = None) -> int:
     return count
 
 
+@contextmanager
+def publication_lock():
+    """Serialize the replacement phase across collector processes."""
+    path = OUTPUT_DIR.parent / ".subscription-publish.lock"
+    try:
+        descriptor = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+    except FileExistsError as exc:
+        raise OSError("Another publication is replacing the snapshot") from exc
+    try:
+        with os.fdopen(descriptor, "w", encoding="ascii") as lock:
+            lock.write(str(os.getpid()))
+        yield
+    finally:
+        try:
+            path.unlink()
+        except OSError:
+            log(f"    Publication lock cleanup deferred: {path}")
+
+
 def publish_outputs(nodes: list[Node], full: list[Node], stats: Stats,
                     stable: list[Node], history: dict) -> tuple[dict, int]:
     """Stage the whole snapshot before replacing the last successful output."""
     OUTPUT_DIR.parent.mkdir(parents=True, exist_ok=True)
-    with tempfile.TemporaryDirectory(prefix=".subscription-", dir=OUTPUT_DIR.parent) as tmp:
+    with publication_lock(), tempfile.TemporaryDirectory(prefix=".subscription-", dir=OUTPUT_DIR.parent) as tmp:
         stage = Path(tmp) / "new"
         # Keep the backup outside automatic cleanup if restoring it also fails.
         backup = OUTPUT_DIR.parent / f"{Path(tmp).name}-previous"
@@ -801,10 +829,10 @@ def interleave(*groups: list[Node]) -> list[Node]:
 
 
 def dedupe_servers(nodes: list[Node]) -> list[Node]:
-    """Prefer verified TLS before latency when sharing an endpoint."""
-    best: dict[tuple[str, int], Node] = {}
+    """Prefer verified TLS for the same complete configuration identity."""
+    best: dict[str, Node] = {}
     for node in nodes:
-        key = (node.host, node.port)
+        key = node.key
         current = best.get(key)
         if current is None:
             best[key] = node
