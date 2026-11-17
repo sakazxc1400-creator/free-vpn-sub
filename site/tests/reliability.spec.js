@@ -23,12 +23,12 @@ test("theme preference persists and system changes apply", async ({ page }) => {
   await page.emulateMedia({ colorScheme: "light" });
   await page.goto("/");
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
-  await page.getByLabel("Theme", { exact: true }).selectOption("dark");
+  await page.getByRole("radio", { name: "Dark" }).click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   expect(await page.evaluate(() => localStorage.getItem("fvps-theme"))).toBe("dark");
   await page.reload();
-  await expect(page.getByLabel("Theme", { exact: true })).toHaveValue("dark");
-  await page.getByLabel("Theme", { exact: true }).selectOption("system");
+  await expect(page.getByRole("radio", { name: "Dark" })).toHaveAttribute("aria-checked", "true");
+  await page.getByRole("radio", { name: "System" }).click();
   await page.emulateMedia({ colorScheme: "dark" });
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await page.emulateMedia({ colorScheme: "light" });
@@ -42,7 +42,7 @@ test("storage failure does not block theme controls or content", async ({ page }
   });
   await routeData(page);
   await page.goto("/");
-  await page.getByLabel("Theme", { exact: true }).selectOption("dark");
+  await page.getByRole("radio", { name: "Dark" }).click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
 });

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function useGlassPointer(ref) {
   useEffect(() => {
@@ -26,6 +26,64 @@ export default function useGlassPointer(ref) {
       element.removeEventListener("pointermove", move);
     };
   }, [ref]);
+}
+
+export function useCountUp(target, duration = 900) {
+  const [value, setValue] = useState(typeof target === "number" ? target : null);
+  const from = useRef(0);
+  useEffect(() => {
+    if (typeof target !== "number" || !Number.isFinite(target)) {
+      from.current = 0;
+      setValue(null);
+      return undefined;
+    }
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      from.current = target;
+      setValue(target);
+      return undefined;
+    }
+    const start = performance.now();
+    const origin = from.current;
+    let frame = 0;
+    const tick = (now) => {
+      const t = Math.min(1, (now - start) / duration);
+      setValue(Math.round(origin + (target - origin) * (1 - Math.pow(1 - t, 3))));
+      if (t < 1) frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => { cancelAnimationFrame(frame); from.current = target; };
+  }, [target, duration]);
+  return value;
+}
+
+export function useParallax(ref, strength = 10) {
+  useEffect(() => {
+    const element = ref.current;
+    if (!element || !window.matchMedia("(pointer: fine)").matches || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return undefined;
+    let frame = 0;
+    const move = (event) => {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        const rect = element.getBoundingClientRect();
+        const x = (event.clientX - rect.left) / rect.width - .5;
+        const y = (event.clientY - rect.top) / rect.height - .5;
+        element.style.setProperty("--parallax-x", `${(-x * strength).toFixed(2)}px`);
+        element.style.setProperty("--parallax-y", `${(-y * strength).toFixed(2)}px`);
+        frame = 0;
+      });
+    };
+    const leave = () => {
+      element.style.setProperty("--parallax-x", "0px");
+      element.style.setProperty("--parallax-y", "0px");
+    };
+    element.addEventListener("pointermove", move, { passive: true });
+    element.addEventListener("pointerleave", leave);
+    return () => {
+      cancelAnimationFrame(frame);
+      element.removeEventListener("pointermove", move);
+      element.removeEventListener("pointerleave", leave);
+    };
+  }, [ref, strength]);
 }
 
 export function useReveal(ref) {

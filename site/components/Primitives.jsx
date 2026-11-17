@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 const paths = {
   arrow: <><path d="M5 12h14M12 5l7 7-7 7" /></>,
@@ -15,7 +15,6 @@ const paths = {
   sun: <><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41" /></>,
   moon: <path d="M20.7 13.1A8.5 8.5 0 0 1 10.9 3.3 8.5 8.5 0 1 0 20.7 13.1Z" />,
   system: <><rect x="3" y="4" width="18" height="12" rx="2" /><path d="M8 20h8M12 16v4" /></>,
-  chevron: <path d="m8 10 4 4 4-4" />,
 };
 
 export function Icon({ name = "arrow", size = 20, ...props }) {
@@ -53,8 +52,34 @@ export function CopyButton({ value, children = "Copy link", className = "", icon
   </button>;
 }
 
+const THEME_OPTIONS = [["system", "system", "System"], ["light", "sun", "Light"], ["dark", "moon", "Dark"]];
+
 export function ThemeControl({ theme }) {
-  return <label className="theme-control glass" title="Color theme"><Icon name={theme.resolved === "dark" ? "moon" : "sun"} size={17} /><span className="sr-only">Theme</span><select aria-label="Theme" value={theme.preference} onChange={(event) => theme.setPreference(event.target.value)}><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select><Icon name="chevron" size={14} /></label>;
+  const list = useRef(null);
+  const measure = () => {
+    const element = list.current;
+    const active = element?.querySelector('[aria-checked="true"]');
+    if (!element || !active) return;
+    element.style.setProperty("--theme-x", `${active.offsetLeft}px`);
+    element.style.setProperty("--theme-width", `${active.offsetWidth}px`);
+  };
+  useLayoutEffect(measure, [theme.preference]);
+  useEffect(() => {
+    const element = list.current;
+    if (!element || !("ResizeObserver" in window)) return undefined;
+    const observer = new ResizeObserver(measure);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+  const onKeyDown = (event) => {
+    const index = THEME_OPTIONS.findIndex(([value]) => value === theme.preference);
+    const next = event.key === "ArrowRight" ? (index + 1) % THEME_OPTIONS.length : event.key === "ArrowLeft" ? (index + THEME_OPTIONS.length - 1) % THEME_OPTIONS.length : event.key === "Home" ? 0 : event.key === "End" ? THEME_OPTIONS.length - 1 : null;
+    if (next === null) return;
+    event.preventDefault();
+    theme.setPreference(THEME_OPTIONS[next][0]);
+    list.current?.querySelectorAll('[role="radio"]')[next]?.focus();
+  };
+  return <div className="theme-control glass" role="radiogroup" aria-label="Theme" ref={list} onKeyDown={onKeyDown}><span className="theme-indicator" aria-hidden="true" />{THEME_OPTIONS.map(([value, icon, label]) => <button key={value} type="button" role="radio" aria-checked={theme.preference === value} tabIndex={theme.preference === value ? 0 : -1} onClick={() => theme.setPreference(value)}><Icon name={icon} size={15} /><span>{label}</span></button>)}</div>;
 }
 
 export function SectionHeading({ index, eyebrow, title, children, id }) {

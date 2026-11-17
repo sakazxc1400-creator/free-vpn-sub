@@ -2,10 +2,16 @@ import React, { useMemo, useState } from "react";
 import { RAW } from "../config.js";
 import { age, snapshotState } from "../data.js";
 import { CopyButton, Icon, SectionHeading } from "./Primitives.jsx";
+import { useCountUp } from "../hooks/useEffects.js";
 
 const regions = new Intl.DisplayNames(["en"], { type: "region" });
 const number = (value) => typeof value === "number" && Number.isFinite(value) ? value.toLocaleString("en-US") : "—";
 export const countryName = (code) => /^[A-Z]{2}$/.test(code || "") && code !== "XX" ? regions.of(code) : "Unknown location";
+
+function StatCard({ label, value, note, icon, unit }) {
+  const animated = useCountUp(value);
+  return <div className="stat-card"><div className="stat-title"><span>{label}</span><Icon name={icon} size={18} /></div><div className="stat-value">{number(animated)}{unit && animated != null && <span>{unit}</span>}</div><p>{note}</p></div>;
+}
 
 function Stats({ network }) {
   const { stats } = network;
@@ -16,7 +22,7 @@ function Stats({ network }) {
     ["Best latency", data?.best_latency_ms, "Measured from the test runner", "refresh"],
     ["Consistent performers", data?.stable, `${data?.stable_runs ?? 6} successful checks in a row`, "shield"],
   ];
-  return <div className="stats-grid">{items.map(([label, value, note, icon], index) => <div className="stat-card" key={label}><div className="stat-title"><span>{label}</span><Icon name={icon} size={18} /></div><div className="stat-value">{number(value)}{index === 2 && value != null && <span>ms</span>}</div><p>{note}</p></div>)}</div>;
+  return <div className="stats-grid">{items.map(([label, value, note, icon], index) => <StatCard key={label} label={label} value={value} note={note} icon={icon} unit={index === 2 ? "ms" : null} />)}</div>;
 }
 
 export default function Network({ network }) {
